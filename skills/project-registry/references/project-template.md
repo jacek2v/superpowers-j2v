@@ -45,6 +45,12 @@ graph LR
 |-----------|-------|--------|
 | | | |
 
+### Development Setup
+
+- **Prerequisites:** [required runtimes, tools, versions]
+- **Install:** [install command]
+- **Run:** [run command]
+
 ## STATE
 
 Specs in development:
