@@ -29,9 +29,18 @@ For each task:
 3. Run verifications as specified
 4. Mark as completed
 
-### Step 3: Complete Development
+### Step 3: Register Feature
 
-After all tasks complete and verified:
+After all tasks complete and verified, update the project registry using the project-registry skill (operation 4):
+- Remove spec entry from STATE
+- Add FXXX entry to FEATURES with date and list of satisfied RXXX
+- Mark those RXXX as `implemented`
+- Update SPECIFICATIONS if implementation diverged from design
+- Commit PROJECT.md changes
+
+### Step 4: Complete Development
+
+After PROJECT.md is updated:
 - Announce: "I'm using the finishing-a-development-branch skill to complete this work."
 - **REQUIRED SUB-SKILL:** Use superpowers:finishing-a-development-branch
 - Follow that skill to verify tests, present options, execute choice
@@ -67,4 +76,5 @@ After all tasks complete and verified:
 **Required workflow skills:**
 - **superpowers:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting
 - **superpowers:writing-plans** - Creates the plan this skill executes
+- **superpowers:project-registry** - Register completed feature in PROJECT.md (operation 4) after all tasks, before finishing
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
