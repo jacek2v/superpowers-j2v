@@ -22,16 +22,17 @@ Every project goes through this process. A todo list, a single-function utility,
 You MUST create a task for each of these items and complete them in order:
 
 1. **Explore project context** — check files, docs, recent commits
-2. **Project registry check** — if `docs/superpowers/PROJECT.md` exists, read it for awareness of existing requirements and features (conflict flags presented at step 5; see project-registry skill, operation 3)
+2. **Project registry check** — if `docs/superpowers/PROJECT.md` exists, read it for awareness of existing requirements and features (conflict flags presented at step 6; see project-registry skill, operation 3)
 3. **Offer visual companion** (if topic will involve visual questions) — this is its own message, not combined with a clarifying question. See the Visual Companion section below.
 4. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
-5. **Propose 2-3 approaches** — with trade-offs and your recommendation. Flag any conflicts with existing requirements or features from PROJECT.md.
-6. **Present design** — in sections scaled to their complexity, get user approval after each section
-7. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
-8. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
-9. **User reviews written spec** — ask user to review the spec file before proceeding
-10. **Update PROJECT.md** — create or update using project-registry skill (operations 1 or 2): update SPECIFICATIONS prose, add spec to STATE, register new RXXX requirements. Commit.
-11. **Transition to implementation** — invoke writing-plans skill to create implementation plan
+5. **Research sanity check** — verify key assumptions before proposing: prior art, library/API existence, domain patterns. Skip when domain and tools are well-known.
+6. **Propose 2-3 approaches** — with trade-offs and your recommendation, grounded in research findings. Flag any conflicts with existing requirements or features from PROJECT.md.
+7. **Present design** — in sections scaled to their complexity, get user approval after each section
+8. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
+9. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
+10. **User reviews written spec** — ask user to review the spec file before proceeding
+11. **Update PROJECT.md** — create or update using project-registry skill (operations 1 or 2): update SPECIFICATIONS prose, add spec to STATE, register new RXXX requirements. Commit.
+12. **Transition to implementation** — invoke writing-plans skill to create implementation plan
 
 ## Process Flow
 
@@ -43,7 +44,9 @@ digraph brainstorming {
     "Visual questions ahead?" [shape=diamond];
     "Offer Visual Companion\n(own message, no other content)" [shape=box];
     "Ask clarifying questions" [shape=box];
-    "Propose 2-3 approaches\n(flag conflicts)" [shape=box];
+    "Research needed?" [shape=diamond];
+    "Research sanity check" [shape=box];
+    "Propose 2-3 approaches\n(grounded in research)" [shape=box];
     "Present design sections" [shape=box];
     "User approves design?" [shape=diamond];
     "Write design doc" [shape=box];
@@ -59,8 +62,11 @@ digraph brainstorming {
     "Visual questions ahead?" -> "Offer Visual Companion\n(own message, no other content)" [label="yes"];
     "Visual questions ahead?" -> "Ask clarifying questions" [label="no"];
     "Offer Visual Companion\n(own message, no other content)" -> "Ask clarifying questions";
-    "Ask clarifying questions" -> "Propose 2-3 approaches\n(flag conflicts)";
-    "Propose 2-3 approaches\n(flag conflicts)" -> "Present design sections";
+    "Ask clarifying questions" -> "Research needed?";
+    "Research needed?" -> "Research sanity check" [label="unfamiliar domain\nor unverified deps"];
+    "Research needed?" -> "Propose 2-3 approaches\n(grounded in research)" [label="well-known territory"];
+    "Research sanity check" -> "Propose 2-3 approaches\n(grounded in research)";
+    "Propose 2-3 approaches\n(grounded in research)" -> "Present design sections";
     "Present design sections" -> "User approves design?";
     "User approves design?" -> "Present design sections" [label="no, revise"];
     "User approves design?" -> "Write design doc" [label="yes"];
@@ -86,8 +92,19 @@ digraph brainstorming {
 - Only one question per message - if a topic needs more exploration, break it into multiple questions
 - Focus on understanding: purpose, constraints, success criteria
 
+**Research sanity check:**
+
+Before proposing approaches, verify that key assumptions hold. This is a quick check, not exhaustive research.
+
+- **Prior art**: Search for existing libraries, tools, or patterns that solve the same problem. If something well-maintained already exists, propose using it rather than building from scratch.
+- **Dependency verification**: If you plan to suggest a specific library or API, confirm it exists, is maintained, and supports the version/features you'd reference.
+- **Domain patterns**: When working in an unfamiliar domain, search for established patterns before reasoning from general knowledge.
+
+Skip this step when the domain and tooling are well-known. When you do research, briefly share what you found before proposing approaches — "I checked and X library handles this, Y is deprecated, Z pattern is standard in this ecosystem."
+
 **Exploring approaches:**
 
+- Ground proposals in research findings — reference specific libraries, APIs, or patterns discovered
 - Propose 2-3 different approaches with trade-offs
 - Present options conversationally with your recommendation and reasoning
 - Lead with your recommended option and explain why
