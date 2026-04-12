@@ -57,6 +57,8 @@ This structure informs the task decomposition. Each task should produce self-con
 
 **Tech Stack:** [Key technologies/libraries]
 
+**Requirements:** [RXXX entries from PROJECT.md this plan addresses, if PROJECT.md exists]
+
 ---
 ```
 
@@ -134,6 +136,8 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 **3. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
 
 **4. External knowledge correctness:** For each task using external libraries, CLI tools, config formats, or framework conventions — are method names, signatures, flags, and schemas verified against current docs, not assumed from training data?
+
+**5. Requirement traceability:** If PROJECT.md exists, verify each RXXX listed in the header maps to at least one task. If a requirement has no corresponding task, either add one or note why it's already satisfied.
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 
