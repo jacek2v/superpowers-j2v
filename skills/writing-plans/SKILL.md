@@ -103,6 +103,10 @@ git commit -m "feat: add specific feature"
 ```
 ````
 
+## External Knowledge Verification
+
+Before writing code examples that rely on external libraries, APIs, CLI tools, config formats, or framework conventions, verify against current docs (context7 or web search). Check method signatures, CLI flags, config schemas, query syntax. Do not write from memory — a plan that confidently uses a nonexistent method or deprecated config key is worse than a placeholder.
+
 ## No Placeholders
 
 Every step must contain the actual content an engineer needs. These are **plan failures** — never write them:
@@ -128,6 +132,8 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 **2. Placeholder scan:** Search your plan for red flags — any of the patterns from the "No Placeholders" section above. Fix them.
 
 **3. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
+
+**4. External knowledge correctness:** For each task using external libraries, CLI tools, config formats, or framework conventions — are method names, signatures, flags, and schemas verified against current docs, not assumed from training data?
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 
