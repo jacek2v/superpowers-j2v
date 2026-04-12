@@ -22,6 +22,14 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 If the spec covers multiple independent subsystems, it should have been broken into sub-project specs during brainstorming. If it wasn't, suggest breaking this into separate plans — one per subsystem. Each plan should produce working, testable software on its own.
 
+## Context Loading
+
+Before writing tasks, read:
+1. The approved spec (primary input)
+2. `docs/superpowers/PROJECT.md` if it exists — for SPECIFICATIONS (current architecture) and REQUIREMENTS (RXXX constraints)
+
+The engineer executing the plan won't have access to PROJECT.md — what they need must be in the plan. Embed relevant RXXX constraints into task descriptions where a task could violate them.
+
 ## File Structure
 
 Before defining tasks, map out which files will be created or modified and what each one is responsible for. This is where decomposition decisions get locked in.
