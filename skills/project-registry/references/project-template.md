@@ -8,17 +8,42 @@ Use this template when creating PROJECT.md for the first time.
 ## SPECIFICATIONS
 
 ### Overview
-[What this project is — 1-2 sentences]
+
+- **Purpose:** [one sentence]
+- **Domain:** [problem domain]
 
 ### Tech Stack
-[Languages, frameworks, key libraries, build tools]
+
+| Layer | Technology |
+|-------|-----------|
+| Language | |
+| Framework | |
+| Build | |
+| Storage | |
+| Testing | |
 
 ### Source Structure
-[Brief description of code organization — 3-5 lines, not a file tree]
+
+- `src/` — [role]
+- `src/components/` — [role]
+- `src/lib/` — [role]
 
 ### Architecture
-[System structure, components, responsibilities, data flow, storage,
-external dependencies. Coherent prose, not bullet lists.]
+
+[Use bullet points for component responsibilities, tables for data contracts, mermaid diagrams for flows]
+
+```mermaid
+graph LR
+  A[Component] --> B[Component]
+  B --> C[Storage]
+```
+
+- **Component A** — [responsibility]
+- **Component B** — [responsibility]
+
+| Interface | Input | Output |
+|-----------|-------|--------|
+| | | |
 
 ## STATE
 
@@ -28,8 +53,8 @@ Specs in development:
 
 ## REQUIREMENTS
 
-| ID | Requirement | Status | Features |
-|----|-------------|--------|----------|
+| ID | Requirement | Rationale | Status | Features |
+|----|-------------|-----------|--------|----------|
 
 **Status:** `active` (accepted, not yet built) · `implemented` (shipped) · `deprecated` (superseded)
 
