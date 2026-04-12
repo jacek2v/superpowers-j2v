@@ -17,6 +17,17 @@ Do NOT invoke any implementation skill, write any code, scaffold any project, or
 
 Every project goes through this process. A todo list, a single-function utility, a config change — all of them. "Simple" projects are where unexamined assumptions cause the most wasted work. The design can be short (a few sentences for truly simple projects), but you MUST present it and get approval.
 
+## Refactoring Mode
+
+**When:** Restructuring code without changing behavior.
+
+Checklist still applies, with these adaptations:
+- **Step 3:** Skip (refactoring is structural, not visual)
+- **Step 4:** Focus on what's wrong with current structure, boundaries to change, invariants to preserve
+- **Step 6:** Propose structural options (extract module, split file, introduce interface, etc.)
+- **Step 7:** Present target structure, not new functionality
+- **Step 11:** Update SPECIFICATIONS if structure changes. No new RXXX — behavior unchanged, no new constraints.
+
 ## Checklist
 
 You MUST create a task for each of these items and complete them in order:
