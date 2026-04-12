@@ -1,6 +1,6 @@
 ---
 name: project-registry
-description: "Manage PROJECT.md — the project's single source of truth for architecture, requirements, and features. Invoked by other skills: brainstorming (conflict check + register spec), subagent-driven-development and executing-plans (register completed feature). Not user-invocable directly."
+description: "Manage PROJECT.md — the project's single source of truth for architecture, requirements, and features. Also generates/updates README.md in the source code repo. Invoked by other skills: brainstorming (conflict check + register spec), subagent-driven-development and executing-plans (register completed feature, update README). Not user-invocable directly."
 ---
 
 # Project Registry
@@ -30,6 +30,7 @@ For the initial template, read `references/project-template.md`.
 - Extract constraining decisions from spec → assign R001, R002, ... with status `active`, each with rationale. Include: architecture choices, explicit constraints, NFRs, trade-offs. Exclude: data model shape, component structure, UI details, framework conventions — these live in the spec and code.
 - FEATURES section empty
 - Commit: `"docs: create PROJECT.md with initial spec registry"`
+- Run Operation 6 to generate initial README.md in the source code repo
 
 ### 2. Update for New Spec
 
@@ -89,6 +90,7 @@ If no conflicts found, proceed normally — no message needed.
 - Mark those RXXX as `implemented`, fill in Features column
 - If implementation diverged from design: update SPECIFICATIONS to reflect actual architecture
 - Commit: `"docs: register F00X <feature-name> in PROJECT.md"`
+- Run Operation 6 to update README.md with the new feature and any spec/setup changes
 
 ### 5. Cleanup Abandoned Spec
 
@@ -98,6 +100,26 @@ If no conflicts found, proceed normally — no message needed.
 - Mark related RXXX as `deprecated`
 - Remove abandoned design elements from SPECIFICATIONS
 - Commit: `"docs: remove abandoned <feature-name> from PROJECT.md"`
+
+### 6. Generate/Update README.md
+
+**When:** Called automatically by Operation 1 (after creating PROJECT.md) and Operation 4 (after registering a feature). Can also be invoked manually.
+
+README.md lives in the source code git repo root (not `docs/superpowers/`). In projects where `src/` is its own git repo, write there.
+
+Read `references/readme-template.md` for the full template, auto-detection sources, and merge rules.
+
+Steps:
+
+1. Read PROJECT.md — extract project name, SPECIFICATIONS (Overview, Tech Stack, Source Structure, Architecture, Development Setup), and FEATURES
+2. Locate the source code git repo root
+3. Read existing README.md from source repo (if exists) — extract `## Additional` section content to preserve
+4. Auto-detect prerequisites/install/run from source repo project files (see template reference for detection sources)
+5. Merge: PROJECT.md `### Development Setup` values take precedence over auto-detected values; auto-detected fills gaps
+6. If Installation or Running sections would still be empty, ask the developer for the missing commands and store in PROJECT.md `### Development Setup`
+7. Render README from template
+8. Write README.md to source repo root
+9. Commit in source repo: `"docs: update README.md"`
 
 ## ID Assignment
 
