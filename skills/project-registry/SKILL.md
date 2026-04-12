@@ -11,9 +11,9 @@ Manage `docs/superpowers/PROJECT.md` as a living registry of what the project IS
 
 Four sections, in order:
 
-1. **SPECIFICATIONS** — prose architecture summary (overview, tech stack, source structure, architecture). No tables, no links. Rewritten as a coherent narrative each time new design is incorporated.
+1. **SPECIFICATIONS** — living system overview reflecting current actual architecture (overview, tech stack, source structure, architecture). Use bullet points, tables, and mermaid diagrams. Minimal prose — only what's necessary for clarity. Rewritten to synthesize the full system each time, including implementation divergences. Spec files in `docs/superpowers/specs/` are point-in-time design records — SPECIFICATIONS tracks reality.
 2. **STATE** — specs currently in development, with links. Entries appear after brainstorming, disappear when feature ships.
-3. **REQUIREMENTS** — numbered RXXX. Includes functional requirements, design decisions, constraints, assumptions. Everything that constrains future work.
+3. **REQUIREMENTS** — numbered RXXX. Developer decisions that constrain future work. Litmus test: "If a future feature contradicted this, would it need flagging?" Yes → requirement. No → implementation detail (lives in spec/code, not here).
 4. **FEATURES** — numbered FXXX. Added when implementation ships. Cross-references which RXXX it satisfies.
 
 For the initial template, read `references/project-template.md`.
@@ -27,7 +27,7 @@ For the initial template, read `references/project-template.md`.
 - Read the approved spec
 - Populate SPECIFICATIONS from spec: overview, tech stack, source structure, architecture
 - Add spec link to STATE
-- Extract ALL decisions and requirements from spec → assign R001, R002, ... with status `active`
+- Extract constraining decisions from spec → assign R001, R002, ... with status `active`, each with rationale. Include: architecture choices, explicit constraints, NFRs, trade-offs. Exclude: data model shape, component structure, UI details, framework conventions — these live in the spec and code.
 - FEATURES section empty
 - Commit: `"docs: create PROJECT.md with initial spec registry"`
 
@@ -36,9 +36,9 @@ For the initial template, read `references/project-template.md`.
 **When:** Brainstorming ends, PROJECT.md already exists.
 
 - Read current PROJECT.md and the new approved spec
-- SPECIFICATIONS: rewrite the section to incorporate new design into existing prose. Do NOT append — synthesize into one coherent narrative reflecting the full system.
+- SPECIFICATIONS: rewrite the section to incorporate new design. Do NOT append — synthesize into one coherent spec reflecting the full system.
 - STATE: add new spec link
-- REQUIREMENTS: assign next available RXXX IDs, status `active`
+- REQUIREMENTS: extract constraining decisions (same filtering as operation 1), assign next available RXXX IDs with rationale, status `active`
 - Commit: `"docs: update PROJECT.md with <feature-name> spec"`
 
 ### 3. Conflict Check
@@ -107,7 +107,7 @@ If no conflicts found, proceed normally — no message needed.
 
 ## Key Principles
 
-- SPECIFICATIONS is prose, never tables or link lists. It describes the system holistically.
+- SPECIFICATIONS is technical and terse — bullet points, tables, mermaid diagrams. Minimal prose, only where necessary for clarity.
 - STATE is transient — presence means "in progress", absence means "done or abandoned".
-- Every design decision IS a requirement. "Use localStorage" constrains future work the same as "User can add tasks".
+- Not every spec detail is a requirement. "Use localStorage, no backend" constrains future work (requirement). "Tasks displayed in a list" describes what code does (spec detail). Apply the litmus test: would contradicting this need flagging?
 - Conflict check is advisory, not blocking — user always decides.
