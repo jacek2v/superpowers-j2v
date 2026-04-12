@@ -80,7 +80,8 @@ digraph process {
     "Mark task complete in TodoWrite" -> "More tasks remain?";
     "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
     "More tasks remain?" -> "Dispatch final code reviewer subagent for entire implementation" [label="no"];
-    "Dispatch final code reviewer subagent for entire implementation" -> "Use superpowers:finishing-a-development-branch";
+    "Dispatch final code reviewer subagent for entire implementation" -> "Use superpowers:project-registry\n(register feature)";
+    "Use superpowers:project-registry\n(register feature)" -> "Use superpowers:finishing-a-development-branch";
 }
 ```
 
@@ -196,6 +197,12 @@ Code reviewer: ✅ Approved
 [Dispatch final code-reviewer]
 Final reviewer: All requirements met, ready to merge
 
+[Use superpowers:project-registry (operation 4)]
+  - Remove spec from STATE
+  - Add FXXX entry to FEATURES
+  - Mark RXXX as implemented
+  - Update SPECIFICATIONS if implementation diverged from design
+
 Done!
 ```
 
@@ -268,6 +275,7 @@ Done!
 - **superpowers:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting
 - **superpowers:writing-plans** - Creates the plan this skill executes
 - **superpowers:requesting-code-review** - Code review template for reviewer subagents
+- **superpowers:project-registry** - Register completed feature in PROJECT.md (operation 4) after final review, before finishing
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
 
 **Subagents should use:**
