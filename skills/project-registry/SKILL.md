@@ -44,9 +44,9 @@ For the initial template, read `references/project-template.md`.
 
 ### 3. Conflict Check
 
-**When:** Brainstorming starts, PROJECT.md exists.
+**When:** Brainstorming design approved by user, before writing spec, PROJECT.md exists.
 
-Read PROJECT.md. After understanding the user's proposed idea, before finalizing design:
+Read PROJECT.md. Check the approved design against existing requirements and features:
 
 ```
 For each RXXX with status "implemented":

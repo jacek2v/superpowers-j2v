@@ -26,7 +26,7 @@ Checklist still applies, with these adaptations:
 - **Step 4:** Focus on what's wrong with current structure, boundaries to change, invariants to preserve
 - **Step 6:** Propose structural options (extract module, split file, introduce interface, etc.)
 - **Step 7:** Present target structure, not new functionality
-- **Step 11:** Update SPECIFICATIONS if structure changes. No new RXXX — behavior unchanged, no new constraints.
+- **Step 12:** Update SPECIFICATIONS if structure changes. No new RXXX — behavior unchanged, no new constraints.
 
 ## Checklist
 
@@ -37,13 +37,14 @@ You MUST create a task for each of these items and complete them in order:
 3. **Offer visual companion** (if topic will involve visual questions) — this is its own message, not combined with a clarifying question. See the Visual Companion section below.
 4. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 5. **Research sanity check** — verify key assumptions before proposing: prior art, library/API existence, domain patterns. Skip when domain and tools are well-known.
-6. **Propose 2-3 approaches** — with trade-offs and your recommendation, grounded in research findings. Flag any conflicts with existing requirements or features from PROJECT.md.
+6. **Propose 2-3 approaches** — with trade-offs and your recommendation, grounded in research findings
 7. **Present design** — in sections scaled to their complexity, get user approval after each section
-8. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
-9. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
-10. **User reviews written spec** — ask user to review the spec file before proceeding
-11. **Update PROJECT.md** — create or update using project-registry skill (operations 1 or 2): update SPECIFICATIONS prose, add spec to STATE, register new RXXX requirements. Commit.
-12. **Transition to implementation** — invoke writing-plans skill to create implementation plan
+8. **Conflict check** — if `docs/superpowers/PROJECT.md` exists, run project-registry skill operation 3 against the approved design. Resolve any conflicts before proceeding.
+9. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
+10. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
+11. **User reviews written spec** — ask user to review the spec file before proceeding
+12. **Update PROJECT.md** — create or update using project-registry skill (operations 1 or 2): update SPECIFICATIONS prose, add spec to STATE, register new RXXX requirements. Commit.
+13. **Transition to implementation** — invoke writing-plans skill to create implementation plan
 
 ## Process Flow
 
@@ -80,7 +81,10 @@ digraph brainstorming {
     "Propose 2-3 approaches\n(grounded in research)" -> "Present design sections";
     "Present design sections" -> "User approves design?";
     "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "Write design doc" [label="yes"];
+    "User approves design?" -> "Conflict check\n(project-registry op 3)" [label="yes"];
+    "Conflict check\n(project-registry op 3)" [shape=diamond];
+    "Conflict check\n(project-registry op 3)" -> "Present design sections" [label="conflicts found"];
+    "Conflict check\n(project-registry op 3)" -> "Write design doc" [label="clear"];
     "Write design doc" -> "Spec self-review\n(fix inline)";
     "Spec self-review\n(fix inline)" -> "User reviews spec?";
     "User reviews spec?" -> "Write design doc" [label="changes requested"];
