@@ -111,12 +111,12 @@ Read `references/readme-template.md` for the full template, auto-detection sourc
 
 Steps:
 
-1. Read PROJECT.md — extract project name, SPECIFICATIONS (Overview, Tech Stack, Source Structure, Architecture, Development Setup), and FEATURES
+1. Read PROJECT.md — extract project name, SPECIFICATIONS (Overview, Tech Stack, Source Structure, Architecture, Development Setup including Test), and FEATURES
 2. Locate the source code git repo root
 3. Read existing README.md from source repo (if exists) — extract `## Additional` section content to preserve
-4. Auto-detect prerequisites/install/run from source repo project files (see template reference for detection sources)
+4. Auto-detect prerequisites/install/run/test from source repo project files (see template reference for detection sources)
 5. Merge: PROJECT.md `### Development Setup` values take precedence over auto-detected values; auto-detected fills gaps
-6. If Installation or Running sections would still be empty, ask the developer for the missing commands and store in PROJECT.md `### Development Setup`
+6. If Installation, Running, or Testing sections would still be empty, ask the developer for the missing commands and store in PROJECT.md `### Development Setup`
 7. Render README from template
 8. Write README.md to source repo root
 9. Commit in source repo: `"docs: update README.md"`

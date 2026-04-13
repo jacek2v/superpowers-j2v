@@ -33,6 +33,10 @@ Use this when generating or updating README.md in the source code repo (Operatio
 
 [Run/start commands]
 
+## Testing
+
+[Test commands]
+
 ## Additional
 
 [Protected section — preserve existing content on regeneration]
@@ -40,18 +44,18 @@ Use this when generating or updating README.md in the source code repo (Operatio
 
 ## Auto-Detection
 
-Scan the source code repo root for project files to populate Prerequisites, Installation, and Running. Extract what's available:
+Scan the source code repo root for project files to populate Prerequisites, Installation, Running, and Testing. Extract what's available:
 
 | File | Extract |
 |------|---------|
-| `package.json` | `engines` → prerequisites; `scripts.install`/`scripts.postinstall` → install; `scripts.start`/`scripts.dev` → run |
-| `Makefile` | `install` target → install; `run`/`dev`/`start` target → run |
+| `package.json` | `engines` → prerequisites; `scripts.install`/`scripts.postinstall` → install; `scripts.start`/`scripts.dev` → run; `scripts.test` → test |
+| `Makefile` | `install` target → install; `run`/`dev`/`start` target → run; `test` target → test |
 | `docker-compose.yml` | service names → prerequisites; `docker compose up` → run |
 | `Dockerfile` | `FROM` image → prerequisites (implies runtime) |
-| `pyproject.toml` | `requires-python` → prerequisites; build system → install |
+| `pyproject.toml` | `requires-python` → prerequisites; build system → install; pytest config or `scripts.test` → test |
 | `requirements.txt` | presence → `pip install -r requirements.txt` for install |
-| `Cargo.toml` | Rust edition → prerequisites; `cargo build` → install; `cargo run` → run |
-| `go.mod` | Go version → prerequisites; `go build` → install; `go run` → run |
+| `Cargo.toml` | Rust edition → prerequisites; `cargo build` → install; `cargo run` → run; `cargo test` → test |
+| `go.mod` | Go version → prerequisites; `go build` → install; `go run` → run; `go test ./...` → test |
 | `.tool-versions` | runtime versions → prerequisites |
 | `.nvmrc` / `.node-version` | Node version → prerequisites |
 
@@ -60,7 +64,7 @@ Scan the source code repo root for project files to populate Prerequisites, Inst
 When both auto-detected values and `### Development Setup` from PROJECT.md exist:
 
 1. **PROJECT.md values win** — developer-provided instructions override auto-detected ones
-2. **Auto-detected values fill gaps** — if PROJECT.md has Install but not Prerequisites, auto-detect Prerequisites
+2. **Auto-detected values fill gaps** — if PROJECT.md has Install but not Prerequisites or Test, auto-detect them
 3. **Don't duplicate** — if PROJECT.md already covers a section, don't append auto-detected content
 
 ## Protected Section Handling
@@ -75,8 +79,8 @@ On regeneration:
 
 ## Gap Handling
 
-After auto-detection, if Installation or Running sections would be empty:
+After auto-detection, if Installation, Running, or Testing sections would be empty:
 
-1. Ask the developer: "I couldn't auto-detect [install/run] instructions for this project. What commands should be in the README?"
+1. Ask the developer: "I couldn't auto-detect [install/run/test] instructions for this project. What commands should be in the README?"
 2. Store answers in PROJECT.md under `SPECIFICATIONS → Development Setup`
 3. Then render the README with those values
