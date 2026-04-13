@@ -50,6 +50,7 @@ graph LR
 - **Prerequisites:** [required runtimes, tools, versions]
 - **Install:** [install command]
 - **Run:** [run command]
+- **Test:** [test command]
 
 ## STATE
 
