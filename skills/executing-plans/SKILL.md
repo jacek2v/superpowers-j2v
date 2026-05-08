@@ -74,7 +74,7 @@ After PROJECT.md is updated:
 ## Integration
 
 **Required workflow skills:**
-- **superpowers:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting
+- **superpowers:using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)
 - **superpowers:writing-plans** - Creates the plan this skill executes
 - **superpowers:project-registry** - Register completed feature in PROJECT.md (operation 4) after all tasks, before finishing
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
