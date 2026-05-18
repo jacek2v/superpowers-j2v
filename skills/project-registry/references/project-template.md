@@ -1,56 +1,23 @@
-# PROJECT.md Template
+# CONTEXT.md Template
 
-Use this template when creating PROJECT.md for the first time.
+Use this template when creating CONTEXT.md for the first time.
 
-```markdown
-# PROJECT: [Name]
+`````markdown
+# CONTEXT: [Project Name]
 
-## SPECIFICATIONS
+> AI workspace metadata. Project facts (overview, architecture, tech stack,
+> decisions, features) live in the source repo — not here.
 
-### Overview
+## Source of truth
 
-- **Purpose:** [one sentence]
-- **Domain:** [problem domain]
+| Topic | File |
+|---|---|
+| Project purpose, architecture, tech stack, repo map, key decisions, domain glossary | `../../<source-repo>/README.md` |
+| Backlog, ideas, changelog (if used) | `../../<source-repo>/STATUS.md` |
+| Operations procedures (if used) | `../../<source-repo>/OPERATIONS.md` |
 
-### Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Language | |
-| Framework | |
-| Build | |
-| Storage | |
-| Testing | |
-
-### Source Structure
-
-- `src/` — [role]
-- `src/components/` — [role]
-- `src/lib/` — [role]
-
-### Architecture
-
-[Use bullet points for component responsibilities, tables for data contracts, mermaid diagrams for flows]
-
-```mermaid
-graph LR
-  A[Component] --> B[Component]
-  B --> C[Storage]
-```
-
-- **Component A** — [responsibility]
-- **Component B** — [responsibility]
-
-| Interface | Input | Output |
-|-----------|-------|--------|
-| | | |
-
-### Development Setup
-
-- **Prerequisites:** [required runtimes, tools, versions]
-- **Install:** [install command]
-- **Run:** [run command]
-- **Test:** [test command]
+When source repo content changes, STATE/REQUIREMENTS sections here update.
+Never the reverse — source repo is the source of truth.
 
 ## STATE
 
@@ -60,13 +27,20 @@ Specs in development:
 
 ## REQUIREMENTS
 
-| ID | Requirement | Rationale | Status | Features |
-|----|-------------|-----------|--------|----------|
+Grouped by originating spec. Each R-XXX: 1–3 sentences + link to spec.
+Status derived from STATE (in-progress) and FEATURES (implemented).
+Explicit `[deprecated YYYY-MM-DD, superseded by R-NNN]` when retired.
 
-**Status:** `active` (accepted, not yet built) · `implemented` (shipped) · `deprecated` (superseded)
+### R-001 .. R-00N (YYYY-MM-DD) — <feature name>
+*Spec: [`YYYY-MM-DD-feature-design.md`](specs/YYYY-MM-DD-feature-design.md)*
+
+- **R-001** <constraining decision, 1–3 sentences>
+- **R-002** <constraining decision, 1–3 sentences>
 
 ## FEATURES
 
-| ID | Feature | Date | Requirements |
-|----|---------|------|-------------|
-```
+Index only — feature details live in source repo README/changelog.
+
+| ID    | Description           | Requirements   | Spec                          |
+|-------|-----------------------|----------------|-------------------------------|
+`````
