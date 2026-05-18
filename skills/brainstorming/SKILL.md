@@ -26,24 +26,24 @@ Checklist still applies, with these adaptations:
 - **Step 4:** Focus on what's wrong with current structure, boundaries to change, invariants to preserve
 - **Step 6:** Propose structural options (extract module, split file, introduce interface, etc.)
 - **Step 7:** Present target structure, not new functionality
-- **Step 12:** Update SPECIFICATIONS if structure changes. No new RXXX — behavior unchanged, no new constraints.
+- **Step 12:** Update CONTEXT.md STATE if structure changes. No new RXXX — behavior unchanged, no new constraints.
 
 ## Checklist
 
 You MUST create a task for each of these items and complete them in order:
 
 1. **Explore project context** — check files, docs, recent commits
-2. **Project registry check** — if `docs/superpowers/PROJECT.md` exists, read it for awareness of existing requirements and features (conflict flags presented at step 6; see project-registry skill, operation 3)
+2. **Project registry check** — if `docs/superpowers/CONTEXT.md` exists, read it for awareness of existing requirements and features (conflict flags presented at step 6; see project-registry skill, operation 3)
 3. **Offer visual companion** (if topic will involve visual questions) — this is its own message, not combined with a clarifying question. See the Visual Companion section below.
 4. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 5. **Research sanity check** — verify key assumptions before proposing: prior art, library/API existence, domain patterns. Skip when domain and tools are well-known.
 6. **Propose 2-3 approaches** — with trade-offs and your recommendation, grounded in research findings
 7. **Present design** — in sections scaled to their complexity, get user approval after each section
-8. **Conflict check** — if `docs/superpowers/PROJECT.md` exists, run project-registry skill operation 3 against the approved design. Resolve any conflicts before proceeding.
+8. **Conflict check** — if `docs/superpowers/CONTEXT.md` exists, run project-registry skill operation 3 against the approved design. Resolve any conflicts before proceeding.
 9. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
 10. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 11. **User reviews written spec** — ask user to review the spec file before proceeding
-12. **Update PROJECT.md** — create or update using project-registry skill (operations 1 or 2): update SPECIFICATIONS prose, add spec to STATE, register new RXXX requirements. Commit.
+12. **Update CONTEXT.md** — create or update using project-registry skill (operations 1 or 2): add spec to STATE, register new RXXX requirements. Commit.
 13. **Transition to implementation** — invoke writing-plans skill to create implementation plan
 
 ## Process Flow
@@ -51,8 +51,8 @@ You MUST create a task for each of these items and complete them in order:
 ```dot
 digraph brainstorming {
     "Explore project context" [shape=box];
-    "PROJECT.md exists?" [shape=diamond];
-    "Read PROJECT.md\nfor conflict awareness" [shape=box];
+    "CONTEXT.md exists?" [shape=diamond];
+    "Read CONTEXT.md\nfor conflict awareness" [shape=box];
     "Visual questions ahead?" [shape=diamond];
     "Offer Visual Companion\n(own message, no other content)" [shape=box];
     "Ask clarifying questions" [shape=box];
@@ -64,13 +64,13 @@ digraph brainstorming {
     "Write design doc" [shape=box];
     "Spec self-review\n(fix inline)" [shape=box];
     "User reviews spec?" [shape=diamond];
-    "Update PROJECT.md\n(SPECIFICATIONS + STATE + REQUIREMENTS)" [shape=box];
+    "Update CONTEXT.md\n(STATE + REQUIREMENTS)" [shape=box];
     "Invoke writing-plans skill" [shape=doublecircle];
 
-    "Explore project context" -> "PROJECT.md exists?";
-    "PROJECT.md exists?" -> "Read PROJECT.md\nfor conflict awareness" [label="yes"];
-    "PROJECT.md exists?" -> "Visual questions ahead?" [label="no"];
-    "Read PROJECT.md\nfor conflict awareness" -> "Visual questions ahead?";
+    "Explore project context" -> "CONTEXT.md exists?";
+    "CONTEXT.md exists?" -> "Read CONTEXT.md\nfor conflict awareness" [label="yes"];
+    "CONTEXT.md exists?" -> "Visual questions ahead?" [label="no"];
+    "Read CONTEXT.md\nfor conflict awareness" -> "Visual questions ahead?";
     "Visual questions ahead?" -> "Offer Visual Companion\n(own message, no other content)" [label="yes"];
     "Visual questions ahead?" -> "Ask clarifying questions" [label="no"];
     "Offer Visual Companion\n(own message, no other content)" -> "Ask clarifying questions";
@@ -88,8 +88,8 @@ digraph brainstorming {
     "Write design doc" -> "Spec self-review\n(fix inline)";
     "Spec self-review\n(fix inline)" -> "User reviews spec?";
     "User reviews spec?" -> "Write design doc" [label="changes requested"];
-    "User reviews spec?" -> "Update PROJECT.md\n(SPECIFICATIONS + STATE + REQUIREMENTS)" [label="approved"];
-    "Update PROJECT.md\n(SPECIFICATIONS + STATE + REQUIREMENTS)" -> "Invoke writing-plans skill";
+    "User reviews spec?" -> "Update CONTEXT.md\n(STATE + REQUIREMENTS)" [label="approved"];
+    "Update CONTEXT.md\n(STATE + REQUIREMENTS)" -> "Invoke writing-plans skill";
 }
 ```
 
@@ -171,13 +171,13 @@ After the spec review loop passes, ask the user to review the written spec befor
 
 Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
 
-**Update PROJECT.md:**
+**Update CONTEXT.md:**
 
 After the user approves the spec, update the project registry using the project-registry skill:
-- If `docs/superpowers/PROJECT.md` does not exist → create it (operation 1)
+- If `docs/superpowers/CONTEXT.md` does not exist → create it (operation 1)
 - If it exists → update it (operation 2)
-- This registers the new spec in STATE, updates SPECIFICATIONS prose, and adds RXXX requirements
-- Commit the PROJECT.md changes
+- This registers the new spec in STATE and adds RXXX requirements
+- Commit the CONTEXT.md changes
 
 **Implementation:**
 
