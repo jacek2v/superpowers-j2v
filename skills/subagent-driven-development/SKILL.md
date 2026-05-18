@@ -202,8 +202,6 @@ Final reviewer: All requirements met, ready to merge
 [Use superpowers:project-registry (operation 4)]
   - Remove spec from STATE
   - Add FXXX entry to FEATURES
-  - Mark RXXX as implemented
-  - Update SPECIFICATIONS if implementation diverged from design
 
 Done!
 ```
