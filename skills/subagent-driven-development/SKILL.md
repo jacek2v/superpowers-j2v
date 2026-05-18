@@ -277,7 +277,7 @@ Done!
 - **superpowers:using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)
 - **superpowers:writing-plans** - Creates the plan this skill executes
 - **superpowers:requesting-code-review** - Code review template for reviewer subagents
-- **superpowers:project-registry** - Register completed feature in PROJECT.md (operation 4) after final review, before finishing
+- **superpowers:project-registry** - Register completed feature in CONTEXT.md (operation 4) after final review, before finishing
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
 
 **Subagents should use:**
