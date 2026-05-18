@@ -2,7 +2,7 @@
 
 Use this template when creating CONTEXT.md for the first time.
 
-`````markdown
+```markdown
 # CONTEXT: [Project Name]
 
 > AI workspace metadata. Project facts (overview, architecture, tech stack,
@@ -43,4 +43,4 @@ Index only — feature details live in source repo README/changelog.
 
 | ID    | Description           | Requirements   | Spec                          |
 |-------|-----------------------|----------------|-------------------------------|
-`````
+```
