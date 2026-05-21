@@ -24,10 +24,11 @@ Load plan, review critically, execute all tasks, report when complete.
 ### Step 2: Execute Tasks
 
 For each task:
-1. Mark as in_progress
+1. Mark as in_progress in TodoWrite
 2. Follow each step exactly (plan has bite-sized steps)
 3. Run verifications as specified
-4. Mark as completed
+4. Once all verifications pass, Edit the plan file to flip this task's `- [ ]` boxes to `- [x]`; commit the plan file in its repo (typically `docs/superpowers/.git`) with message `progress: task N (<task slug>) checked off`
+5. Mark as completed in TodoWrite
 
 ### Step 3: Register Feature
 
