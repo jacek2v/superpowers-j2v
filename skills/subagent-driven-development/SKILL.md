@@ -159,7 +159,10 @@ Spec reviewer: ✅ Spec compliant - all requirements met, nothing extra
 [Get git SHAs, dispatch code quality reviewer]
 Code reviewer: Strengths: Good test coverage, clean. Issues: None. Approved.
 
-[Mark Task 1 complete]
+[Edit docs/superpowers/plans/feature-plan.md: flip Task 1 checkboxes to [x]]
+[git -C docs/superpowers commit -m "progress: task 1 (hook installation) checked off"]
+
+[Mark Task 1 complete in TodoWrite]
 
 Task 2: Recovery modes
 
@@ -193,7 +196,10 @@ Implementer: Extracted PROGRESS_INTERVAL constant
 [Code reviewer reviews again]
 Code reviewer: ✅ Approved
 
-[Mark Task 2 complete]
+[Edit docs/superpowers/plans/feature-plan.md: flip Task 2 checkboxes to [x]]
+[git -C docs/superpowers commit -m "progress: task 2 (recovery modes) checked off"]
+
+[Mark Task 2 complete in TodoWrite]
 
 ...
 
