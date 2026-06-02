@@ -44,7 +44,7 @@ You MUST create a task for each of these items and complete them in order:
 10. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 11. **User reviews written spec** — ask user to review the spec file before proceeding
 12. **Update CONTEXT.md** — create or update using project-registry skill (operations 1 or 2): add spec to STATE, register new RXXX requirements. Commit.
-13. **Transition to implementation** — invoke writing-plans skill to create implementation plan
+13. **Stop and hand off** — do NOT invoke writing-plans in this session; tell the user to start a fresh session and invoke writing-plans there
 
 ## Process Flow
 
@@ -65,7 +65,7 @@ digraph brainstorming {
     "Spec self-review\n(fix inline)" [shape=box];
     "User reviews spec?" [shape=diamond];
     "Update CONTEXT.md\n(STATE + REQUIREMENTS)" [shape=box];
-    "Invoke writing-plans skill" [shape=doublecircle];
+    "Stop: instruct user to invoke\nwriting-plans in a new session" [shape=doublecircle];
 
     "Explore project context" -> "CONTEXT.md exists?";
     "CONTEXT.md exists?" -> "Read CONTEXT.md\nfor conflict awareness" [label="yes"];
@@ -89,11 +89,11 @@ digraph brainstorming {
     "Spec self-review\n(fix inline)" -> "User reviews spec?";
     "User reviews spec?" -> "Write design doc" [label="changes requested"];
     "User reviews spec?" -> "Update CONTEXT.md\n(STATE + REQUIREMENTS)" [label="approved"];
-    "Update CONTEXT.md\n(STATE + REQUIREMENTS)" -> "Invoke writing-plans skill";
+    "Update CONTEXT.md\n(STATE + REQUIREMENTS)" -> "Stop: instruct user to invoke\nwriting-plans in a new session";
 }
 ```
 
-**The terminal state is invoking writing-plans.** Do NOT invoke frontend-design, mcp-builder, or any other implementation skill. The ONLY skill you invoke after brainstorming is writing-plans.
+**The terminal state is stopping with a hand-off message.** Do NOT invoke writing-plans, frontend-design, mcp-builder, or any other implementation skill in this session. After brainstorming, this session ends — tell the user to start a fresh session and invoke writing-plans there. The fresh session picks up the committed spec and CONTEXT.md and produces the implementation plan.
 
 ## The Process
 
@@ -179,10 +179,12 @@ After the user approves the spec, update the project registry using the project-
 - This registers the new spec in STATE and adds RXXX requirements
 - Commit the CONTEXT.md changes
 
-**Implementation:**
+**Stop here — hand off to a fresh session:**
 
-- Invoke the writing-plans skill to create a detailed implementation plan
-- Do NOT invoke any other skill. writing-plans is the next step.
+- Do NOT invoke writing-plans or any other implementation skill in this session
+- Tell the user the brainstorming session is complete and they should start a fresh Claude session and invoke the writing-plans skill there
+- The fresh session will pick up the committed spec and CONTEXT.md and produce the implementation plan
+- Suggested hand-off message: "Brainstorming complete. Spec committed to `<path>` and CONTEXT.md updated. Start a fresh session and invoke `superpowers:writing-plans` to create the implementation plan."
 
 ## Key Principles
 
