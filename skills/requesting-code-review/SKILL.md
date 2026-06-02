@@ -33,6 +33,8 @@ HEAD_SHA=$(git rev-parse HEAD)
 
 Use Task tool with `general-purpose` type, fill template at `code-reviewer.md`
 
+**Always `general-purpose` — never a specialized review agent.** Even if your environment offers a purpose-built reviewer (e.g. `feature-dev:code-reviewer`, or anything named `code-reviewer`), do not dispatch it. Those agents carry their own review persona and methodology that override this template. Keeping the template but swapping the agent type is still wrong — dispatch `general-purpose` so the reviewer follows only `code-reviewer.md`.
+
 **Placeholders:**
 - `{DESCRIPTION}` - Brief summary of what you built
 - `{PLAN_OR_REQUIREMENTS}` - What it should do
@@ -94,6 +96,7 @@ You: [Fix progress indicators]
 - Ignore Critical issues
 - Proceed with unfixed Important issues
 - Argue with valid technical feedback
+- Swap `general-purpose` for a specialized/registered code-review agent (e.g. `feature-dev:code-reviewer`) because it looks purpose-built
 
 **If reviewer wrong:**
 - Push back with technical reasoning

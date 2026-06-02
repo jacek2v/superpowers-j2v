@@ -127,6 +127,9 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 - `./implementer-prompt.md` - Dispatch implementer subagent
 - `./spec-reviewer-prompt.md` - Dispatch spec compliance reviewer subagent
 - `./code-quality-reviewer-prompt.md` - Dispatch code quality reviewer subagent
+- Final review (after all tasks): fill `requesting-code-review/code-reviewer.md` over the full-branch range
+
+**All reviewer subagents dispatch as `general-purpose`** with the templates above — never a specialized/registered code-review agent (e.g. `feature-dev:code-reviewer`), even when one is available and looks purpose-built. Such agents override the template with their own methodology.
 
 ## Example Workflow
 
@@ -204,7 +207,7 @@ Code reviewer: ✅ Approved
 ...
 
 [After all tasks]
-[Dispatch final code-reviewer]
+[Dispatch final code reviewer: general-purpose + requesting-code-review/code-reviewer.md over the full branch range]
 Final reviewer: All requirements met, ready to merge
 
 [Use superpowers:project-registry (operation 4)]
@@ -261,6 +264,7 @@ Done!
 - Let implementer self-review replace actual review (both are needed)
 - **Start code quality review before spec compliance is ✅** (wrong order)
 - Move to next task while either review has open issues
+- Dispatch any reviewer via a specialized/registered code-review agent (e.g. `feature-dev:code-reviewer`) instead of `general-purpose` + the requesting-code-review template
 
 **If subagent asks questions:**
 - Answer clearly and completely

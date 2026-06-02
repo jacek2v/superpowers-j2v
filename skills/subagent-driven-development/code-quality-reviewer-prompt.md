@@ -16,6 +16,8 @@ Task tool (general-purpose):
   HEAD_SHA: [current commit]
 ```
 
+**Dispatch as `general-purpose` — not a specialized reviewer agent.** Even if a purpose-built `code-reviewer` agent (e.g. `feature-dev:code-reviewer`) is available, do not use it. It overrides the template above with its own methodology. Keeping the template but swapping the agent type is still wrong.
+
 **In addition to standard code quality concerns, the reviewer should check:**
 - Does each file have one clear responsibility with a well-defined interface?
 - Are units decomposed so they can be understood and tested independently?
