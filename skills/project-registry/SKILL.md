@@ -1,6 +1,6 @@
 ---
 name: project-registry
-description: "Manage CONTEXT.md — the AI workspace registry of in-progress specs, R-XXX constraints, and F-XXX feature index. Project facts (architecture, tech stack, decisions) live in the source repo, not here. Invoked by other skills: brainstorming (conflict check + register spec), subagent-driven-development and executing-plans (register completed feature). Not user-invocable directly."
+description: "Use when another skill directs you to run a registry operation on docs/superpowers/CONTEXT.md — the AI-workspace index of in-progress specs, R-XXX constraints, and F-XXX features. Not user-invocable directly; project facts (architecture, tech stack) live in the source repo, not here."
 ---
 
 # Project Registry
