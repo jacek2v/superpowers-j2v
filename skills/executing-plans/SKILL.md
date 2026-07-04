@@ -33,7 +33,7 @@ For each task:
 
 After all tasks complete and verified, update the project registry using the project-registry skill (operation 4):
 - Remove spec entry from STATE
-- Add FXXX entry to FEATURES with date and list of satisfied RXXX
+- Add F-XXX entry to FEATURES with date and list of satisfied R-XXX
 - Commit CONTEXT.md changes
 
 ### Step 4: Complete Development

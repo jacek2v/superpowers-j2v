@@ -26,9 +26,9 @@ If the spec covers multiple independent subsystems, it should have been broken i
 
 Before writing tasks, read:
 1. The approved spec (primary input)
-2. `docs/superpowers/CONTEXT.md` if it exists — for REQUIREMENTS (RXXX constraints)
+2. `docs/superpowers/CONTEXT.md` if it exists — for REQUIREMENTS (R-XXX constraints)
 
-The engineer executing the plan won't have access to CONTEXT.md — what they need must be in the plan. Embed relevant RXXX constraints into task descriptions where a task could violate them.
+The engineer executing the plan won't have access to CONTEXT.md — what they need must be in the plan. Embed relevant R-XXX constraints into task descriptions where a task could violate them.
 
 ## File Structure
 
@@ -74,7 +74,7 @@ independently testable deliverable.
 
 **Tech Stack:** [Key technologies/libraries]
 
-**Requirements:** [RXXX entries from CONTEXT.md this plan addresses, if CONTEXT.md exists]
+**Requirements:** [R-XXX entries from CONTEXT.md this plan addresses, if CONTEXT.md exists]
 
 ## Global Constraints
 
@@ -167,7 +167,7 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 
 **4. External knowledge correctness:** For each task using external libraries, CLI tools, config formats, or framework conventions — are method names, signatures, flags, and schemas verified against current docs, not assumed from training data?
 
-**5. Requirement traceability:** If CONTEXT.md exists, verify each RXXX listed in the header maps to at least one task. If a requirement has no corresponding task, either add one or note why it's already satisfied.
+**5. Requirement traceability:** If CONTEXT.md exists, verify each R-XXX listed in the header maps to at least one task. If a requirement has no corresponding task, either add one or note why it's already satisfied.
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 
