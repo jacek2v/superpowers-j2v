@@ -84,8 +84,8 @@ You: [Fix progress indicators]
 - Fix Critical/Important findings before merge
 
 **Executing Plans:**
-- Review after each task or at natural checkpoints
-- Get feedback, apply, continue
+- That skill runs where subagents are unavailable, so this template does not apply
+- Ask your human partner to review the branch before merging
 
 **Ad-Hoc Development:**
 - Review before merge
