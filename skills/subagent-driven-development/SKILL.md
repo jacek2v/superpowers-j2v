@@ -337,6 +337,8 @@ Final reviewer: All requirements met, ready to merge
   - Remove spec from STATE
   - Add FXXX entry to FEATURES
 
+[Use superpowers:finishing-a-development-branch]
+
 Done!
 ```
 

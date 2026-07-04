@@ -33,7 +33,7 @@ Checklist still applies, with these adaptations:
 You MUST create a task for each of these items and complete them in order:
 
 1. **Explore project context** — check files, docs, recent commits
-2. **Project registry check** — if `docs/superpowers/CONTEXT.md` exists, read it for awareness of existing requirements and features (conflict flags presented at step 6; see project-registry skill, operation 3)
+2. **Project registry check** — if `docs/superpowers/CONTEXT.md` exists, read it for awareness of existing requirements and features (conflict flags presented at step 8; see project-registry skill, operation 3)
 3. **Offer the visual companion just-in-time** — NOT upfront. The first time a question would genuinely be clearer shown than described, offer it then (its own message); on approval its browser tab opens for you. If no visual question ever arises, never offer it. See the Visual Companion section below.
 4. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 5. **Research sanity check** — verify key assumptions before proposing: prior art, library/API existence, domain patterns. Skip when domain and tools are well-known.
