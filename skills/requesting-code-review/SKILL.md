@@ -31,7 +31,7 @@ HEAD_SHA=$(git rev-parse HEAD)
 
 **2. Dispatch code reviewer subagent:**
 
-Use Task tool with `general-purpose` type, fill template at `code-reviewer.md`
+Dispatch a `general-purpose` subagent, filling the template at [code-reviewer.md](code-reviewer.md)
 
 **Always `general-purpose` — never a specialized review agent.** Even if your environment offers a purpose-built reviewer (e.g. `feature-dev:code-reviewer`, or anything named `code-reviewer`), do not dispatch it. Those agents carry their own review persona and methodology that override this template. Keeping the template but swapping the agent type is still wrong — dispatch `general-purpose` so the reviewer follows only `code-reviewer.md`.
 
@@ -103,4 +103,4 @@ You: [Fix progress indicators]
 - Show code/tests that prove it works
 - Request clarification
 
-See template at: requesting-code-review/code-reviewer.md
+See template at: [code-reviewer.md](code-reviewer.md)
