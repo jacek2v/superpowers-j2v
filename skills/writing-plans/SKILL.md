@@ -135,6 +135,16 @@ git commit -m "feat: add specific feature"
 ```
 ````
 
+## TDD Is the Default; Waivers Are Explicit
+
+Every task follows TDD — the failing test comes first (superpowers:test-driven-development). This is the default; you do not add a marker to require it.
+
+A task that inherently cannot follow TDD — documentation-only, or pure configuration with no production code — carries one explicit line in the task body:
+
+`TDD: waived — <reason>`
+
+No waiver line means TDD is required. Because the human partner approves the plan, an in-plan waiver constitutes the "human partner's permission" the TDD Iron Law already allows — so waive only when there is genuinely no production code to test-drive, and always state the reason.
+
 ## External Knowledge Verification
 
 Before writing code examples that rely on external libraries, APIs, CLI tools, config formats, or framework conventions, verify against current docs (context7 or web search). Check method signatures, CLI flags, config schemas, query syntax. Do not write from memory — a plan that confidently uses a nonexistent method or deprecated config key is worse than a placeholder.

@@ -434,7 +434,7 @@ Done!
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
 
 **Subagents should use:**
-- **superpowers:test-driven-development** - Subagents follow TDD for each task
+- **superpowers:test-driven-development** - Subagents follow TDD for each task, unless the task brief explicitly waives it
 
 **Alternative workflow:**
 - **superpowers:executing-plans** - Use when subagent dispatch is unavailable
