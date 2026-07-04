@@ -148,6 +148,17 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 
 **Never** ignore an escalation or force the same model to retry without changes. If the implementer said it's stuck, something needs to change.
 
+## Verification Contract
+
+Marking a task complete is a completion claim —
+superpowers:verification-before-completion governs it. In this workflow
+the required evidence is: the implementer's report file containing the
+test commands and their output (TDD evidence), plus the task reviewer's
+verdicts on the diff. Do not re-run the implementer's suite to
+double-check a clean report — but never mark a task complete without
+both pieces of evidence on file. The fresh full-suite verification
+happens once, in superpowers:finishing-a-development-branch.
+
 ## Handling Reviewer ⚠️ Items
 
 The task reviewer may report "⚠️ Cannot verify from diff" items — requirements
