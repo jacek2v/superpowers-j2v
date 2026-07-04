@@ -65,6 +65,11 @@ Or ask: "This branch split from main - is that correct?"
 
 ### Step 4: Present Options
 
+**Review status check (before the menu):** Establish whether this branch has been reviewed.
+
+- **Reviewed** — an SDD final whole-branch review ran this session, an ad-hoc superpowers:requesting-code-review run covered this branch, or the human partner confirms they reviewed the diff → present the menu below unchanged.
+- **Not reviewed / status unknown** — state that plainly and offer a review now: dispatch a reviewer per superpowers:requesting-code-review when subagents are available, otherwise ask the human partner to review the diff. If the human declines, that is their conscious call — proceed to the menu.
+
 **Normal repo and named-branch worktree — present exactly these 4 options:**
 
 ```
@@ -234,6 +239,7 @@ git worktree prune  # Self-healing: clean up any stale registrations
 **Always:**
 - Verify tests before offering options
 - Detect environment before presenting menu
+- Surface review status before presenting options
 - Present exactly 4 options (or 3 for detached HEAD)
 - Get typed confirmation for Option 4
 - Clean up worktree for Options 1 & 4 only
