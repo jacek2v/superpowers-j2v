@@ -37,7 +37,6 @@ digraph when_to_use {
 ```
 
 **vs. Executing Plans (no subagents):**
-- Same session (no context switch)
 - Fresh subagent per task (no context pollution)
 - Review after each task (spec compliance + code quality), broad review at the end
 - Faster iteration (no human-in-loop between tasks)
