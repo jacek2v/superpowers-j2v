@@ -26,7 +26,7 @@ Checklist still applies, with these adaptations:
 - **Step 4:** Focus on what's wrong with current structure, boundaries to change, invariants to preserve
 - **Step 6:** Propose structural options (extract module, split file, introduce interface, etc.)
 - **Step 7:** Present target structure, not new functionality
-- **Step 12:** Update CONTEXT.md STATE if structure changes. No new RXXX — behavior unchanged, no new constraints.
+- **Step 12:** Update CONTEXT.md STATE if structure changes. No new R-XXX — behavior unchanged, no new constraints.
 
 ## Checklist
 
@@ -43,7 +43,7 @@ You MUST create a task for each of these items and complete them in order:
 9. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
 10. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 11. **User reviews written spec** — ask user to review the spec file before proceeding
-12. **Update CONTEXT.md** — create or update using project-registry skill (operations 1 or 2): add spec to STATE, register new RXXX requirements. Commit.
+12. **Update CONTEXT.md** — create or update using project-registry skill (operations 1 or 2): add spec to STATE, register new R-XXX requirements. Commit.
 13. **Stop and hand off** — do NOT invoke writing-plans in this session; tell the user to start a fresh session and invoke writing-plans there
 
 ## Process Flow
@@ -171,7 +171,7 @@ Wait for the user's response. If they request changes, make them and re-run the 
 After the user approves the spec, update the project registry using the project-registry skill:
 - If `docs/superpowers/CONTEXT.md` does not exist → create it (operation 1)
 - If it exists → update it (operation 2)
-- This registers the new spec in STATE and adds RXXX requirements
+- This registers the new spec in STATE and adds R-XXX requirements
 - Commit the CONTEXT.md changes
 
 **Stop here — hand off to a fresh session:**

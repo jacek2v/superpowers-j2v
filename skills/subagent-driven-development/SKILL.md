@@ -334,7 +334,7 @@ Final reviewer: All requirements met, ready to merge
 
 [Use superpowers:project-registry (operation 4)]
   - Remove spec from STATE
-  - Add FXXX entry to FEATURES
+  - Add F-XXX entry to FEATURES
 
 [Use superpowers:finishing-a-development-branch]
 
