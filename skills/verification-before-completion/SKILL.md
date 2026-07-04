@@ -105,6 +105,15 @@ Skip any step = lying, not verifying
 ❌ Trust agent report
 ```
 
+When a workflow defines an explicit verification contract (e.g. the
+Verification Contract in superpowers:subagent-driven-development), the
+required evidence is the artifacts that contract names — the implementer's
+report file with test commands and their output, plus reviewer verdicts.
+Reading and checking those artifacts against the diff IS the verification;
+a bare "success" message without artifacts is still insufficient. The fresh
+full-suite run happens where that workflow schedules it
+(superpowers:finishing-a-development-branch).
+
 ## Why This Matters
 
 From 24 failure memories:
