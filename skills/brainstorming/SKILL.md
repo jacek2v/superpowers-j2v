@@ -3,6 +3,11 @@ name: brainstorming
 description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
 ---
 
+<!-- The imperative "You MUST use this…" description is a deliberate, tested
+     exception to the "Use when…" convention: the 2026-07-04 discriminator A/B
+     run showed the "Use when…" rewrite regressed auto-triggering. Evidence:
+     docs workspace, superpowers-j2v evals, 2026-07-04-audit-followups.md. -->
+
 # Brainstorming Ideas Into Designs
 
 Help turn ideas into fully formed designs and specs through natural collaborative dialogue.
