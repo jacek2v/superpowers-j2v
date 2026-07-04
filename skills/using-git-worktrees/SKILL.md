@@ -42,7 +42,7 @@ Has the user already indicated their worktree preference in your instructions? I
 
 > "Would you like me to set up an isolated worktree? It protects your current branch from changes."
 
-Honor any existing declared preference without asking. If the user declines consent, work in place and skip to Step 2.
+Honor any existing declared preference without asking. If the user declines consent, work in place — but declining a worktree is not consent to implement on main/master. Check the current branch first: if you are on main/master, create a feature branch (`git checkout -b <branch-name>`) before continuing. Then skip to Step 2.
 
 ## Step 1: Create Isolated Workspace
 
@@ -97,7 +97,7 @@ git worktree add "$path" -b "$BRANCH_NAME"
 cd "$path"
 ```
 
-**Sandbox fallback:** If `git worktree add` fails with a permission error (sandbox denial), tell the user the sandbox blocked worktree creation and you're working in the current directory instead. Then run setup and baseline tests in place.
+**Sandbox fallback:** If `git worktree add` fails with a permission error (sandbox denial), tell the user the sandbox blocked worktree creation and you're working in the current directory instead. Create the branch in place (`git checkout -b "$BRANCH_NAME"`) so work stays off main/master. Then run setup and baseline tests in place.
 
 ## Step 2: Project Setup
 
