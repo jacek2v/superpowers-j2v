@@ -12,7 +12,7 @@ Dispatch a code reviewer subagent to catch issues before they cascade. The revie
 ## When to Request Review
 
 **Mandatory:**
-- After each task in subagent-driven development
+- Final whole-branch review in subagent-driven development (per-task reviews use that skill's task-reviewer-prompt.md, not this template)
 - After completing major feature
 - Before merge to main
 
@@ -25,9 +25,11 @@ Dispatch a code reviewer subagent to catch issues before they cascade. The revie
 
 **1. Get git SHAs:**
 ```bash
-BASE_SHA=$(git rev-parse HEAD~1)  # or origin/main
+BASE_SHA=$(git merge-base main HEAD)  # or the SHA you recorded before the work began
 HEAD_SHA=$(git rev-parse HEAD)
 ```
+
+Never use `HEAD~1` as the base of a multi-commit range — it silently drops every commit except the last.
 
 **2. Dispatch code reviewer subagent:**
 
@@ -50,11 +52,11 @@ Dispatch a `general-purpose` subagent, filling the template at [code-reviewer.md
 ## Example
 
 ```
-[Just completed Task 2: Add verification function]
+[All plan tasks complete; time for the final whole-branch review]
 
-You: Let me request code review before proceeding.
+You: Let me request the final code review before finishing.
 
-BASE_SHA=$(git log --oneline | grep "Task 1" | head -1 | awk '{print $1}')
+BASE_SHA=$(git merge-base main HEAD)
 HEAD_SHA=$(git rev-parse HEAD)
 
 [Dispatch code reviewer subagent]
@@ -68,18 +70,18 @@ HEAD_SHA=$(git rev-parse HEAD)
   Issues:
     Important: Missing progress indicators
     Minor: Magic number (100) for reporting interval
-  Assessment: Ready to proceed
+  Assessment: Ready to merge with fixes
 
 You: [Fix progress indicators]
-[Continue to Task 3]
+[Proceed to superpowers:finishing-a-development-branch]
 ```
 
 ## Integration with Workflows
 
 **Subagent-Driven Development:**
-- Review after EACH task
-- Catch issues before they compound
-- Fix before moving to next task
+- This template runs ONCE, as the final whole-branch review
+- Per-task reviews use that skill's task-reviewer-prompt.md
+- Fix Critical/Important findings before merge
 
 **Executing Plans:**
 - Review after each task or at natural checkpoints

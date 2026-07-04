@@ -7,6 +7,9 @@ Use this template when dispatching a code reviewer subagent.
 ```
 Subagent (general-purpose):
   description: "Review code changes"
+  model: [MODEL — REQUIRED: for a final whole-branch review use the most
+         capable available model; an omitted model silently inherits the
+         session's model]
   prompt: |
     You are a Senior Code Reviewer with expertise in software architecture,
     design patterns, and best practices. Your job is to review completed work
@@ -24,11 +27,22 @@ Subagent (general-purpose):
 
     **Base:** [BASE_SHA]
     **Head:** [HEAD_SHA]
+    **Diff file:** [DIFF_FILE]
+
+    Read the diff file once — it contains the commit list, a stat summary,
+    and the full diff with surrounding context. If the diff file is missing,
+    fetch the diff yourself:
 
     ```bash
     git diff --stat [BASE_SHA]..[HEAD_SHA]
     git diff [BASE_SHA]..[HEAD_SHA]
     ```
+
+    ## Deferred Minor Findings
+
+    [MINOR_FINDINGS — Minor items recorded in the progress ledger during
+    per-task reviews, if any. Triage them: which must be fixed before
+    merge, which can wait.]
 
     ## Read-Only Review
 
@@ -126,10 +140,13 @@ Subagent (general-purpose):
 ```
 
 **Placeholders:**
+- `[MODEL]` — REQUIRED: reviewer model; a final whole-branch review gets the most capable available model
 - `[DESCRIPTION]` — brief summary of what was built
 - `[PLAN_OR_REQUIREMENTS]` — what it should do (plan file path, task text, or requirements)
 - `[BASE_SHA]` — starting commit
 - `[HEAD_SHA]` — ending commit
+- `[DIFF_FILE]` — review package path (subagent-driven-development's `scripts/review-package BASE HEAD` prints it); for standalone reviews outside SDD, write "none — use the git commands"
+- `[MINOR_FINDINGS]` — deferred Minor findings from per-task reviews; write "none" if there are none
 
 **Reviewer returns:** Strengths, Issues (Critical / Important / Minor), Recommendations, Assessment
 
