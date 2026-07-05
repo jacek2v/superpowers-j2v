@@ -37,11 +37,14 @@ Dispatch a `general-purpose` subagent, filling the template at [code-reviewer.md
 
 **Always `general-purpose` — never a specialized review agent.** Even if your environment offers a purpose-built reviewer (e.g. `feature-dev:code-reviewer`, or anything named `code-reviewer`), do not dispatch it. Those agents carry their own review persona and methodology that override this template. Keeping the template but swapping the agent type is still wrong — dispatch `general-purpose` so the reviewer follows only `code-reviewer.md`.
 
-**Placeholders:**
-- `{DESCRIPTION}` - Brief summary of what you built
-- `{PLAN_OR_REQUIREMENTS}` - What it should do
-- `{BASE_SHA}` - Starting commit
-- `{HEAD_SHA}` - Ending commit
+**Placeholders (full definitions in the template):**
+- `[MODEL]` - REQUIRED: reviewer model; a final whole-branch review gets the most capable available model
+- `[DESCRIPTION]` - Brief summary of what you built
+- `[PLAN_OR_REQUIREMENTS]` - What it should do
+- `[BASE_SHA]` - Starting commit
+- `[HEAD_SHA]` - Ending commit
+- `[DIFF_FILE]` - Review package path (subagent-driven-development's `scripts/review-package BASE HEAD` prints it); for standalone reviews outside SDD, write "none — use the git commands"
+- `[MINOR_FINDINGS]` - Deferred Minor findings from per-task reviews; write "none" if there are none
 
 **3. Act on feedback:**
 
@@ -63,10 +66,13 @@ BASE_SHA=$(git merge-base main HEAD)
 HEAD_SHA=$(git rev-parse HEAD)
 
 [Dispatch code reviewer subagent]
+  MODEL: most capable available
   DESCRIPTION: Added verifyIndex() and repairIndex() with 4 issue types
   PLAN_OR_REQUIREMENTS: Task 2 from docs/superpowers/plans/deployment-plan.md
   BASE_SHA: a7981ec
   HEAD_SHA: 3df7661
+  DIFF_FILE: .superpowers/sdd/review-a7981ec..3df7661.diff
+  MINOR_FINDINGS: none
 
 [Subagent returns]:
   Strengths: Clean architecture, real tests
