@@ -30,6 +30,17 @@ For each task:
 3. Run verifications as specified
 4. Mark as completed in TodoWrite
 
+### Gate Steps (Gated Testing Mode)
+
+Plans for projects declaring `## Gated testing` contain **Gate RED / Gate GREEN** steps (activation, round format, valid-RED criteria: superpowers:test-driven-development — Gated Testing Mode). No declaration → no gate steps exist; skip this section. At a gate step:
+
+1. STOP. No code edits of any kind while a gate is open.
+2. Fill the plan's round request: next round number from the round ledger (`.superpowers/rounds.md`), actual file list, the single-line command, expected outcome. Append the "issued" ledger line.
+3. Default runner (operator): post the round request and WAIT for your human partner's pasted output — never proceed on silence, assumptions, or partial output. `Runner: claude`: execute the command on the test system yourself.
+4. Judge the output and append the verdict ledger line: Gate RED — every new test against the valid-RED criteria; Gate GREEN — full suite green.
+5. Invalid RED → fix the TESTS → re-round narrowed to the affected files. GREEN failures → fix the CODE, never the test → narrowed or full GREEN re-round.
+6. Past a gate only with valid round evidence for the current code state — any later edit invalidates it.
+
 ### Step 3: Register Feature
 
 After all tasks complete and verified, update the project registry using the project-registry skill (operation 4):
