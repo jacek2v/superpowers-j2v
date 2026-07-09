@@ -41,6 +41,8 @@ Subagent (general-purpose):
 
     Work from: [directory]
 
+    If your dispatch declares gated testing mode: never run the gated tests — run only the local subset it names; in your report, name the gated tests covering your change instead of pasting their output (the controller holds the round evidence).
+
     **While you work:** If you encounter something unexpected or unclear, **ask questions**.
     It's always OK to pause and clarify. Don't guess or make assumptions.
 

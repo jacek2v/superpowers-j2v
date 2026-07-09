@@ -63,6 +63,8 @@ Subagent (general-purpose):
 
     ## Tests
 
+    If the dispatch declares gated testing mode: gated-test output is held by the controller (round evidence), not the report — do not demand it; require instead that the report names the gated tests covering this change. Local-subset TDD evidence stays required.
+
     The implementer already ran the tests and reported results with TDD
     evidence for exactly this code. TDD is required for every task unless the
     brief explicitly waives it: missing TDD Evidence is acceptable only when

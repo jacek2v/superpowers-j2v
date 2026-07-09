@@ -159,6 +159,22 @@ double-check a clean report — but never mark a task complete without
 both pieces of evidence on file. The fresh full-suite verification
 happens once, in superpowers:finishing-a-development-branch.
 
+## Gated Testing Mode
+
+When the project declares `## Gated testing` (activation, batch cycle, rounds: superpowers:test-driven-development — Gated Testing Mode), the plan groups tasks into phases with **Gate RED / Gate GREEN** steps. This section carves out the rules above; without the declaration it does not apply.
+
+**Gates are legitimate stops.** Continuous Execution yields at gate steps: with the default operator runner you STOP, post the round request, and wait for the pasted output. (`Runner: claude` → run the round yourself and continue.) Gates belong to YOU, the main agent — subagents never emit round requests, never run gated tests, never talk to the operator.
+
+**Phase orchestration** (within a gated phase, replaces the per-task dispatch order):
+
+1. ONE test-writer subagent for the whole phase: dispatch it (implementer template) with every task's brief, instructed to execute ONLY the test-writing and RED-commit steps of each brief, to run at most the declared local subset, and never to attempt gated tests.
+2. YOU run Gate RED. Invalid RED → fix subagent scoped to the affected test files → narrowed re-round.
+3. Implementer subagent per task, as usual. Every gated-phase dispatch (test-writer, implementer, fixer, reviewer) carries one line: `Gated testing mode — local subset: <command or none>; gated tests run only at gates, by the controller.`
+4. Task reviewer per task, as usual — but mark the task complete only after the phase's Gate GREEN.
+5. YOU run Gate GREEN (full suite, no filter). Failures → ONE fix subagent with the complete findings → re-round. Refactor only after green.
+
+**Verification Contract, gated:** for gated tests the required evidence is the round output YOU hold, recorded in the round ledger (`.superpowers/rounds.md`). Implementer reports NAME the gated tests covering their change instead of pasting their output; local-subset tests keep normal TDD evidence in the report. Task-complete requires all three: implementer report + reviewer verdicts + the covering Gate GREEN round.
+
 ## Handling Reviewer ⚠️ Items
 
 The task reviewer may report "⚠️ Cannot verify from diff" items — requirements
