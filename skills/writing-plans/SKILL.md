@@ -169,7 +169,7 @@ ROUND <n> — RED, phase "<name>"
 Source:  <worktree root>
 Files:   tests/test_a.py tests/test_b.py
 Command: pytest -q --tb=short tests/test_a.py tests/test_b.py
-Expected: <k> failed, 0 errors — all new tests, each failing for the missing feature
+Expected: <k> failed or <m> collection errors — all new tests, each attributable to the missing feature
 ```
 
 STOP: no implementation steps until this gate confirms every new test fails for the right reason (superpowers:test-driven-development — Valid RED).
