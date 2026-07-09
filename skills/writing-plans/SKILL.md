@@ -145,6 +145,52 @@ A task that inherently cannot follow TDD — documentation-only, or pure configu
 
 No waiver line means TDD is required. Because the human partner approves the plan, an in-plan waiver constitutes the "human partner's permission" the TDD Iron Law already allows — so waive only when there is genuinely no production code to test-drive, and always state the reason.
 
+## Gated Testing Mode Plans
+
+Applies only when the project CLAUDE.md contains the literal heading `## Gated testing` or your human partner declared the mode in-session (activation, defaults, batch cycle: superpowers:test-driven-development — Gated Testing Mode). No declaration → plan exactly as above, zero changes.
+
+Gated tests verify at phase gates, not inline — the plan must encode that:
+
+- **Group tasks into phases** of 2–5 related tasks; name each phase. The phase is the verification unit.
+- **Order steps within a phase:** every task's test-writing steps (ending in a RED commit per task) come first; then a **Gate RED** step; then every task's implementation steps (ending in a GREEN commit per task); then a **Gate GREEN** step; then refactor.
+- Tests for later tasks are written before earlier tasks are implemented, so the **Interfaces block is mandatory for every task in a phase** — exact names, signatures, parameter and return types the tests will import.
+- Tests matched by a declared `Local subset:` keep classic inline "Run:" steps inside their task. Gated tests get NO inline run step — the gate is their verification. A phase with no gated tests gets no gate steps.
+- A gate step carries a pre-filled round request; round number `<n>` is assigned at execution time from the round ledger:
+
+````markdown
+#### Phase P: <name> (Tasks N–M)
+
+[all tasks' test-writing steps + RED commit steps]
+
+- [ ] **Gate RED — phase "<name>"**
+
+```
+ROUND <n> — RED, phase "<name>"
+Source:  <worktree root>
+Files:   tests/test_a.py tests/test_b.py
+Command: pytest -q --tb=short tests/test_a.py tests/test_b.py
+Expected: <k> failed, 0 errors — all new tests, each failing for the missing feature
+```
+
+STOP: no implementation steps until this gate confirms every new test fails for the right reason (superpowers:test-driven-development — Valid RED).
+
+[all tasks' implementation steps + GREEN commit steps]
+
+- [ ] **Gate GREEN — phase "<name>"**
+
+```
+ROUND <n> — GREEN, phase "<name>"
+Source:  <worktree root>
+Files:   <all files changed in the phase>
+Command: pytest -q --tb=short
+Expected: all passed, 0 failed
+```
+
+Gate GREEN always runs the full suite — no filter.
+
+- [ ] **Refactor — only after Gate GREEN**
+````
+
 ## External Knowledge Verification
 
 Before writing code examples that rely on external libraries, APIs, CLI tools, config formats, or framework conventions, verify against current docs (context7 or web search). Check method signatures, CLI flags, config schemas, query syntax. Do not write from memory — a plan that confidently uses a nonexistent method or deprecated config key is worse than a placeholder.
