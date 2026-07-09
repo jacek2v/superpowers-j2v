@@ -114,6 +114,8 @@ a bare "success" message without artifacts is still insufficient. The fresh
 full-suite run happens where that workflow schedules it
 (superpowers:finishing-a-development-branch).
 
+**Gated-round evidence** (projects declaring `## Gated testing` — superpowers:test-driven-development, Gated Testing Mode): test verification arrives as round output — an operator paste or your own run on the test system. It is fresh evidence ONLY for the exact code state the round was generated for; any later edit to code or tests invalidates it, and a claim may state only what the output actually shows ("ROUND 3: 6 failed, all ModuleNotFoundError — valid RED", not "tests verified"). An open gate = unverified work: no completion claims, no satisfaction, no moving on.
+
 ## Why This Matters
 
 From 24 failure memories:
