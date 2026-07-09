@@ -369,3 +369,94 @@ Otherwise → not TDD
 ```
 
 No exceptions without your human partner's permission.
+
+## Gated Testing Mode
+
+Some projects declare that (some or all) tests run on a system you cannot reach: an operator copies the files, runs one command, and pastes the output back — or you run the command on that system yourself. In this mode RED/GREEN verification is batched at explicit gates. Everything above stays true; only WHERE verification happens changes.
+
+### Activation — explicit only
+
+The literal heading `## Gated testing` in the project's CLAUDE.md activates the mode. Optional override lines beneath the heading — everything else is fixed by this section; there is no other configuration:
+
+```markdown
+## Gated testing
+Runner: claude
+Local subset: uv run pytest -m "not integration"
+```
+
+- `Runner: claude` — you execute round commands on the test system yourself. Default: operator (your human partner runs them and pastes the output).
+- `Local subset: <command/filter>` — tests you CAN run locally; they keep the classic per-test cycle above. Default: none — all tests gated.
+
+In-session activation: your human partner declares it ("I run the tests on X myself"). Confirm runner and local subset, then offer to persist the `## Gated testing` block in the project's CLAUDE.md.
+
+**No declaration → this section does not exist for you. Classic TDD, unchanged. Never enter the mode silently.**
+
+### Anti-Improvisation Rule
+
+You cannot execute a test and no gated-testing declaration exists? **STOP and ask your human partner.** Never write implementation on top of an unverified RED. Writing test and implementation back-to-back because "the test is obviously correct" is testing after, with extra steps.
+
+### The Iron Law, Gated
+
+```
+NO IMPLEMENTATION FOR A TASK BEFORE THE PHASE'S RED GATE
+CONFIRMS ITS TESTS FAIL FOR THE RIGHT REASON
+```
+
+### Batch Cycle (per plan phase)
+
+A phase is a group of 2–5 related tasks drawn by superpowers:writing-plans; gates are explicit plan steps.
+
+1. Write ALL the phase's gated tests — one RED commit per task. Tests for later tasks build on the plan's Interfaces blocks, not on implemented code.
+2. **Gate RED** — round over the phase's new tests only.
+3. Implement ALL the phase's tasks — one GREEN commit per task. Local-subset tests keep the classic per-test micro-cycle while you implement.
+4. **Gate GREEN** — round over the FULL suite, no filter.
+5. Refactor — only after Gate GREEN. Then the next phase.
+
+### Round Request
+
+Produce this at every gate. `Runner: claude` → execute the command yourself; otherwise post it and WAIT for your human partner's pasted output.
+
+```
+ROUND <n> — RED|GREEN, phase "<name>"
+Source:  <worktree root>
+Files:   <relative paths of files to copy>
+Command: <single short one-line command>
+Expected: <e.g. "6 failed, 0 errors — all new tests">
+```
+
+- `<n>` is global within the feature branch. Append to the round ledger — `.superpowers/rounds.md` at the repo root — one line when a round is issued and one when its verdict is judged: `ROUND <n> RED|GREEN phase "<name>" — issued` / `ROUND <n> verdict: <what the output showed>`. After context compaction, trust the ledger.
+- Use output-friendly flags (e.g. `pytest -q --tb=short`) — pastes must stay small.
+
+### Valid RED — judge every new test in the output
+
+| Round shows | Verdict | Action |
+|---|---|---|
+| Assertion failure on the missing behavior | Valid RED | proceed |
+| Clean "object/module does not exist" error | Valid RED | proceed |
+| Test-file syntax error, fixture/collection error, connection error | INVALID | fix the tests → re-round narrowed to the affected files |
+
+Gate GREEN failures: fix the code — never the test — then a narrowed or full GREEN re-round. A phase ends only green.
+
+### Evidence Freshness
+
+Round output verifies ONLY the exact code state the round was generated for. Any later edit — code or tests — invalidates it. Claim only what the output shows.
+
+### Commit Discipline (gated mode only)
+
+Within a phase: every task's RED commit(s) land before any task's GREEN commit(s), never mixed — git log mirrors the round structure, RED-first, GREEN-second.
+
+### Gated Rationalizations
+
+| Excuse | Reality |
+|--------|---------|
+| "I can't run it, but the test is obviously correct" | Unverified RED. Gate round or STOP and ask. |
+| "I'll draft the implementation while the round is out" | Implementation before RED verification. Wait at the gate. |
+| "The operator is busy — one combined RED+GREEN round saves a trip" | The phase IS the batching. Gates stay separate. |
+| "The round passed an hour ago; my edit was trivial" | Any edit invalidates round evidence. Re-round. |
+| "Only one test errored — close enough to RED" | Every test must fail for the right reason. Fix tests, narrowed re-round. |
+| "I'll work autonomously and ask for one verification at the end, instead of stopping at each gate" | Skips every gate, not just merges two. Gate each phase as you go — no single end-of-task check. |
+| "The module doesn't exist yet — that's the RED state, no need to run it" | A diagnostic (missing file, import error) is not a round. Gate it for a Valid RED verdict. |
+| "I can't run it locally, so I'll prepare the commands and keep implementing" | Preparing a command is not gating. STOP before writing implementation, don't just queue the ask. |
+| "Every step landed as a RED/GREEN commit, so TDD was followed" | Commit shape without verified round output proves nothing. Claim only what a round showed. |
+| "I ran the assertions by hand with plain python — not pytest, but enough to proceed" | An improvised verification channel is not a round. Only gate output counts. |
+| "I'll write the tests as plain asserts, runnable through a channel the gate doesn't block" | Engineering tests to dodge the gate. Gated tests go through the gate, period. |
