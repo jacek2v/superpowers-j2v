@@ -460,3 +460,4 @@ Within a phase: every task's RED commit(s) land before any task's GREEN commit(s
 | "Every step landed as a RED/GREEN commit, so TDD was followed" | Commit shape without verified round output proves nothing. Claim only what a round showed. |
 | "I ran the assertions by hand with plain python — not pytest, but enough to proceed" | An improvised verification channel is not a round. Only gate output counts. |
 | "I'll write the tests as plain asserts, runnable through a channel the gate doesn't block" | Engineering tests to dodge the gate. Gated tests go through the gate, period. |
+| "I'll run the gated command once, just to confirm it's really unavailable" | Probing the gated command IS running gated tests. Trust the declaration; go straight to the round request. |
