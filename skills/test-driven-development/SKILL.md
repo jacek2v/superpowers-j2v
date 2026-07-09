@@ -424,7 +424,7 @@ Command: <single short one-line command>
 Expected: <e.g. "6 failed, 0 errors — all new tests">
 ```
 
-- `<n>` is global within the feature branch. Append to the round ledger — `.superpowers/rounds.md` at the repo root — one line when a round is issued and one when its verdict is judged — EXACTLY these one-line formats, no extra fields or lines: `ROUND <n> RED|GREEN phase "<name>" — issued` / `ROUND <n> verdict: <what the output showed>`. After context compaction, trust the ledger.
+- `<n>` is global within the feature branch. Append to the round ledger — `.superpowers/rounds.md` at the repo root — one line when a round is issued and one when its verdict is judged — EXACTLY these one-line formats, no extra fields or lines: `ROUND <n> RED|GREEN phase "<name>" — issued` / `ROUND <n> verdict: <what the output showed>`. A narrowed re-round may append `(narrowed: <files>)` to its issued line. After context compaction, trust the ledger.
 - Use output-friendly flags (e.g. `pytest -q --tb=short`) — pastes must stay small.
 
 ### Valid RED — judge every new test in the output
