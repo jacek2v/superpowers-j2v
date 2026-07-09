@@ -37,6 +37,8 @@ Stop. Don't proceed to Step 2.
 
 **If tests pass:** Continue to Step 2.
 
+**Gated Testing Mode:** in projects declaring `## Gated testing` (superpowers:test-driven-development — Gated Testing Mode), the fresh full-suite verification IS one final round: emit the standard round request for the full suite (no filter), run it per the declared runner — your own run on the test system, or your human partner's pasted output — and record it in the round ledger (`.superpowers/rounds.md`). Never substitute a local run for it. Failures → fix → re-round. Only a green final round for the current HEAD lets you continue to Step 2.
+
 ### Step 2: Detect Environment
 
 **Determine workspace state before presenting options:**
