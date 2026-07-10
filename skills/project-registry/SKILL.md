@@ -105,6 +105,7 @@ Hit → hard gate (protocol below). No hit → proceed silently, no message.
 - Ad-hoc sections (e.g. naming conventions) → flag to your human partner for relocation into source-repo docs; keep them in place until your human partner decides — never drop content silently. Your migration reply MUST name every kept ad-hoc section — kept-but-unmentioned is a silent-drop risk.
 - D-XXX IDs are defined by this file alone — decisions mentioned in source-repo docs are never ID collisions. Do not invent blockers; on consent, execute the mapping mechanically and commit.
 - Consent to migrate also supersedes in-file entries that reserve ID namespaces or formats (e.g. "D-XXX lives in README, R-XXX here"): strike them VERBATIM — renumber the ID, change nothing else in the entry text — with `[superseded → decision-log migration, YYYY-MM-DD]` in the migration commit; never keep them active or reword them. Do not gate on them; your human partner's consent already answered it. The new format outranks old in-file conventions — entries describing the old format or ID scheme are reservations too; when in doubt, strike.
+- Before committing, self-verify links mechanically: extract every `](…)` target from the pre-migration file and from the migrated file; every pre-migration target must appear in the migrated file (active or struck entry, or folded into a SHIPPED What cell). A missing link is a bug — fix it before the commit.
 - Commit: `docs: migrate CONTEXT.md to decision-log format`. Then continue the interrupted operation.
 
 ## Hard-Gate Protocol
