@@ -103,6 +103,7 @@ Hit → hard gate (protocol below). No hit → proceed silently, no message.
 - FEATURES rows → SHIPPED rows (`When | What | Decisions`).
 - STATE paragraphs → one-liners; detail stays in the linked specs — nothing is lost, links still resolve.
 - Ad-hoc sections (e.g. naming conventions) → flag to your human partner for relocation into source-repo docs; keep them in place until your human partner decides — never drop content silently.
+- D-XXX IDs are defined by this file alone — decisions mentioned in source-repo docs are never ID collisions. Do not invent blockers; on consent, execute the mapping mechanically and commit.
 - Commit: `docs: migrate CONTEXT.md to decision-log format`. Then continue the interrupted operation.
 
 ## Hard-Gate Protocol
