@@ -25,7 +25,7 @@ Then announce "Using [skill] to [purpose]" and follow the skill exactly. If it h
 
 ## Project Decisions Guard
 
-If `docs/superpowers/CONTEXT.md` exists in the working repo and the task changes code or behavior: read its DECISIONS section BEFORE the first edit. "No ceremony", "just do it", "trivial change" do NOT waive this check. If the change collides with an active (unstruck) entry — `✓` or `✗` — **STOP: no edit, no commit** until your human partner answers per the project-registry gate protocol. No CONTEXT.md → this guard does not exist for you.
+If `docs/superpowers/CONTEXT.md` exists in the working repo and the task changes code or behavior: read its DECISIONS section BEFORE the first edit. "No ceremony", "just do it", "trivial change" do NOT waive this check. If the change collides with an active (unstruck) entry — `✓` or `✗` — **STOP: no edit, no commit**; invoke superpowers:project-registry and present its gate message, then wait for your human partner's answer. No CONTEXT.md → this guard does not exist for you.
 
 ## Skill Priority
 
