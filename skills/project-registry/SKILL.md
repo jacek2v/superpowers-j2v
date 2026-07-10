@@ -96,7 +96,7 @@ Hit → hard gate (protocol below). No hit → proceed silently, no message.
 
 ### 7. Migrate (one-time per project)
 
-**When:** any operation touches a CONTEXT.md in the old format (a `REQUIREMENTS` heading or `R-XXX` entries). Offer migration — never migrate silently. On consent:
+**When:** any operation touches a CONTEXT.md in the old format (a `REQUIREMENTS` heading or `R-XXX` entries). Offer migration BEFORE any other write — never migrate silently, and never write an entry in the old grammar; the interrupted operation waits for the answer. On consent:
 
 - R-NNN → D-NNN, numbers preserved (R-015 → D-015). Drop the per-spec group headings; put each entry's date + spec link inline on the entry (flat list, grammar rule 5). A heading naming several specs: each entry carries the link it came from — every link under the heading survives on some entry.
 - Entries carrying `[deprecated …, superseded by R-NNN]` → struck entries with `[superseded → D-NNN, <original date>]`; `[deprecated …]` without a successor → `[abandoned <original date>]`. All others → active `✓`.
@@ -104,6 +104,7 @@ Hit → hard gate (protocol below). No hit → proceed silently, no message.
 - STATE paragraphs → one-liners; detail stays in the linked specs — nothing is lost, links still resolve.
 - Ad-hoc sections (e.g. naming conventions) → flag to your human partner for relocation into source-repo docs; keep them in place until your human partner decides — never drop content silently.
 - D-XXX IDs are defined by this file alone — decisions mentioned in source-repo docs are never ID collisions. Do not invent blockers; on consent, execute the mapping mechanically and commit.
+- Consent to migrate also supersedes in-file entries that reserve ID namespaces or formats (e.g. "D-XXX lives in README, R-XXX here"): strike them in the migration commit with `[superseded → decision-log migration, YYYY-MM-DD]` — do not gate on them; your human partner's consent already answered it. The new format outranks old in-file conventions.
 - Commit: `docs: migrate CONTEXT.md to decision-log format`. Then continue the interrupted operation.
 
 ## Hard-Gate Protocol
