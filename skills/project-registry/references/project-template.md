@@ -3,44 +3,33 @@
 Use this template when creating CONTEXT.md for the first time.
 
 ```markdown
-# CONTEXT: [Project Name]
+# CONTEXT: <project>
 
-> AI workspace metadata. Project facts (overview, architecture, tech stack,
-> decisions, features) live in the source repo — not here.
+> AI workspace metadata. Project facts live in the source repo — not here.
 
 ## Source of truth
 
 | Topic | File |
 |---|---|
-| Project purpose, architecture, tech stack, repo map, key decisions, domain glossary | `../../<source-repo>/README.md` |
-| Backlog, ideas, changelog (if used) | `../../<source-repo>/STATUS.md` |
-| Operations procedures (if used) | `../../<source-repo>/OPERATIONS.md` |
-
-When source repo content changes, STATE/REQUIREMENTS sections here update.
-Never the reverse — source repo is the source of truth.
+| Purpose, architecture, stack, glossary | `../../<src-repo>/README.md` |
 
 ## STATE
 
-Specs in development:
+Specs in flight — ONE line each: link + status ≤10 words.
 
-- [Spec title](specs/YYYY-MM-DD-feature-design.md)
+- [<title>](specs/YYYY-MM-DD-<topic>-design.md) — <short status>
 
-## REQUIREMENTS
+## DECISIONS
 
-Grouped by originating spec. Each R-XXX: 1–3 sentences + link to spec.
-Status derived from STATE (in-progress) and FEATURES (implemented).
-Explicit `[deprecated YYYY-MM-DD, superseded by R-NNN]` when retired.
+One decision per line. ✓ adopted, ✗ rejected direction. Never delete — supersede.
 
-### R-001 .. R-00N (YYYY-MM-DD) — <feature name>
-*Spec: [`YYYY-MM-DD-feature-design.md`](specs/YYYY-MM-DD-feature-design.md)*
+- **D-001** ✓ <decision, ≤1 line> — <why, one clause> [YYYY-MM-DD](specs/…)
+- **D-002** ✗ DO NOT <direction> — <why, one clause> [YYYY-MM-DD](specs/…)
+- **D-003** ~~✓ <old decision>~~ [superseded → D-007, YYYY-MM-DD]
 
-- **R-001** <constraining decision, 1–3 sentences>
-- **R-002** <constraining decision, 1–3 sentences>
+## SHIPPED
 
-## FEATURES
-
-Index only — feature details live in source repo README/changelog.
-
-| ID    | Description           | Requirements   | Spec                          |
-|-------|-----------------------|----------------|-------------------------------|
+| When | What | Decisions |
+|---|---|---|
+| YYYY-MM-DD | <feature, 1 line> | D-001, D-002 |
 ```

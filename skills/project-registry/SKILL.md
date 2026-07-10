@@ -1,121 +1,140 @@
 ---
 name: project-registry
-description: "Use when another skill directs you to run a registry operation on docs/superpowers/CONTEXT.md — the AI-workspace index of in-progress specs, R-XXX constraints, and F-XXX features. Not user-invocable directly; project facts (architecture, tech stack) live in the source repo, not here."
+description: "Use when another skill directs you to run a registry operation on docs/superpowers/CONTEXT.md — the AI-workspace decision log of D-XXX decisions (adopted and rejected), specs in flight, and shipped features. Not user-invocable directly; project facts (architecture, tech stack) live in the source repo, not here."
 ---
 
 # Project Registry
 
-Manage `docs/superpowers/CONTEXT.md` as a living registry of specs in flight, constraining requirements (R-XXX), and shipped features (F-XXX). This file prevents new work from silently contradicting existing constraints.
+Manage `docs/superpowers/CONTEXT.md` as a decision log. It records decisions — adopted AND rejected — so they are never re-asked and never silently reversed, whether by operator oversight or by an automatic AI assumption.
 
-Project facts — overview, architecture, tech stack, key strategic decisions, source structure, development setup — live in the source repo (`README.md` and optionally `STATUS.md` / `OPERATIONS.md`). CONTEXT.md links to them via a top-level `## Source of truth` block; it does not duplicate them.
+Project facts — overview, architecture, tech stack, source structure, development setup — live in the source repo (`README.md`, optionally `STATUS.md` / `OPERATIONS.md`). CONTEXT.md links to them via the `## Source of truth` block; it never duplicates them.
 
 ## CONTEXT.md Structure
 
-A pointer block plus three content sections:
+Four sections (full template: `references/project-template.md`):
 
-- **Source of truth** — table of links to source repo files (README, optionally STATUS / OPERATIONS).
-- **STATE** — specs currently in development, with links. Entries appear after brainstorming, disappear when feature ships.
-- **REQUIREMENTS** — numbered R-XXX, grouped by originating spec, 1–3 sentences each + spec link. Status is derived from STATE (in-progress) and FEATURES (implemented); only `[deprecated]` is stored inline.
-- **FEATURES** — numbered F-XXX. Index table with description, R-XXX cross-reference, and spec link. Added when implementation ships.
+- **Source of truth** — table of links to source-repo files.
+- **STATE** — specs in flight. Hard rule: ONE line per spec — link + status ≤10 words.
+- **DECISIONS** — flat chronological list of D-XXX entries, both polarities. Never delete — supersede.
+- **SHIPPED** — one row per shipped feature: `When | What | Decisions`.
 
-For the initial template, read `references/project-template.md`.
+## Entry Grammar
+
+```markdown
+- **D-001** ✓ <decision, ≤1 line> — <why, one clause> [YYYY-MM-DD](specs/…)
+- **D-002** ✗ DO NOT <direction> — <why, one clause> [YYYY-MM-DD](specs/…)
+- **D-003** ~~✓ <old decision> — <why> [YYYY-MM-DD](specs/…)~~ [superseded → D-007, YYYY-MM-DD]
+```
+
+1. **One line = one decision.** Declarative, no implementation detail — full rationale lives in the linked spec.
+2. **Why is mandatory:** one short clause after an em-dash. Longer rationale belongs in the spec.
+3. **Explicit polarity:** `✓` adopted; `✗` rejected direction, phrased "DO NOT …" — a tripwire for future sessions.
+4. **Explicit inline status:** unstruck = binding. Struck-through — the whole entry body including its date/link, with `[superseded → D-NNN, YYYY-MM-DD]` or `[abandoned YYYY-MM-DD]` appended — = not binding. No derived status: an entry's validity is visible in the entry itself.
+5. **Flat chronological list.** No per-spec group headings; provenance is the date + link on each entry. Decisions made outside a spec cycle link `(session)` instead.
+6. **Recording litmus:** would contradicting this / re-asking this need a flag? In: choices that constrain future work, explicitly condemned directions, answers that would otherwise be re-asked. Out: data-model shape, component structure, UI details — spec and code describe those.
+7. **`✗` only for directions explicitly marked wrong** ("don't do X", "that was a mistake"). Alternatives that merely lost on trade-offs are NOT recorded — they stay in the spec's "approaches considered"; re-proposing one collides with the winning `✓` entry, so the gate still fires.
+8. **IDs sequential** D-001…, never reused. Scan DECISIONS for the highest ID (struck entries included), increment.
 
 ## Operations
 
-### 1. Create CONTEXT.md
+### 1. Create
 
-**When:** First brainstorming session (no CONTEXT.md exists yet).
+**When:** a registry write is due (op 2 or op 3) and no CONTEXT.md exists.
 
-- Read the approved spec.
-- Render from `references/project-template.md`.
-- Populate `## Source of truth` with the source repo's `README.md` path. Include rows for `STATUS.md` and `OPERATIONS.md` only if those files exist in the source repo at creation time.
-- Add the spec link to STATE.
-- Extract constraining decisions from the spec → assign R-001, R-002, ... with 1–3 sentence summaries each. Group them under a single `### R-001 .. R-00N (YYYY-MM-DD) — <feature name>` heading, linked to the spec. Include: architecture choices, explicit constraints, NFRs, trade-offs. Exclude: data model shape, component structure, UI details, framework conventions — these live in the spec and code.
-- FEATURES section empty.
-- Commit: `docs: create CONTEXT.md with initial spec registry`.
+- Render `references/project-template.md`; fill `Source of truth` with the source repo's `README.md` path (add `STATUS.md` / `OPERATIONS.md` rows only if those files exist).
+- Add the spec's STATE line.
+- Extract decisions from the approved spec → `✓` entries; add `✗` entries for directions explicitly condemned during the session (grammar rules 6–7).
+- SHIPPED table empty.
+- Commit: `docs: create CONTEXT.md decision registry`.
 
-### 2. Update for New Spec
+### 2. Record decisions (gate write)
 
-**When:** Brainstorming ends, CONTEXT.md already exists.
+**When:** spec approved (end of brainstorming), CONTEXT.md exists.
 
-- Read current CONTEXT.md and the new approved spec.
-- STATE: append new spec link.
-- REQUIREMENTS: append a new `### R-NNN .. R-MMM (YYYY-MM-DD) — <feature name>` group with the spec link. Assign next available R-XXX IDs with 1–3 sentence summaries (same filtering as Op 1).
-- Commit: `docs: update CONTEXT.md with <feature-name> spec`.
+- Append D-entries: `✓` per litmus from the approved spec, `✗` for directions explicitly condemned during the session. Date + spec link on each.
+- Add the spec's STATE line (one line, status ≤10 words).
+- Commit: `docs: record decisions for <feature> spec`.
 
-### 3. Conflict Check
+### 3. Immediate write
 
-**When:** Brainstorming design approved by user, before writing spec, CONTEXT.md exists.
+**When:** the moment — in ANY skill, including quick-fix/debug work — a direction is condemned or an existing decision reversed. Negative decisions never wait for a gate.
 
-Read CONTEXT.md. Build derived status:
+- Rejection → append `✗ DO NOT …` with date and source: the spec link, or `(session)` when none exists.
+- Reversal → strike the old entry (`~~…~~ [superseded → D-NNN, YYYY-MM-DD]`), append the new entry.
+- Commit immediately: `docs: record D-NNN <slug>`. Then continue the interrupted work.
+- No CONTEXT.md? Offer to create a minimal registry (op 1) — never create it silently.
 
-- **implemented R-XXX** — listed in the Requirements column of any F-XXX row in FEATURES.
-- **in-progress R-XXX** — its originating spec heading appears in STATE.
-- **deprecated R-XXX** — carries an inline `[deprecated …]` marker.
+### 4. Conflict gate
 
-Check the approved design against derived status:
+**When:** another skill hands you an intended direction — a clarifying-question set, proposed approaches, an approved design, plan tasks, or a requested code change.
+
+Match the direction against ACTIVE (unstruck) entries, both polarities:
+
+- collision with `✗` — the direction was previously condemned;
+- collision with `✓` — the change contradicts an adopted decision.
+
+Hit → hard gate (protocol below). No hit → proceed silently, no message.
+
+**Don't-re-ask mode:** before asking a clarifying question, check whether an active D-entry already answers it — if so, do NOT ask; declare the assumption with its ID ("assuming per D-014: runner = operator").
+
+### 5. Register shipped
+
+**When:** implementation complete, before finishing-a-development-branch.
+
+- Remove the spec's STATE line.
+- Add a SHIPPED row: `| YYYY-MM-DD | <feature, 1 line> | D-XXX, D-YYY |`.
+- Commit: `docs: register <feature> in SHIPPED`.
+
+### 6. Abandon
+
+**When:** your human partner abandons in-progress work.
+
+- Remove the spec's STATE line.
+- Strike the spec's unshipped `✓` entries with `[abandoned YYYY-MM-DD]`.
+- **`✗` entries stay active** — rejections are knowledge gained, not abandoned.
+- Commit: `docs: abandon <feature> in CONTEXT.md`.
+
+### 7. Migrate (one-time per project)
+
+**When:** any operation touches a CONTEXT.md in the old format (a `REQUIREMENTS` heading or `R-XXX` entries). Offer migration — never migrate silently. On consent:
+
+- R-NNN → D-NNN, numbers preserved (R-015 → D-015). Drop the per-spec group headings; put each entry's date + spec link inline on the entry (flat list, grammar rule 5).
+- Entries carrying `[deprecated …, superseded by R-NNN]` → struck entries with `[superseded → D-NNN, <original date>]`; `[deprecated …]` without a successor → `[abandoned <original date>]`. All others → active `✓`.
+- FEATURES rows → SHIPPED rows (`When | What | Decisions`).
+- STATE paragraphs → one-liners; detail stays in the linked specs — nothing is lost, links still resolve.
+- Ad-hoc sections (e.g. naming conventions) → flag to your human partner for relocation into source-repo docs; keep them in place until your human partner decides — never drop content silently.
+- Commit: `docs: migrate CONTEXT.md to decision-log format`. Then continue the interrupted operation.
+
+## Hard-Gate Protocol
+
+The protocol text lives ONLY here; other skills reference it. On an op-4 hit, present:
 
 ```
-For each implemented R-XXX:
-  → Does the proposed design MODIFY behavior described by this requirement?
-  → If yes: flag to user with the R-XXX ID and the F-XXX that satisfies it.
+⛔ Collision with a recorded project decision:
 
-For each in-progress R-XXX:
-  → Does the proposed design CONTRADICT this requirement?
-  → If yes: flag to user with the R-XXX ID.
+D-042 ✗ DO NOT forward @check_risky to check_table_metadata
+      — result=1 collision [2026-04-15](specs/2026-04-15-check-risky-design.md)
 
-Check STATE:
-  → Is there in-progress work touching the same area?
-  → If yes: flag potential overlap.
+The requested change forwards @check_risky.
+
+(a) supersede D-042 — I record the reversal and proceed
+(b) change direction — keep D-042, adjust approach
+(c) stop here
 ```
 
-Present ALL flags before proceeding. Format:
+Rules:
 
-```
-⚠ Conflict check against CONTEXT.md:
-- R-002 "localStorage persistence, no backend" (implemented in F-001) —
-  proposed change introduces a backend API.
-- R-007 "User can archive tasks" (in-progress) —
-  proposed change removes task archiving.
-
-These require explicit acknowledgment before proceeding.
-```
-
-User decides for each flag:
-- **Acknowledge and deprecate** old R-XXX → add inline `[deprecated YYYY-MM-DD, superseded by R-NNN]` marker on the entry.
-- **Redesign** to avoid the conflict.
-- **Override** with explicit justification.
-
-If no conflicts found, proceed normally — no message needed.
-
-### 4. Register Feature
-
-**When:** Implementation complete, all tasks done and reviewed, BEFORE invoking finishing-a-development-branch.
-
-- Remove the spec entry from STATE.
-- Append an F-XXX row to FEATURES with: date, 1-line description, comma-separated R-XXX it satisfies, spec link.
-- Commit: `docs: register F-XXX <feature-name> in CONTEXT.md`.
-
-Status of the satisfied R-XXX is now implicitly `implemented` (derived from the FEATURES cross-reference) — no inline status change needed.
-
-### 5. Cleanup Abandoned Spec
-
-**When:** User decides to abandon in-progress work.
-
-- Remove spec entry from STATE.
-- Mark relevant R-XXX entries with `~~<text>~~ [deprecated YYYY-MM-DD, abandoned]`.
-- Commit: `docs: remove abandoned <feature-name> from CONTEXT.md`.
-
-## ID Assignment
-
-- **R-XXX**: sequential from R-001. Scan all `### R-N .. R-M …` group headings in REQUIREMENTS for the highest ID, increment.
-- **F-XXX**: sequential from F-001. Scan FEATURES table for the highest ID, increment.
-- Never reuse IDs — deprecated entries keep their numbers.
+- **No progress without an explicit a/b/c answer. No default.** Waiting is the correct state — do not pick for your human partner, do not proceed "provisionally".
+- (a) → run op 3 immediately (strike + new entry + commit), then continue the work.
+- (b) → keep the entry binding; adjust the question, approach, plan, or change so it respects the decision.
+- (c) → stop; leave the registry untouched.
+- Multiple collisions: ONE message listing all of them, with a per-item (a)/(b)/(c) decision.
+- The quote always carries ID, polarity, text, why, date, link — your human partner sees the decision's full context at the warning site.
+- Only the main agent / coordinator runs gates, never subagents.
 
 ## Key Principles
 
-- STATE is transient — presence means "in progress", absence means "done or abandoned".
-- Not every spec detail is a requirement. "Use localStorage, no backend" constrains future work (requirement). "Tasks displayed in a list" describes what code does (spec detail). Apply the litmus test: would contradicting this need flagging?
-- Conflict check is advisory, not blocking — user always decides.
-- R-XXX status is derived from STATE (in-progress) and FEATURES (implemented). Only `[deprecated]` is stored inline.
-- This skill manages `CONTEXT.md` only. It does not generate, update, or touch source repo files (README, STATUS, OPERATIONS).
+- STATE is transient — presence means "in flight", absence means "shipped or abandoned".
+- Never delete a D-entry — supersede or abandon by striking; IDs are never reused.
+- An entry's validity is visible in the entry itself; there is no derived status.
+- This skill manages `CONTEXT.md` only; it never touches source-repo files (README, STATUS, OPERATIONS).
