@@ -18,9 +18,10 @@ Load plan, review critically, execute all tasks, report when complete.
 ### Step 1: Load and Review Plan
 1. Ensure an isolated workspace exists — **REQUIRED SUB-SKILL:** superpowers:using-git-worktrees
 2. Read plan file
-3. Review critically - identify any questions or concerns about the plan
-4. If concerns: Raise them with your human partner before starting
-5. If no concerns: Create todos for the plan items and proceed
+3. If `docs/superpowers/CONTEXT.md` exists, run project-registry op 4 (conflict gate) over the plan's tasks — the plan may predate a newer decision; a collision stops work until your human partner picks supersede / change direction / stop
+4. Review critically - identify any questions or concerns about the plan
+5. If concerns: Raise them with your human partner before starting
+6. If no concerns: Create todos for the plan items and proceed
 
 ### Step 2: Execute Tasks
 
@@ -29,6 +30,8 @@ For each task:
 2. Follow each step exactly (plan has bite-sized steps)
 3. Run verifications as specified
 4. Mark as completed in TodoWrite
+
+The moment your human partner condemns a direction or reverses a recorded decision mid-execution, record it via project-registry op 3 (immediate write) before continuing.
 
 ### Gate Steps (Gated Testing Mode)
 
@@ -43,9 +46,9 @@ Plans for projects declaring `## Gated testing` contain **Gate RED / Gate GREEN*
 
 ### Step 3: Register Feature
 
-After all tasks complete and verified, update the project registry using the project-registry skill (operation 4):
-- Remove spec entry from STATE
-- Add F-XXX entry to FEATURES with date and list of satisfied R-XXX
+After all tasks complete and verified, update the project registry using the project-registry skill (op 5 — register shipped):
+- Remove the spec's STATE line
+- Add a SHIPPED row: `| YYYY-MM-DD | <feature, 1 line> | D-XXX, D-YYY |`
 - Commit CONTEXT.md changes
 
 ### Step 4: Complete Development
@@ -86,5 +89,5 @@ After CONTEXT.md is updated:
 **Required workflow skills:**
 - **superpowers:using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)
 - **superpowers:writing-plans** - Creates the plan this skill executes
-- **superpowers:project-registry** - Register completed feature in CONTEXT.md (operation 4) after all tasks, before finishing
+- **superpowers:project-registry** - Register shipped feature in CONTEXT.md (op 5) after all tasks, before finishing
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
