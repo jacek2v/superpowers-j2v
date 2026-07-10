@@ -31,24 +31,24 @@ Checklist still applies, with these adaptations:
 - **Step 4:** Focus on what's wrong with current structure, boundaries to change, invariants to preserve
 - **Step 6:** Propose structural options (extract module, split file, introduce interface, etc.)
 - **Step 7:** Present target structure, not new functionality
-- **Step 12:** Update CONTEXT.md STATE if structure changes. No new R-XXX — behavior unchanged, no new constraints.
+- **Step 12:** Update CONTEXT.md STATE if structure changes. Usually no new D-entries — behavior unchanged; a direction condemned or reversed during the session was already recorded by op 3 at the moment it happened.
 
 ## Checklist
 
 You MUST create a task for each of these items and complete them in order:
 
 1. **Explore project context** — check files, docs, recent commits
-2. **Project registry check** — if `docs/superpowers/CONTEXT.md` exists, read it for awareness of existing requirements and features (conflict flags presented at step 8; see project-registry skill, operation 3)
+2. **Project registry check (active)** — if `docs/superpowers/CONTEXT.md` exists, read DECISIONS and hold the active entries for the whole session (project-registry op 4, conflict gate): never ask a clarifying question an active D-entry already answers — declare the assumption with its ID instead; and the moment the request or an approach you are about to propose collides with an active entry, run the project-registry gate protocol — before presenting it, not at step 8
 3. **Offer the visual companion just-in-time** — NOT upfront. The first time a question would genuinely be clearer shown than described, offer it then (its own message); on approval its browser tab opens for you. If no visual question ever arises, never offer it. See the Visual Companion section below.
 4. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 5. **Research sanity check** — verify key assumptions before proposing: prior art, library/API existence, domain patterns. Skip when domain and tools are well-known.
 6. **Propose 2-3 approaches** — with trade-offs and your recommendation, grounded in research findings
 7. **Present design** — in sections scaled to their complexity, get user approval after each section
-8. **Conflict check** — if `docs/superpowers/CONTEXT.md` exists, run project-registry skill operation 3 against the approved design. Resolve any conflicts before proceeding.
+8. **Conflict check (safety net)** — if `docs/superpowers/CONTEXT.md` exists, run project-registry op 4 (conflict gate) against the approved design. A collision stops work until your human partner picks supersede / change direction / stop.
 9. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
 10. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 11. **User reviews written spec** — ask user to review the spec file before proceeding
-12. **Update CONTEXT.md** — create or update using project-registry skill (operations 1 or 2): add spec to STATE, register new R-XXX requirements. Commit.
+12. **Update CONTEXT.md** — create or update using project-registry skill (op 1 or 2): add the spec's STATE line, record the session's decisions as D-entries (✓ adopted; ✗ for directions explicitly condemned). Commit.
 13. **Stop and hand off** — do NOT invoke writing-plans in this session; tell the user to start a fresh session and invoke writing-plans there
 
 ## Process Flow
@@ -57,7 +57,7 @@ You MUST create a task for each of these items and complete them in order:
 digraph brainstorming {
     "Explore project context" [shape=box];
     "CONTEXT.md exists?" [shape=diamond];
-    "Read CONTEXT.md\nfor conflict awareness" [shape=box];
+    "Read DECISIONS — op 4 active:\nno re-asking, gate collisions early" [shape=box];
     "Ask clarifying questions" [shape=box];
     "Research needed?" [shape=diamond];
     "Research sanity check" [shape=box];
@@ -67,13 +67,13 @@ digraph brainstorming {
     "Write design doc" [shape=box];
     "Spec self-review\n(fix inline)" [shape=box];
     "User reviews spec?" [shape=diamond];
-    "Update CONTEXT.md\n(STATE + REQUIREMENTS)" [shape=box];
+    "Update CONTEXT.md\n(STATE + DECISIONS)" [shape=box];
     "Stop: instruct user to invoke\nwriting-plans in a new session" [shape=doublecircle];
 
     "Explore project context" -> "CONTEXT.md exists?";
-    "CONTEXT.md exists?" -> "Read CONTEXT.md\nfor conflict awareness" [label="yes"];
+    "CONTEXT.md exists?" -> "Read DECISIONS — op 4 active:\nno re-asking, gate collisions early" [label="yes"];
     "CONTEXT.md exists?" -> "Ask clarifying questions" [label="no"];
-    "Read CONTEXT.md\nfor conflict awareness" -> "Ask clarifying questions";
+    "Read DECISIONS — op 4 active:\nno re-asking, gate collisions early" -> "Ask clarifying questions";
     "Ask clarifying questions" -> "Research needed?";
     "Research needed?" -> "Research sanity check" [label="unfamiliar domain\nor unverified deps"];
     "Research needed?" -> "Propose 2-3 approaches\n(grounded in research)" [label="well-known territory"];
@@ -81,15 +81,15 @@ digraph brainstorming {
     "Propose 2-3 approaches\n(grounded in research)" -> "Present design sections";
     "Present design sections" -> "User approves design?";
     "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "Conflict check\n(project-registry op 3)" [label="yes"];
-    "Conflict check\n(project-registry op 3)" [shape=diamond];
-    "Conflict check\n(project-registry op 3)" -> "Present design sections" [label="conflicts found"];
-    "Conflict check\n(project-registry op 3)" -> "Write design doc" [label="clear"];
+    "User approves design?" -> "Conflict check\n(op 4 safety net)" [label="yes"];
+    "Conflict check\n(op 4 safety net)" [shape=diamond];
+    "Conflict check\n(op 4 safety net)" -> "Present design sections" [label="conflicts found"];
+    "Conflict check\n(op 4 safety net)" -> "Write design doc" [label="clear"];
     "Write design doc" -> "Spec self-review\n(fix inline)";
     "Spec self-review\n(fix inline)" -> "User reviews spec?";
     "User reviews spec?" -> "Write design doc" [label="changes requested"];
-    "User reviews spec?" -> "Update CONTEXT.md\n(STATE + REQUIREMENTS)" [label="approved"];
-    "Update CONTEXT.md\n(STATE + REQUIREMENTS)" -> "Stop: instruct user to invoke\nwriting-plans in a new session";
+    "User reviews spec?" -> "Update CONTEXT.md\n(STATE + DECISIONS)" [label="approved"];
+    "Update CONTEXT.md\n(STATE + DECISIONS)" -> "Stop: instruct user to invoke\nwriting-plans in a new session";
 }
 ```
 
@@ -106,6 +106,7 @@ digraph brainstorming {
 - Prefer multiple choice questions when possible, but open-ended is fine too
 - Only one question per message - if a topic needs more exploration, break it into multiple questions
 - Focus on understanding: purpose, constraints, success criteria
+- Before asking, check the active D-entries (step 2): a question an active entry already answers is not asked — declare the assumption with its ID ("assuming per D-014: runner = operator")
 
 **Research sanity check:**
 
@@ -123,6 +124,7 @@ Skip this step when the domain and tooling are well-known. When you do research,
 - Propose 2-3 different approaches with trade-offs
 - Present options conversationally with your recommendation and reasoning
 - Lead with your recommended option and explain why
+- The moment your human partner condemns a direction ("don't do X", "that was a mistake") or reverses a recorded decision, record it via project-registry op 3 (immediate write) — negative decisions never wait for the step-12 gate write
 
 **Presenting the design:**
 
@@ -174,9 +176,9 @@ Wait for the user's response. If they request changes, make them and re-run the 
 **Update CONTEXT.md:**
 
 After the user approves the spec, update the project registry using the project-registry skill:
-- If `docs/superpowers/CONTEXT.md` does not exist → create it (operation 1)
-- If it exists → update it (operation 2)
-- This registers the new spec in STATE and adds R-XXX requirements
+- If `docs/superpowers/CONTEXT.md` does not exist → create it (op 1)
+- If it exists → update it (op 2 — record decisions)
+- This adds the spec's STATE line and records D-entries: ✓ per the recording litmus, ✗ for directions explicitly condemned during the session
 - Commit the CONTEXT.md changes
 
 **Stop here — hand off to a fresh session:**
