@@ -44,7 +44,7 @@ Plans for projects declaring `## Gated testing` contain **Gate RED / Gate GREEN*
 5. Invalid RED → fix the TESTS → re-round narrowed to the affected files. GREEN failures → fix the CODE, never the test → narrowed or full GREEN re-round.
 6. Past a gate only with valid round evidence for the current code state — any later edit invalidates it.
 
-### Step 3: Register Feature
+### Step 3: Register Shipped
 
 After all tasks complete and verified, update the project registry using the project-registry skill (op 5 — register shipped):
 - Remove the spec's STATE line
