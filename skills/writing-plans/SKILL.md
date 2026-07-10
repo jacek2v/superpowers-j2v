@@ -26,9 +26,11 @@ If the spec covers multiple independent subsystems, it should have been broken i
 
 Before writing tasks, read:
 1. The approved spec (primary input)
-2. `docs/superpowers/CONTEXT.md` if it exists — for REQUIREMENTS (R-XXX constraints)
+2. `docs/superpowers/CONTEXT.md` if it exists — for DECISIONS (active D-XXX entries, both polarities)
 
-The engineer executing the plan won't have access to CONTEXT.md — what they need must be in the plan. Embed relevant R-XXX constraints into task descriptions where a task could violate them.
+If CONTEXT.md exists, run project-registry op 4 (conflict gate) with the spec's intended direction before writing any task — the spec may predate a newer decision; a collision stops work until your human partner decides.
+
+The engineer executing the plan won't have access to CONTEXT.md — what they need must be in the plan. Embed relevant D-XXX decisions verbatim into task descriptions where a task could violate them; `✗` entries are tripwires — quote them in any task that works near the condemned direction.
 
 ## File Structure
 
@@ -74,7 +76,7 @@ independently testable deliverable.
 
 **Tech Stack:** [Key technologies/libraries]
 
-**Requirements:** [R-XXX entries from CONTEXT.md this plan addresses, if CONTEXT.md exists]
+**Decisions:** [active D-XXX entries from CONTEXT.md this plan implements or must respect, if CONTEXT.md exists]
 
 ## Global Constraints
 
@@ -223,7 +225,7 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 
 **4. External knowledge correctness:** For each task using external libraries, CLI tools, config formats, or framework conventions — are method names, signatures, flags, and schemas verified against current docs, not assumed from training data?
 
-**5. Requirement traceability:** If CONTEXT.md exists, verify each R-XXX listed in the header maps to at least one task. If a requirement has no corresponding task, either add one or note why it's already satisfied.
+**5. Decision traceability:** If CONTEXT.md exists, verify each D-XXX listed in the header maps to at least one task that implements it or embeds it as a constraint. If a decision has no corresponding task, either add one or note why it's already satisfied.
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 
