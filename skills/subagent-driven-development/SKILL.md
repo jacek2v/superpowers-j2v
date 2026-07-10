@@ -62,7 +62,7 @@ digraph process {
     "Read plan, note context and global constraints, create todos" [shape=box];
     "More tasks remain?" [shape=diamond];
     "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" [shape=box];
-    "Use superpowers:project-registry\n(register feature)" [shape=box];
+    "Use superpowers:project-registry\n(op 5 — register shipped)" [shape=box];
     "Use superpowers:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
     "Read plan, note context and global constraints, create todos" -> "Dispatch implementer subagent (./implementer-prompt.md)";
@@ -78,14 +78,14 @@ digraph process {
     "Mark task complete in todo list and progress ledger" -> "More tasks remain?";
     "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
     "More tasks remain?" -> "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" [label="no"];
-    "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" -> "Use superpowers:project-registry\n(register feature)";
-    "Use superpowers:project-registry\n(register feature)" -> "Use superpowers:finishing-a-development-branch";
+    "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" -> "Use superpowers:project-registry\n(op 5 — register shipped)";
+    "Use superpowers:project-registry\n(op 5 — register shipped)" -> "Use superpowers:finishing-a-development-branch";
 }
 ```
 
 ## Pre-Flight Plan Review
 
-Before dispatching Task 1, ensure an isolated workspace exists (**REQUIRED SUB-SKILL:** superpowers:using-git-worktrees), then scan the plan once for conflicts:
+Before dispatching Task 1, ensure an isolated workspace exists (**REQUIRED SUB-SKILL:** superpowers:using-git-worktrees). If `docs/superpowers/CONTEXT.md` exists, run project-registry op 4 (conflict gate) over the plan's tasks — the plan may predate a newer decision; registry gates belong to YOU, the coordinator, never to subagents. Mid-execution, the moment your human partner condemns a direction or reverses a recorded decision, record it via project-registry op 3 (immediate write) before dispatching further work. Then scan the plan once for conflicts:
 
 - tasks that contradict each other or the plan's Global Constraints
 - anything the plan explicitly mandates that the review rubric treats as a
@@ -359,9 +359,9 @@ Task reviewer: Spec ✅. Task quality: Approved.
 [Dispatch final code reviewer: general-purpose + requesting-code-review/code-reviewer.md over the full branch range]
 Final reviewer: All requirements met, ready to merge
 
-[Use superpowers:project-registry (operation 4)]
-  - Remove spec from STATE
-  - Add F-XXX entry to FEATURES
+[Use superpowers:project-registry (op 5 — register shipped)]
+  - Remove the spec's STATE line
+  - Add a SHIPPED row (When | What | Decisions)
 
 [Use superpowers:finishing-a-development-branch]
 
@@ -446,7 +446,7 @@ Done!
 - **superpowers:using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)
 - **superpowers:writing-plans** - Creates the plan this skill executes
 - **superpowers:requesting-code-review** - Code review template for the final whole-branch review
-- **superpowers:project-registry** - Register completed feature in CONTEXT.md (operation 4) after final review, before finishing
+- **superpowers:project-registry** - Register shipped feature in CONTEXT.md (op 5) after final review, before finishing
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
 
 **Subagents should use:**
