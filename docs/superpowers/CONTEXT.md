@@ -12,6 +12,8 @@
 
 Specs in flight — ONE line each: link + status ≤10 words.
 
+- [2026-07-11 brainstorming early-gate](specs/2026-07-11-brainstorming-early-gate-design.md) — spec approved, awaiting implementation plan
+
 
 ## DECISIONS
 
@@ -37,6 +39,7 @@ One decision per line. ✓ adopted, ✗ rejected direction. Never delete — sup
 - **D-018** ✓ check points: brainstorming start (active: no re-asking, gate before proposing), plan and execution start, using-superpowers bootstrap guard, pre-spec safety net — warn early, not only pre-spec [2026-07-10](specs/2026-07-10-context-md-decision-log-design.md)
 - **D-019** ✓ migration (op 7) is offered never silent; R-NNN → D-NNN preserving numbers; per-project on first touch — no bulk migration [2026-07-10](specs/2026-07-10-context-md-decision-log-design.md)
 - **D-020** ✓ projects without CONTEXT.md see zero behavior change — every new behavior keyed on the file existing [2026-07-10](specs/2026-07-10-context-md-decision-log-design.md)
+- **D-021** ✓ brainstorming gates every direction before presenting it (question set, approaches, composed design, revisions); pre-spec check is a conditional re-check only — never approve-then-warn [2026-07-11](specs/2026-07-11-brainstorming-early-gate-design.md)
 
 ## SHIPPED
 
