@@ -12,7 +12,7 @@
 
 Specs in flight — ONE line each: link + status ≤10 words.
 
-- [2026-07-11 brainstorming early-gate](specs/2026-07-11-brainstorming-early-gate-design.md) — spec approved, awaiting implementation plan
+- [2026-07-11 brainstorming early-gate](specs/2026-07-11-brainstorming-early-gate-design.md) — plan ready, awaiting execution
 
 
 ## DECISIONS
