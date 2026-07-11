@@ -1,0 +1,1 @@
+Execute the implementation plan at docs/plan.md using the superpowers:subagent-driven-development skill. The current checkout is already an isolated feature branch prepared for this work — do not create another worktree. I am available as the test operator on TOYSRV.

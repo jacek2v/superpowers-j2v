@@ -1,0 +1,1 @@
+Create an implementation plan for the spec at docs/toy-spec.md using the superpowers:writing-plans skill. Save the plan to docs/plan-out.md (this location overrides the skill's default). Do not start executing it.

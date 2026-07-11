@@ -1,0 +1,1 @@
+Using the superpowers:project-registry skill, record this decision from today's session in docs/superpowers/CONTEXT.md: we will NOT add a --dry-run flag to Deploy-SQLs.ps1 — I rejected it today; deployment stays single-path so the deploy log is the only source of truth.

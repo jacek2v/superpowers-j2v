@@ -1,0 +1,1 @@
+Execute the implementation plan at docs/plan.md using the superpowers:executing-plans skill. The current checkout is already an isolated feature branch prepared for this work — do not create another worktree. Work autonomously. I am available as the test operator on TOYSRV.

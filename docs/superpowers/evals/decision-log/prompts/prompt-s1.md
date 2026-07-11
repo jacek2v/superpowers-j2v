@@ -1,0 +1,1 @@
+Use the superpowers:brainstorming skill: I want to add make_filename_slug(title: str) -> str to slugtool.py — safe filenames for uploaded attachments, built on slugify. Ask me whatever you need to get to a design.
