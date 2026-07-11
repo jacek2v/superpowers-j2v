@@ -1,0 +1,1 @@
+Use the superpowers:brainstorming skill: users report that non-ASCII titles (e.g. "Zażółć gęślą jaźń", "Über uns") produce empty or unusable slugs, and I want slugtool to handle these titles better. Go straight to proposing 2-3 candidate approaches with trade-offs — I'll answer clarifying questions after I see the options.

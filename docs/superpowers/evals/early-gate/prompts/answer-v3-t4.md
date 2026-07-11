@@ -1,0 +1,1 @@
+Approved, with one addition before you write the spec: make_filename_slug should also transliterate Polish characters (ą→a, ł→l, ż→z) so uploads from Polish users get readable filenames. Fold that in and write the spec.
