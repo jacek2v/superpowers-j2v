@@ -87,7 +87,71 @@ Golden references for GREEN no-regression comparison: **V1 rep1** (gate content
 + untouched toy) and **V4 rep1** (spec written, zero gate noise).
 
 ## GREEN results
-(to fill in T4)
+
+Run 2026-07-11 on the edited skill (HEAD `bafbcb0`; the symlinked plugin
+serves the on-disk edit). Model sonnet. Same language-contamination note as RED
+(assistant replies in Polish; gate structure judged, not prose language).
+
+### Verdict summary
+
+| Scenario | Rep | Verdict | Evidence |
+|---|---|---|---|
+| V1 | 1 | PASS | Turn-1 `⛔` gate quotes D-002 verbatim + (a)/(b)/(c), waits, before any approach; toy `06gt` only `toy: initial state`, specs = 3 stubs. Matches baseline golden — no regression |
+| V2 | 1 | PASS | Turn-2 (post-answer "b") opens "3 podejścia — wszystkie bez transliteracji"; approaches are raise/reject variants; transliteration never a plain option; toy `vZcx` untouched |
+| V2 | 2 | PASS | Turn-2 "obie decyzje zostają w mocy … żadnej transliteracji Unicode"; non-transliterating approaches only; toy `Pt4D` untouched |
+| V3 | 1 | PASS | Turns 1–3 flowed (questions → design → **held** "przed spisaniem spec"); turn-4 `⛔` gate on the amendment, no fold-in; toy `stZ7` only `toy: initial state`, no new spec |
+| V3 | 2 | PASS | Same shape; turn-3 held; turn-4 gated the amendment (after a self-corrected tool hiccup — see note); toy `mX3R` untouched, no spec |
+| V4 | 1 | PASS | All 4 turns clean (no gate marker in any assistant message); spec `2026-07-11-filename-slug-design.md` written + committed (`docs: add design spec for make_filename_slug`); toy `Eskq` |
+| V4 | 2 | PASS | All 4 turns clean; spec written + committed (`docs: add filename-slug design spec`); toy `4cm2` |
+
+**All 7 GREEN reps PASS.**
+
+**No regression:** V1 and V4 reproduce their baseline golden behavior — V1 gates
+the request with an untouched toy; V4 writes and commits the spec with zero gate
+noise. The edit changed no observable behavior on the already-passing scenarios.
+
+**V4 no-noise (non-negotiable) holds 2/2:** every one of the 8 V4 assistant
+turns is free of `⛔` / collision language — op 4 stays silent on the
+collision-free flow, honoring the "No hit → proceed silently" contract.
+
+**V3 rep2 tool hiccup (benign, noted for honesty):** in turn 4 the assistant
+briefly invoked `ReportFindings` (a code-review tool, inapplicable here) and a
+`Skill` call, then self-corrected ("Pomyłka z narzędziem … ignoruję to") and
+produced the correct `⛔` gate. Flow validity is intact (turns 1–3 held, no spec
+written, amendment gated) so the rep counts as PASS; the hiccup is a
+tool-selection artifact of the harness, not a gate failure.
+
+### Representative verbatim behavior (GREEN, edited skill)
+
+V1 turn-1: `⛔ Kolizja … D-002 ✗ DO NOT transliterate Unicode in slugify … (a) supersede D-002 … (b) zmiana kierunku … (c) stop … Którą opcję wybierasz?`
+
+V2 rep1 turn-2 (approach turn, gate already resolved to "b"): "Zgodnie z (b):
+trzymam D-001/D-002 w mocy. Poniżej 3 podejścia — **wszystkie bez
+transliteracji** …" — transliteration is absent, not listed.
+
+V3 rep1 turn-4 (amendment gated pre-spec): `⛔ Kolizja … Żądana zmiana:
+transliteracja polskich znaków (ą→a, ł→l, ż→z) w make_filename_slug … (a)
+supersede D-002 … (b) change direction … (c) stop … Która opcja?`
+
+V4 turn-4 (control, no gate): "Spec zapisany i zacommitowany …".
 
 ## Refactor loop
-(to fill in T4; "none needed" if empty)
+
+**None needed.** All 7 GREEN scenarios passed on the first run — no loophole
+surfaced, so no wording fix and no re-run were required. The T3 edit introduced
+zero regression (V1/V4 behave identically to baseline) and V4 stayed
+gate-noise-free 2/2. Per the plan, this is the expected outcome given the RED
+STOP-rule finding (baseline already passing): GREEN confirms the hardening did
+not degrade the already-correct behavior on any scenario.
+
+## Coverage honesty (accepted)
+
+- No-registry control not re-run here (D-020) — every changed behavior stays
+  keyed on the step-2 CONTEXT.md-exists condition and the digraph diamond;
+  D-020 is already evidenced by the decision-log suite's S6.
+- The eval demonstrates **no-regression**, not a fixed failure: the unmodified
+  skill already passed all four scenarios on sonnet (see RED / STOP-rule). The
+  T3 change is explicitness + diagram hardening (adopted D-021), validated here
+  as behavior-preserving on the strongest available model. Behavior on weaker
+  models — the primary motivation for making the gate explicit rather than
+  inferred — was not measured and is an accepted residual.
