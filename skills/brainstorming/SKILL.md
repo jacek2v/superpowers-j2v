@@ -38,13 +38,13 @@ Checklist still applies, with these adaptations:
 You MUST create a task for each of these items and complete them in order:
 
 1. **Explore project context** — check files, docs, recent commits
-2. **Project registry check (active)** — if `docs/superpowers/CONTEXT.md` exists, read DECISIONS and hold the active entries for the whole session (project-registry op 4, conflict gate): never ask a clarifying question an active D-entry already answers — declare the assumption with its ID instead; and the moment the request or an approach you are about to propose collides with an active entry, run the project-registry gate protocol — before presenting it, not at step 8
+2. **Project registry check (active)** — if `docs/superpowers/CONTEXT.md` exists, read DECISIONS and hold the active entries for the whole session (project-registry op 4, conflict gate). Standing obligations: never ask a clarifying question an active D-entry already answers — declare the assumption with its ID instead; and gate EVERY direction before presenting it — a clarifying-question set, proposed approaches, a composed design, a revision: the moment it collides with an active entry, run the gate protocol instead of presenting it.
 3. **Offer the visual companion just-in-time** — NOT upfront. The first time a question would genuinely be clearer shown than described, offer it then (its own message); on approval its browser tab opens for you. If no visual question ever arises, never offer it. See the Visual Companion section below.
 4. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 5. **Research sanity check** — verify key assumptions before proposing: prior art, library/API existence, domain patterns. Skip when domain and tools are well-known.
 6. **Propose 2-3 approaches** — with trade-offs and your recommendation, grounded in research findings
-7. **Present design** — in sections scaled to their complexity, get user approval after each section
-8. **Conflict check (safety net)** — if `docs/superpowers/CONTEXT.md` exists, run project-registry op 4 (conflict gate) against the approved design. A collision stops work until your human partner picks supersede / change direction / stop.
+7. **Gate, then present design** — run op 4 against the composed design before showing it; then present in sections scaled to their complexity, get user approval after each section. Any revision passes the gate again before being re-presented.
+8. **Pre-spec re-check (safety net)** — if any design content changed or was added since its last op-4 pass (e.g. amendments accepted during the approval dialogue), run op 4 once more before writing the spec; otherwise skip — the design was already gated. A collision stops work until your human partner picks supersede / change direction / stop.
 9. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
 10. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 11. **User reviews written spec** — ask user to review the spec file before proceeding
@@ -57,13 +57,17 @@ You MUST create a task for each of these items and complete them in order:
 digraph brainstorming {
     "Explore project context" [shape=box];
     "CONTEXT.md exists?" [shape=diamond];
-    "Read DECISIONS — op 4 active:\nno re-asking, gate collisions early" [shape=box];
+    "Read DECISIONS — op 4 active:\ngate EVERY direction\nbefore presenting it" [shape=box];
     "Ask clarifying questions" [shape=box];
     "Research needed?" [shape=diamond];
     "Research sanity check" [shape=box];
     "Propose 2-3 approaches\n(grounded in research)" [shape=box];
+    "Gate composed design\n(op 4): collision?" [shape=diamond];
+    "Hard-gate protocol:\nsupersede / change direction / stop" [shape=box];
     "Present design sections" [shape=box];
     "User approves design?" [shape=diamond];
+    "Design changed since\nlast gate pass?" [shape=diamond];
+    "Pre-spec re-check (op 4)" [shape=box];
     "Write design doc" [shape=box];
     "Spec self-review\n(fix inline)" [shape=box];
     "User reviews spec?" [shape=diamond];
@@ -71,20 +75,24 @@ digraph brainstorming {
     "Stop: instruct user to invoke\nwriting-plans in a new session" [shape=doublecircle];
 
     "Explore project context" -> "CONTEXT.md exists?";
-    "CONTEXT.md exists?" -> "Read DECISIONS — op 4 active:\nno re-asking, gate collisions early" [label="yes"];
+    "CONTEXT.md exists?" -> "Read DECISIONS — op 4 active:\ngate EVERY direction\nbefore presenting it" [label="yes"];
     "CONTEXT.md exists?" -> "Ask clarifying questions" [label="no"];
-    "Read DECISIONS — op 4 active:\nno re-asking, gate collisions early" -> "Ask clarifying questions";
+    "Read DECISIONS — op 4 active:\ngate EVERY direction\nbefore presenting it" -> "Ask clarifying questions";
     "Ask clarifying questions" -> "Research needed?";
     "Research needed?" -> "Research sanity check" [label="unfamiliar domain\nor unverified deps"];
     "Research needed?" -> "Propose 2-3 approaches\n(grounded in research)" [label="well-known territory"];
     "Research sanity check" -> "Propose 2-3 approaches\n(grounded in research)";
-    "Propose 2-3 approaches\n(grounded in research)" -> "Present design sections";
+    "Propose 2-3 approaches\n(grounded in research)" -> "Gate composed design\n(op 4): collision?";
+    "Gate composed design\n(op 4): collision?" -> "Hard-gate protocol:\nsupersede / change direction / stop" [label="hit"];
+    "Hard-gate protocol:\nsupersede / change direction / stop" -> "Gate composed design\n(op 4): collision?" [label="adjusted direction"];
+    "Gate composed design\n(op 4): collision?" -> "Present design sections" [label="clear"];
     "Present design sections" -> "User approves design?";
-    "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "Conflict check\n(op 4 safety net)" [label="yes"];
-    "Conflict check\n(op 4 safety net)" [shape=diamond];
-    "Conflict check\n(op 4 safety net)" -> "Present design sections" [label="conflicts found"];
-    "Conflict check\n(op 4 safety net)" -> "Write design doc" [label="clear"];
+    "User approves design?" -> "Gate composed design\n(op 4): collision?" [label="no, revise\n(re-gate)"];
+    "User approves design?" -> "Design changed since\nlast gate pass?" [label="yes"];
+    "Design changed since\nlast gate pass?" -> "Pre-spec re-check (op 4)" [label="yes"];
+    "Design changed since\nlast gate pass?" -> "Write design doc" [label="no"];
+    "Pre-spec re-check (op 4)" -> "Write design doc" [label="clear"];
+    "Pre-spec re-check (op 4)" -> "Hard-gate protocol:\nsupersede / change direction / stop" [label="hit"];
     "Write design doc" -> "Spec self-review\n(fix inline)";
     "Spec self-review\n(fix inline)" -> "User reviews spec?";
     "User reviews spec?" -> "Write design doc" [label="changes requested"];
@@ -124,11 +132,13 @@ Skip this step when the domain and tooling are well-known. When you do research,
 - Propose 2-3 different approaches with trade-offs
 - Present options conversationally with your recommendation and reasoning
 - Lead with your recommended option and explain why
+- An approach that collides with an active D-entry is never listed as a plain option — either drop it, or, if you believe it is the right direction, present the collision through the hard-gate protocol first
 - The moment your human partner condemns a direction ("don't do X", "that was a mistake") or reverses a recorded decision, record it via project-registry op 3 (immediate write) — negative decisions never wait for the step-12 gate write
 
 **Presenting the design:**
 
 - Once you believe you understand what you're building, present the design
+- Run op 4 on the composed design before the first section goes out; re-gate any revised or added content before re-presenting it
 - Scale each section to its complexity: a few sentences if straightforward, up to 200-300 words if nuanced
 - Ask after each section whether it looks right so far
 - Cover: architecture, components, data flow, error handling, testing
