@@ -99,36 +99,42 @@ conflicts that only emerge from implementation.
 
 ## Model Selection
 
-Use the least powerful model that can handle each role to conserve cost and increase speed.
+Flat single-model scheme with per-role effort. Do NOT set the
+controller/session model or effort here — the operator sets those
+(`/model sonnet`, `/effort medium`). Per-role effort is delivered by two
+predefined agents (`sdd-high`, `sdd-escalate`) because the dispatch tool
+honors `model` per call but exposes **no inline effort parameter** — an
+inline `effort:` field is silently ignored, so a dispatched subagent
+inherits the session effort unless it targets a predefined agent whose
+frontmatter sets `effort`. The `sdd-high` / `sdd-escalate` definitions are
+stored under [deploy/agents/](../../deploy/agents/) — install them per that
+directory's README so the dispatch names resolve.
 
-**Mechanical implementation tasks** (isolated functions, clear specs, 1-2 files): use a fast, cheap model. Most implementation tasks are mechanical when the plan is well-specified.
+**Normal implementer** (all implementation tasks): dispatch `general-purpose`
+with `model: sonnet`. Effort inherits from the session — do NOT set effort
+inline (ignored).
 
-**Integration and judgment tasks** (multi-file coordination, pattern matching, debugging): use a standard model.
+**Task reviewer AND final whole-branch reviewer:** dispatch the `sdd-high`
+agent (sonnet/high).
 
-**Architecture and design tasks**: use the most capable available model.
-The final whole-branch review is one of these — dispatch it on the most
-capable available model, not the session default.
+**Fix subagent** (Critical/Important task findings, and the single fixer for
+final-review findings): dispatch the `sdd-high` agent (sonnet/high) — a bad
+fix triggers a re-review loop, so fixes get reviewer-grade effort.
 
-**Review tasks**: choose the model with the same judgment, scaled to the
-diff's size, complexity, and risk. A small mechanical diff does not need the
-most capable model; a subtle concurrency change does.
+**BLOCKED escalation** ("needs more reasoning"): dispatch the `sdd-escalate`
+agent (opus/high) — one decisive jump, NOT an effort ladder.
 
-**Always specify the model explicitly when dispatching a subagent.** An
+**Always specify the dispatch target explicitly** — the agent type
+(`sdd-high`, `sdd-escalate`), or `general-purpose` + `model: sonnet`. An
 omitted model inherits your session's model — often the most capable and
-most expensive — which silently defeats this section.
+most expensive — which silently defeats this routing. Per-role effort is
+delivered by the two predefined agents because the dispatch tool exposes no
+inline effort parameter.
 
 **Turn count beats token price.** Wall-clock and context cost scale with how
-many turns a subagent takes, and the cheapest models routinely take 2-3× the
-turns on multi-step work — costing more overall. Use a mid-tier model as the
-floor for reviewers and for implementers working from prose descriptions.
-When the task's plan text contains the complete code to write, the
-implementation is transcription plus testing: use the cheapest tier for
-that implementer. Single-file mechanical fixes also take the cheapest tier.
-
-**Task complexity signals (implementation tasks):**
-- Touches 1-2 files with a complete spec → cheap model
-- Touches multiple files with integration concerns → standard model
-- Requires design judgment or broad codebase understanding → most capable model
+many turns a subagent takes, and models below sonnet/medium routinely take
+2-3× the turns on multi-step work — costing more overall. Never drop below
+sonnet/medium for real work.
 
 ## Handling Implementer Status
 
@@ -142,7 +148,8 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 
 **BLOCKED:** The implementer cannot complete the task. Assess the blocker:
 1. If it's a context problem, provide more context and re-dispatch with the same model
-2. If the task requires more reasoning, re-dispatch with a more capable model
+2. If the task requires more reasoning, re-dispatch the "needs more reasoning"
+   block via the `sdd-escalate` agent (opus/high) — one decisive jump
 3. If the task is too large, break it into smaller pieces
 4. If the plan itself is wrong, escalate to the human
 
@@ -297,7 +304,7 @@ a ledger file, not only in todos.
 - [task-reviewer-prompt.md](task-reviewer-prompt.md) - Dispatch task reviewer subagent (spec compliance + code quality)
 - Final whole-branch review: use superpowers:requesting-code-review's [code-reviewer.md](../requesting-code-review/code-reviewer.md)
 
-**Dispatch every reviewer as `general-purpose`** with the templates above — never a specialized/registered code-review agent (e.g. `feature-dev:code-reviewer`), even when one is available and looks purpose-built. Such agents override the template with their own methodology.
+**Dispatch every reviewer through the `sdd-high` agent** (sonnet/high) with the templates above — never a specialized/registered code-review agent (e.g. `feature-dev:code-reviewer`), even when one is available and looks purpose-built. Such agents override the template with their own methodology; `sdd-high` is a bare passthrough that carries only model and effort, so the template still governs. This routing is fixed, not a per-dispatch judgment call: implementer → `general-purpose`+`sonnet`, task/final reviewer + fixer → `sdd-high`, BLOCKED "needs more reasoning" → `sdd-escalate`.
 
 ## Example Workflow
 
@@ -356,7 +363,7 @@ Task reviewer: Spec ✅. Task quality: Approved.
 ...
 
 [After all tasks]
-[Dispatch final code reviewer: general-purpose + requesting-code-review/code-reviewer.md over the full branch range]
+[Dispatch final code reviewer: sdd-high agent + requesting-code-review/code-reviewer.md over the full branch range]
 Final reviewer: All requirements met, ready to merge
 
 [Use superpowers:project-registry (op 5 — register shipped)]
@@ -423,7 +430,7 @@ Done!
 - Move to next task while the review has open Critical/Important issues
 - Re-dispatch a task the progress ledger already marks complete — check
   the ledger (and `git log`) after any compaction or resume
-- Dispatch any reviewer via a specialized/registered code-review agent (e.g. `feature-dev:code-reviewer`) instead of `general-purpose` + the reviewer template
+- Dispatch any reviewer via a specialized/registered code-review agent (e.g. `feature-dev:code-reviewer`) instead of the `sdd-high` agent + the reviewer template
 
 **If subagent asks questions:**
 - Answer clearly and completely
