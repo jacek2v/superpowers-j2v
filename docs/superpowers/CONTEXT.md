@@ -12,6 +12,7 @@
 
 Specs in flight — ONE line each: link + status ≤10 words.
 
+- [op-3 edit-in-place](specs/2026-07-14-op3-edit-in-place-design.md) — spec approved, plan pending
 
 ## DECISIONS
 
@@ -38,6 +39,8 @@ One decision per line. ✓ adopted, ✗ rejected direction. Never delete — sup
 - **D-019** ✓ migration (op 7) is offered never silent; R-NNN → D-NNN preserving numbers; per-project on first touch — no bulk migration [2026-07-10](specs/2026-07-10-context-md-decision-log-design.md)
 - **D-020** ✓ projects without CONTEXT.md see zero behavior change — every new behavior keyed on the file existing [2026-07-10](specs/2026-07-10-context-md-decision-log-design.md)
 - **D-021** ✓ brainstorming gates every direction before presenting it (question set, approaches, composed design, revisions); pre-spec check is a conditional re-check only — never approve-then-warn [2026-07-11](specs/2026-07-11-brainstorming-early-gate-design.md)
+- **D-022** ✓ op-3 reversals edit the entry in place (same D-ID + inline `(prev: <compressed>)`); strikethrough reserved for op-6 abandon; gate (op 4 / a-b-c) unchanged — one entry per topic, no scattered mutually-exclusive lines [2026-07-14](specs/2026-07-14-op3-edit-in-place-design.md)
+- **D-023** ✓ new Rebuild op converts legacy superseded chains (mechanical) and gated implicit reversals between active entries (Case 2) to edit-in-place — one-time, offered never silent [2026-07-14](specs/2026-07-14-op3-edit-in-place-design.md)
 
 ## SHIPPED
 
