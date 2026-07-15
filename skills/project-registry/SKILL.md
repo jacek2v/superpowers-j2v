@@ -155,6 +155,6 @@ Rules:
 ## Key Principles
 
 - STATE is transient — presence means "in flight", absence means "shipped or abandoned".
-- Never delete a D-entry — change by editing the entry in place (op 3), abandon by striking (op 6); IDs are never reused.
+- Never delete a D-entry — change by editing the entry in place (op 3), abandon by striking (op 6); IDs are never reused. Only op 8 Rebuild removes a line — and only by folding its ID + text into a surviving entry's (prev: …) note, so nothing is lost.
 - An entry's validity is visible in the entry itself; there is no derived status.
 - This skill manages `CONTEXT.md` only; it never touches source-repo files (README, STATUS, OPERATIONS).
