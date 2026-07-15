@@ -12,8 +12,6 @@
 
 Specs in flight — ONE line each: link + status ≤10 words.
 
-- [op-3 edit-in-place](specs/2026-07-14-op3-edit-in-place-design.md) — spec approved, plan pending
-
 ## DECISIONS
 
 One decision per line. ✓ adopted, ✗ rejected direction. Never delete — supersede.
@@ -49,3 +47,4 @@ One decision per line. ✓ adopted, ✗ rejected direction. Never delete — sup
 | 2026-07-09 | Gated Testing Mode — batched RED/GREEN gates across 6 skills + 2 templates, eval-validated | D-001..D-012 |
 | 2026-07-10 | CONTEXT.md decision log — D-XXX format, ops 1–7, hard gate across 6 skills | D-013..D-020 |
 | 2026-07-11 | Brainstorming early gate — every direction gated before presentation, conditional pre-spec re-check | D-021 |
+| 2026-07-15 | op-3 edit-in-place — reversals edit the D-entry in place (same ID + `(prev: …)`), strikethrough = op-6 abandon, new op 8 Rebuild converts legacy logs | D-022, D-023 |
