@@ -110,6 +110,21 @@ Hit → hard gate (protocol below). No hit → proceed silently, no message.
 - Before committing, self-verify links mechanically: extract every `](…)` target from the pre-migration file and from the migrated file; every pre-migration target must appear in the migrated file (active or struck entry, or folded into a SHIPPED What cell). A missing link is a bug — fix it before the commit.
 - Commit: `docs: migrate CONTEXT.md to decision-log format`. Then continue the interrupted operation.
 
+### 8. Rebuild (one-time, conscious)
+
+**When:** your human partner asks to convert an existing log to edit-in-place form. Offer it explicitly; **never run it silently** (same principle as op 7). It handles two cases.
+
+- **Case 1 — explicit superseded pairs (mechanical).** A struck old entry (`~~…~~ [superseded → D-NNN, …]`) plus its active successor `D-NNN`. Collapse into the surviving active entry: keep its ID and current text, fold the struck entry's **ID + compressed text** into a `(prev: …)` note, and remove the struck line.
+
+  ```
+  - **D-007** ✓ new decision — why [2026-05-10](specs/…) (prev: D-003 ✗ DO NOT forward — result=1 collision)
+  ```
+
+- **Case 2 — implicit reversals among active entries (judgment).** The log may hold two or more **unstruck** entries where a later one changed an earlier one but no one struck the old one — un-recorded reversals. Scan active entries for the same topic / contradiction and flag every candidate pair. Merging overwrites a recorded decision, so each flagged pair goes through the **hard gate** (protocol below): present the pair and ask supersede / change direction / stop — which entry is current, and whether they are truly the same topic. **Never merge silently.** On confirmation, merge exactly as Case 1 (keep the current entry's ID, fold the older one's ID + text into `(prev: …)`). If your human partner says they are independent, leave both.
+
+- The retired number is never reused (gaps are fine); searching the old ID still lands inside the merged entry — nothing is lost.
+- Commit: `docs: rebuild CONTEXT.md to edit-in-place form`.
+
 ## Hard-Gate Protocol
 
 The protocol text lives ONLY here; other skills reference it. On an op-4 hit, present:
