@@ -15,7 +15,7 @@ Four sections (full template: `references/project-template.md`):
 
 - **Source of truth** — table of links to source-repo files.
 - **STATE** — specs in flight. Hard rule: ONE line per spec — link + status ≤10 words.
-- **DECISIONS** — flat chronological list of D-XXX entries, both polarities. Never delete — supersede.
+- **DECISIONS** — flat chronological list of D-XXX entries, both polarities. Never delete — change by editing in place, abandon by striking.
 - **SHIPPED** — one row per shipped feature: `When | What | Decisions`.
 
 ## Entry Grammar
@@ -23,13 +23,14 @@ Four sections (full template: `references/project-template.md`):
 ```markdown
 - **D-001** ✓ <decision, ≤1 line> — <why, one clause> [YYYY-MM-DD](specs/…)
 - **D-002** ✗ DO NOT <direction> — <why, one clause> [YYYY-MM-DD](specs/…)
-- **D-003** ~~✓ <old decision> — <why> [YYYY-MM-DD](specs/…)~~ [superseded → D-007, YYYY-MM-DD]
+- **D-003** ✓ <changed decision> — <why> [YYYY-MM-DD](specs/…) (prev: <compressed prior state — why>)
+- **D-004** ~~✓ <abandoned decision> — <why> [YYYY-MM-DD](specs/…)~~ [abandoned YYYY-MM-DD]
 ```
 
 1. **One line = one decision.** Declarative, no implementation detail — full rationale lives in the linked spec.
 2. **Why is mandatory:** one short clause after an em-dash. Longer rationale belongs in the spec.
 3. **Explicit polarity:** `✓` adopted; `✗` rejected direction, phrased "DO NOT …" — a tripwire for future sessions.
-4. **Explicit inline status:** unstruck = binding. Struck-through — the whole entry body including its date/link, with `[superseded → D-NNN, YYYY-MM-DD]` or `[abandoned YYYY-MM-DD]` appended (format-reservation strikes during op-7 migration use `[superseded → decision-log migration, YYYY-MM-DD]`) — = not binding. No derived status: an entry's validity is visible in the entry itself.
+4. **Explicit inline status:** unstruck = binding — it always shows the current text; a changed decision keeps its ID and carries an inline `(prev: <compressed prior state — why>)` note (one line, appended after the link). Struck-through — the whole entry body including its date/link, with `[abandoned YYYY-MM-DD]` appended — = not binding, dropped work (op 6). Legacy `[superseded → D-NNN, YYYY-MM-DD]` strikes in pre-Rebuild logs stay valid and readable ("changed, not binding"); format-reservation strikes during op-7 migration use `[superseded → decision-log migration, YYYY-MM-DD]`. No derived status: an entry's validity is visible in the entry itself.
 5. **Flat chronological list.** No per-spec group headings; provenance is the date + link on each entry. Decisions made outside a spec cycle link `(session)` instead.
 6. **Recording litmus:** would contradicting this / re-asking this need a flag? In: choices that constrain future work, explicitly condemned directions, answers that would otherwise be re-asked. Out: data-model shape, component structure, UI details — spec and code describe those.
 7. **`✗` only for directions explicitly marked wrong** ("don't do X", "that was a mistake"). Alternatives that merely lost on trade-offs are NOT recorded — they stay in the spec's "approaches considered"; re-proposing one collides with the winning `✓` entry, so the gate still fires.
@@ -60,8 +61,8 @@ Four sections (full template: `references/project-template.md`):
 **When:** the moment — in ANY skill, including quick-fix/debug work — a direction is condemned or an existing decision reversed. Negative decisions never wait for a gate.
 
 - Rejection → append `✗ DO NOT …` with date and source: the spec link, or `(session)` when none exists.
-- Reversal → strike the old entry (`~~…~~ [superseded → D-NNN, YYYY-MM-DD]`), append the new entry.
-- Commit immediately: `docs: record D-NNN <slug>`. Then continue the interrupted work.
+- Reversal → **edit the entry in place**: keep its D-ID, update the live text (including polarity `✓ ↔ ✗` if it flips) and the date to the new decision, and append a compressed history note `(prev: <compressed prior state — why>)`. Do **not** mint a new ID; do **not** strike. The note is compressed for understanding, not verbatim — `(prev: opposite)` is enough when it is.
+- Commit immediately — rejection: `docs: record D-NNN <slug>`; reversal: `docs: change D-NNN <slug>`. Then continue the interrupted work.
 - No CONTEXT.md? Offer to create a minimal registry (op 1) — never create it silently.
 
 ### 4. Conflict gate
@@ -128,7 +129,7 @@ The requested change forwards @check_risky.
 Rules:
 
 - **No progress without an explicit a/b/c answer. No default.** Waiting is the correct state — do not pick for your human partner, do not proceed "provisionally".
-- (a) → run op 3 immediately (strike + new entry + commit), then continue the work.
+- (a) → run op 3 immediately (edit in place + commit), then continue the work.
 - (b) → keep the entry binding; adjust the question, approach, plan, or change so it respects the decision.
 - (c) → stop; leave the registry untouched.
 - Multiple collisions: ONE message listing all of them, with a per-item (a)/(b)/(c) decision.
@@ -138,6 +139,6 @@ Rules:
 ## Key Principles
 
 - STATE is transient — presence means "in flight", absence means "shipped or abandoned".
-- Never delete a D-entry — supersede or abandon by striking; IDs are never reused.
+- Never delete a D-entry — change by editing the entry in place (op 3), abandon by striking (op 6); IDs are never reused.
 - An entry's validity is visible in the entry itself; there is no derived status.
 - This skill manages `CONTEXT.md` only; it never touches source-repo files (README, STATUS, OPERATIONS).
