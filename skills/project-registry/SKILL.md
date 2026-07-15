@@ -101,6 +101,7 @@ Hit → hard gate (protocol below). No hit → proceed silently, no message.
 
 - R-NNN → D-NNN, numbers preserved and the ID shape is exactly `D-NNN` — hyphen mandatory (R-015 → D-015, never `D015`). Drop the per-spec group headings; put each entry's date + spec link inline on the entry (flat list, grammar rule 5). A heading naming several specs: each entry carries the link it came from — every link under the heading survives on some entry.
 - Entries carrying `[deprecated …, superseded by R-NNN]` → struck entries with `[superseded → D-NNN, <original date>]`; `[deprecated …]` without a successor → `[abandoned <original date>]`. All others → active `✓`.
+- Migration preserves legacy superseded chains as struck entries (historical fidelity) — it does **not** apply edit-in-place. The legacy `[superseded → D-NNN]` form and the edit-in-place `(prev: …)` form coexist until a later Rebuild (op 8) converts the chains; Rebuild is opt-in per project, never automatic.
 - FEATURES rows → SHIPPED rows (`When | What | Decisions`). A spec link from the FEATURES row that no D-entry carries: fold it into the What cell as a markdown link — no link is dropped.
 - STATE paragraphs → one-liners; detail stays in the linked specs — nothing is lost, links still resolve.
 - Ad-hoc sections (e.g. naming conventions) → flag to your human partner for relocation into source-repo docs; keep them in place until your human partner decides — never drop content silently. Your migration reply MUST name every kept ad-hoc section — kept-but-unmentioned is a silent-drop risk.
