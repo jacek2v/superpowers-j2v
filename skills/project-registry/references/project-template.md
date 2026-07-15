@@ -21,11 +21,11 @@ Specs in flight — ONE line each: link + status ≤10 words.
 
 ## DECISIONS
 
-One decision per line. ✓ adopted, ✗ rejected direction. Never delete — supersede.
+One decision per line. ✓ adopted, ✗ rejected direction. Never delete — change by editing in place, abandon by striking.
 
 - **D-001** ✓ <decision, ≤1 line> — <why, one clause> [YYYY-MM-DD](specs/…)
 - **D-002** ✗ DO NOT <direction> — <why, one clause> [YYYY-MM-DD](specs/…)
-- **D-003** ~~✓ <old decision>~~ [superseded → D-007, YYYY-MM-DD]
+- **D-003** ✓ <changed decision> — <why> [YYYY-MM-DD](specs/…) (prev: <compressed prior state — why>)
 
 ## SHIPPED
 
