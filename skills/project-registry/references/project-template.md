@@ -26,6 +26,7 @@ One decision per line. ✓ adopted, ✗ rejected direction. Never delete — cha
 - **D-001** ✓ <decision, ≤1 line> — <why, one clause> [YYYY-MM-DD](specs/…)
 - **D-002** ✗ DO NOT <direction> — <why, one clause> [YYYY-MM-DD](specs/…)
 - **D-003** ✓ <changed decision> — <why> [YYYY-MM-DD](specs/…) (prev: <compressed prior state — why>)
+- **D-004** ~~✓ <abandoned decision> — <why> [YYYY-MM-DD](specs/…)~~ [abandoned YYYY-MM-DD]
 
 ## SHIPPED
 
