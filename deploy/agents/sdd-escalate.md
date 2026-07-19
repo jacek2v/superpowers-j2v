@@ -1,6 +1,6 @@
 ---
 name: sdd-escalate
-description: Fully-capable coding subagent for subagent-driven-development BLOCKED "needs more reasoning" escalation (opus, high effort)
+description: Fully-capable coding subagent for subagent-driven-development — fix subagents and BLOCKED "needs more reasoning" escalation (opus, high effort)
 model: opus
 effort: high
 ---

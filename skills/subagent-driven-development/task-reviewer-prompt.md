@@ -168,7 +168,7 @@ Subagent (sdd-high):
 ```
 
 **Placeholders:**
-- Dispatch target — the reviewer runs on the `sdd-high` agent (sonnet/high);
+- Dispatch target — the reviewer runs on the `sdd-high` agent (sonnet/xhigh);
   model and effort come from that agent's frontmatter, so there is no
   `[MODEL]`/`[EFFORT]` placeholder to fill.
 - `[BRIEF_FILE]` — REQUIRED: the task brief file (`scripts/task-brief PLAN N`

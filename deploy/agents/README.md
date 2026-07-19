@@ -9,8 +9,8 @@ are.
 
 | File | Dispatch name | Model / effort | Used for |
 |---|---|---|---|
-| `sdd-high.md` | `sdd-high` | sonnet / high | task reviewer, final whole-branch reviewer, fix subagents |
-| `sdd-escalate.md` | `sdd-escalate` | opus / high | BLOCKED "needs more reasoning" escalation only |
+| `sdd-high.md` | `sdd-high` | sonnet / xhigh | task reviewer, final whole-branch reviewer |
+| `sdd-escalate.md` | `sdd-escalate` | opus / high | fix subagents, BLOCKED "needs more reasoning" escalation |
 
 The normal implementer is NOT here — it dispatches as `general-purpose` with
 `model: sonnet` and inherits the session effort (see SKILL.md "Model Selection").
@@ -28,5 +28,5 @@ cp sdd-high.md sdd-escalate.md <project>/.claude/agents/
 ```
 
 Keep them in sync with this copy after edits. The controller/session `model`
-and `effort` are set by the operator (`/model sonnet`, `/effort medium`), not by
+and `effort` are set by the operator (`/model opus`, `/effort high`), not by
 these files.
