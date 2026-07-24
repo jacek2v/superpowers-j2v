@@ -89,11 +89,88 @@ No fixes needed — all 6 GREEN reps passed on the first run. SKILL.md unchanged
 
 ## REFACTOR
 
-_(Task 7 appends here.)_
+**Step 1 (loophole counters):** no loopholes surfaced — no counters added. Task 6's GREEN produced an empty rationalization list (6/6 scenarios passed on the first run; see `### Rationalizations for Task 7` above — "Empty list."). Zero edits made to Red Flags' `**Never:**` list.
 
 ## Description micro-test
 
-_(later task appends here.)_
+**Method:** text-listing micro-test — each probe embeds a 2-skill `{LISTING}` (name + description) as plain text; no skill file is read or modified by the probes themselves. 5 reps × 3 probes × 2 arms per round, one `claude -p ... --model sonnet --output-format json` call per rep, files `mt-<arm>-<probe>-<rep>.json` in `/tmp/sdd-parallel-eval`. Smoke test (`claude -p "reply with exactly: OK" --model sonnet --output-format json`) returned `OK` before running. Every `.result` read manually via `jq -r .result <file>`.
+
+**Arms (listings embedded verbatim in the probe prompt):**
+
+CANDIDATE (draft v1, initial round):
+```
+- subagent-driven-development: Use when executing implementation plans with independent tasks in the current session
+- subagent-driven-development-parallel: Use when executing an implementation plan whose tasks carry Depends on: lines, in the current session
+```
+
+CONTROL (new skill description = OLD/sequential text verbatim — no-guidance arm; this text was never written into the actual SKILL.md):
+```
+- subagent-driven-development: Use when executing implementation plans with independent tasks in the current session
+- subagent-driven-development-parallel: Use when executing implementation plans with independent tasks in the current session
+```
+
+**Probes:**
+- P1: `You must execute docs/plans/feature.md; every task carries a "Depends on:" line.`
+- P2: `You must execute docs/plans/feature.md; its tasks have no "Depends on:" lines.`
+- P3: `Your human partner asks you to execute docs/plans/feature.md strictly one task at a time, sequentially.`
+
+### Round 1 (draft v1) tally
+
+| Arm | Probe | Results (5 reps) | Verdict |
+|---|---|---|---|
+| CANDIDATE | P1 | parallel, parallel, parallel, parallel, parallel | 5/5 parallel — PASS |
+| CANDIDATE | P2 | sequential ×5 | 5/5 sequential — acceptable (no bar) |
+| CANDIDATE | P3 | sequential, sequential, **neither**, sequential, sequential | 4/5 — **FAIL** (need 5/5) |
+| CONTROL | P1 | parallel ×5 | 5/5 parallel — no split (name alone pulled toward "parallel"; contrast finding, no bar) |
+| CONTROL | P2 | sequential ×5 | no bar |
+| CONTROL | P3 | sequential ×5 | no bar |
+
+Non-clean rep verbatim — CANDIDATE P3 draft v1, rep 3 (`mt-candidate-p3-3.json`): `neither`
+
+### Revision iteration 1 — draft v1 → v2
+
+- Old: `Use when executing an implementation plan whose tasks carry Depends on: lines, in the current session`
+- New: `Use when executing an implementation plan whose tasks carry Depends on: lines for concurrent dispatch, in the current session`
+- Why: P3 rep 3 answered `neither` instead of the sequential skill's name; hypothesis was that naming the purpose ("concurrent dispatch") sharpens the trigger boundary against a strictly-sequential situation.
+- Re-run: CANDIDATE P3 only, 5 fresh reps → `neither, sequential, sequential, sequential, sequential` — still 4/5, **FAIL**.
+
+Non-clean rep verbatim — CANDIDATE P3 draft v2, rep 1 (`mt-candidate-p3-v2-1.json`): `neither`
+
+### Debug detour (off-tally, not part of the 30-call budget)
+
+To understand the recurring `neither`, ran 3 reps of the same draft-v2 listing/situation asking for a 2-3 sentence explanation instead of the strict one-line reply (files `debug-p3-{1,2,3}.json`). All 3 reasoned correctly and picked `subagent-driven-development`, e.g. rep 2: *"dispatches tasks one at a time in the current session, matching 'strictly sequential.' The parallel variant ... is for plans with `Depends on:` lines enabling concurrent dispatch, which is the opposite of what's asked here."* This confirmed the reasoning itself is sound and `neither` is an artifact of the strict one-line/no-explanation format under sampling variance — but the brief's gate is 5/5 on that exact protocol, so a further revision was still required.
+
+### Revision iteration 2 — draft v2 → v3 (FINAL)
+
+- Old: `Use when executing an implementation plan whose tasks carry Depends on: lines for concurrent dispatch, in the current session`
+- New (FINAL): `Use when executing an implementation plan whose tasks carry Depends on: lines, dispatching independent ones concurrently rather than one at a time, in the current session`
+- Why: made the exclusion of "one at a time" explicit and contrastive, echoing the P3 probe's own phrasing ("one task at a time, sequentially") to close the ambiguity that let `neither` through under the strict format.
+- Re-run: CANDIDATE P3, 5 fresh reps → `sequential ×5` — **5/5, PASS, clean.**
+
+### Post-revision sanity re-checks (extra re-runs, reason recorded)
+
+The description changed twice after P1 and P2 had already been tested against draft v1. Re-ran CANDIDATE P1 and CANDIDATE P2 against the FINAL (v3) wording (10 extra calls) to confirm the wording actually shipped in the frontmatter still satisfies the criteria, rather than shipping a string only ever validated on P3.
+
+- CANDIDATE P1 (v3): `parallel ×5` — 5/5, PASS (unchanged from draft v1).
+- CANDIDATE P2 (v3): `sequential ×5` — 5/5, acceptable, no bar (unchanged from draft v1).
+
+### Final tally (FINAL/v3 description — all criteria satisfied)
+
+| Arm | Probe | Results (5 reps) | Verdict |
+|---|---|---|---|
+| CANDIDATE | P1 | parallel ×5 | PASS |
+| CANDIDATE | P2 | sequential ×5 | acceptable (no bar) |
+| CANDIDATE | P3 | sequential ×5 | PASS |
+| CONTROL | P1 | parallel ×5 | no split observed; name alone drove routing (contrast, no bar) |
+| CONTROL | P2 | sequential ×5 | no bar |
+| CONTROL | P3 | sequential ×5 | no bar |
+
+**Call count:** 30 planned (round 1) + 5 (v2 P3 re-run) + 5 (v3 P3 re-run) + 3 (debug, off-tally) + 10 (v3 P1/P2 sanity re-runs) = 53 `claude -p` calls total.
+
+**Final description (shipped in `skills/subagent-driven-development-parallel/SKILL.md` frontmatter):**
+```
+Use when executing an implementation plan whose tasks carry Depends on: lines, dispatching independent ones concurrently rather than one at a time, in the current session
+```
 
 ## writing-plans RED/GREEN
 
