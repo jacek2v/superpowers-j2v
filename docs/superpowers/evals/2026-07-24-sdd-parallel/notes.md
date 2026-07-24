@@ -52,12 +52,12 @@
 
 | Scenario | Rep | Pass/Fail | Evidence quote |
 |---|---|---|---|
-| A | 1 | PASS | "Dispatch obu w JEDNEJ wiadomości" (Task 1+2); "Task 3 ... ready dopiero gdy oba są MERGED do B (nie tylko review-clean)"; "Merge zawsze wykonuję JA, nigdy subagent, i zawsze serializowane (jeden merge naraz)". |
-| A | 2 | PASS | "Task 1 i Task 2 muszą być w stanie `merged` do B — nie tylko review-clean"; "ja, controller, serializowanie merguję task/N→B — nigdy nie deleguję merge subagentowi". |
-| A | 3 | PASS | "Task 3 i 4 nie dispatchuję — ich zależności nie są merged."; "Task 1 **i** Task 2 muszą być w stanie `merged` w B — nie samo 'review clean'"; "Merge do B robię wyłącznie ja, serializowanie". |
-| B | 1 | PASS | "Merguję `task/1` do `B` natychmiast, nie czekam na Task 2 ... Wykonuję **ja**, nigdy subagent"; "Task 1 i Task 2 oba mają status `merged` w ledgerze/`git log` na `B` — nie 'review-clean'"; conflict path table names rebase/fix as subagent, merge as controller-only. |
+| A | 1 | PASS | "Dispatch obu w JEDNEJ wiadomości" (Task 1+2); "Task 3 ... ready dopiero gdy oba są MERGED do B (nie tylko review-clean)"; "Merge zawsze wykonuję JA, nigdy subagent, i zawsze serializowane (jeden merge naraz)"; "merge do B natychmiast po jego czystym review". |
+| A | 2 | PASS | "Task 1 i Task 2 muszą być w stanie `merged` do B — nie tylko review-clean"; "Po czystym review **ja, controller, serializowanie** merguję task/N→B — nigdy nie deleguję merge subagentowi". |
+| A | 3 | PASS | "Task 3 i 4 nie dispatchuję — ich zależności nie są merged."; "Task 1 **i** Task 2 muszą być w stanie `merged` w B — nie samo 'review clean'"; "Merge do B robię wyłącznie ja, serializowanie: który task pierwszy przejdzie review (spec ✅ + quality approved), ten pierwszy się merguje". |
+| B | 1 | PASS | "Merguję `task/1` do `B` natychmiast, nie czekam na Task 2 ... Wykonuję **ja**, nigdy subagent"; "Task 1 i Task 2 oba mają status `merged` w ledgerze/`git log` na `B` — nie 'review-clean'"; conflict path (verbatim, numbered): "regeneruję `scripts/review-package` dla nowego zakresu (nowy merge-base z `B` .. nowy HEAD)" → "Dispatch task reviewera **`sdd-high`** na nowy pakiet — pełne ponowne review, nie tylko diff konfliktu." → "**Ja** merguję `task/2` → `B` (teraz bez konfliktu)." |
 | B | 2 | PASS | "Merguję task/1 do B **natychmiast** — nie czekam na Task 2. Merge zawsze wykonuję ja, nigdy subagent"; "Task 3 wchodzi do ready set dopiero gdy **obie** linie ledgera pokazują `merged`"; full conflict path: abort → fix subagent rebases → new review package → re-review → controller merge. |
-| B | 3 | PASS | "Merguję `task/1` do `B` od razu — nie czekam na Task 2. Wykonuję **ja**, nie subagent"; "**Oba, Task 1 I Task 2, mają status `merged` w B** — nie 'review-clean', nie 'implementer DONE'"; table marks merge as "ja — nigdy subagent", rebase/fix as subagent.
+| B | 3 | PASS | "Merguję `task/1` do `B` od razu — nie czekam na Task 2. Wykonuję **ja**, nie subagent"; "**Oba, Task 1 I Task 2, mają status `merged` w B** — nie 'review-clean', nie 'implementer DONE'"; conflict path (verbatim, numbered): "Regeneruję `scripts/review-package <nowy BASE=tip B> <nowy HEAD>` dla post-rebase range." → "Dispatch task reviewer (`sdd-high`) ponownie nad nowym pakietem." → "Czysty re-review → **ja** merguję `task/2` do B (teraz fast-forward/clean)."
 
 **Result: 6/6 pass. No fix-loop iterations triggered.**
 
