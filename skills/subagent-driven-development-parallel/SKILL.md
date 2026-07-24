@@ -1,6 +1,6 @@
 ---
 name: subagent-driven-development-parallel
-description: "Use when executing an implementation plan whose tasks carry Depends on: lines, dispatching independent ones concurrently rather than one at a time, in the current session"
+description: "Use when executing an implementation plan whose tasks carry Depends on: lines and independent tasks should run concurrently rather than one at a time, in the current session"
 ---
 
 # Subagent-Driven Development — Parallel

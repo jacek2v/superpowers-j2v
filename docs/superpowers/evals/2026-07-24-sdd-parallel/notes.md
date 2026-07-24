@@ -172,6 +172,33 @@ The description changed twice after P1 and P2 had already been tested against dr
 Use when executing an implementation plan whose tasks carry Depends on: lines, dispatching independent ones concurrently rather than one at a time, in the current session
 ```
 
+### Re-verification round (v4, condition-framed — human-directed)
+
+Task-7 reviewer flagged the v3 clause "dispatching independent ones concurrently rather than one at a time" as a workflow-summary (writing-skills SDO: descriptions state WHEN to use, not what the skill does). Human decision: reword that ACTION clause into a CONDITION and re-verify the discrimination micro-test once, with fallback to v3 if it regresses.
+
+**v4 CANDIDATE listing (verbatim, both lines):**
+```
+- subagent-driven-development: Use when executing implementation plans with independent tasks in the current session
+- subagent-driven-development-parallel: Use when executing an implementation plan whose tasks carry Depends on: lines and independent tasks should run concurrently rather than one at a time, in the current session
+```
+
+15 calls (P1×5, P2×5, P3×5), model sonnet, `--output-format json`, files `mt-candidate-p{1,2,3}-v4-{1..5}.json`.
+
+| Arm | Probe | Results (5 reps, verbatim) | Verdict |
+|---|---|---|---|
+| CANDIDATE | P1 | parallel, parallel, parallel, parallel, parallel | PASS (5/5) |
+| CANDIDATE | P2 | sequential, sequential, sequential, sequential, sequential | recorded (no bar) |
+| CANDIDATE | P3 | sequential, sequential, sequential, sequential, sequential | PASS (5/5) |
+
+("parallel" = `subagent-driven-development-parallel`; "sequential" = `subagent-driven-development`.)
+
+**Decision gate:** P1 = parallel 5/5 AND P3 = sequential 5/5 → **SHIP v4.**
+
+**FINAL shipped description (v4, in `skills/subagent-driven-development-parallel/SKILL.md` frontmatter):**
+```
+Use when executing an implementation plan whose tasks carry Depends on: lines and independent tasks should run concurrently rather than one at a time, in the current session
+```
+
 ## writing-plans RED/GREEN
 
 _(later task appends here.)_
