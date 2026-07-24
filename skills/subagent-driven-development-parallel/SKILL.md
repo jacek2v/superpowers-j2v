@@ -130,6 +130,17 @@ before execution begins, not one interrupt per discovery mid-plan. If the
 scan is clean, proceed without comment. The review loop remains the net for
 conflicts that only emerge from implementation.
 
+## Worktree-per-Task Protocol
+
+- Create the integration worktree ONCE (superpowers:using-git-worktrees) with integration branch B. The plan and the progress ledger live here.
+- When task T becomes ready, create its branch and worktree from the current tip of B and record the branch point — it is the task's review BASE:
+  `git worktree add -b task/T <task-worktree-path> B` (run from the integration worktree).
+- The dispatch prompt names the task worktree path as the working directory. The implementer, every fix subagent, and every re-review for T use that same path. Do NOT use harness-native per-dispatch worktree isolation — the worktree must persist across the implementer → reviewer → fixer chain.
+- Task artifacts (brief, report, review package) live in the task worktree's own `.superpowers/sdd/`: run `scripts/task-brief` and `scripts/review-package` from inside the task worktree, pointing task-brief at the plan file in the integration worktree. The progress ledger is the exception — ONE file, in the integration worktree.
+- The review pipeline per task is unchanged from sequential SDD (report file → review package over `BASE..task/T` → task reviewer → fix subagent → re-review); it simply runs concurrently across tasks.
+- **Merging is yours, and serialized.** After a clean review, merge task/T into B — one merge at a time, never delegated to a subagent. On merge conflict, dispatch a fix subagent to rebase task/T onto B and resolve; a rebase invalidates the prior review verdict — the approved diff no longer exists — so regenerate the review package for the post-rebase range and re-review before merging.
+- After a merge: `git worktree remove <task-worktree-path>`, `git branch -d task/T`, update the task's ledger line, recompute the ready set.
+
 ## Model Selection
 
 Fixed two-model scheme with per-role effort. Do NOT set the
@@ -289,7 +300,7 @@ final whole-branch review. When you fill a reviewer template:
 
 Everything you paste into a dispatch prompt — and everything a subagent
 prints back — stays resident in your context for the rest of the session
-and is re-read on every later turn. Hand artifacts over as files:
+and is re-read on every later turn. Hand artifacts over as files — in this skill, run the scripts inside the task's own worktree (Worktree-per-Task Protocol) so each concurrent task keeps its own `.superpowers/sdd/` workspace:
 
 - **Task brief:** before dispatching an implementer, run this skill's
   `scripts/task-brief PLAN_FILE N` — it extracts the task's full text to a
@@ -323,12 +334,17 @@ a ledger file, not only in todos.
   `cat "$(git rev-parse --show-toplevel)/.superpowers/sdd/progress.md"`. Tasks listed there
   as complete are DONE — do not re-dispatch them; resume at the first task
   not marked complete.
-- When a task's review comes back clean, append one line to the ledger in
-  the same message as your other bookkeeping:
-  `Task N: complete (commits <base7>..<head7>, review clean)`.
+- On every task state change, rewrite that task's ledger line in the same
+  message as your other bookkeeping:
+  `Task N: <state> — branch task/N, worktree <path>, commits <base7>..<head7>, reviews: <verdicts>`.
+  After the merge the line ends as:
+  `Task N: merged — commits <base7>..<head7>, reviews clean`.
 - The ledger is your recovery map: the commits it names exist in git even
   when your context no longer remembers creating them. After compaction,
-  trust the ledger and `git log` over your own recollection.
+  trust the ledger and `git log` over your own recollection. Reconstruct
+  scheduler state from the ledger plus `git log` (merged tasks are in B's
+  history) and `git worktree list` (live task worktrees are in-flight
+  tasks); a task recorded as merged is never re-dispatched.
 - `git clean -fdx` will destroy the ledger (it's git-ignored scratch); if
   that happens, recover from `git log`.
 
