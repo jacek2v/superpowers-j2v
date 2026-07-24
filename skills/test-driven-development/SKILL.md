@@ -422,7 +422,10 @@ Source:  <worktree root>
 Files:   <relative paths of files to copy>
 Command: <single short one-line command>
 Expected: <e.g. "6 failed, 0 errors — all new tests">
+Paste back: the run's summary counts + every failure/error with its message; passing tests stay out of the paste
 ```
+
+The `Paste back:` line is part of every round request, verbatim — it tells the operator what to return. The counts and the failures carry the whole verdict; a full per-test log only burns context.
 
 - `<n>` is global within the feature branch. Append to the round ledger — `.superpowers/rounds.md` at the repo root — one line when a round is issued and one when its verdict is judged — EXACTLY these one-line formats, no extra fields or lines: `ROUND <n> RED|GREEN phase "<name>" — issued` / `ROUND <n> verdict: <what the output showed>`. A narrowed re-round may append `(narrowed: <files>)` to its issued line. After context compaction, trust the ledger.
 - Use output-friendly flags (e.g. `pytest -q --tb=short`) — pastes must stay small.
