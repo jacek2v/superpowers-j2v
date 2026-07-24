@@ -219,11 +219,11 @@ When the project declares `## Gated testing` (activation, batch cycle, rounds: s
 
 **Phase orchestration** (within a gated phase, replaces the per-task dispatch order):
 
-1. ONE test-writer subagent for the whole phase: dispatch it (implementer template) with every task's brief, instructed to execute ONLY the test-writing and RED-commit steps of each brief, to run at most the declared local subset, and never to attempt gated tests.
-2. YOU run Gate RED. Invalid RED → fix subagent scoped to the affected test files → narrowed re-round.
-3. Implementer subagent per task, as usual. Every gated-phase dispatch (test-writer, implementer, fixer, reviewer) carries one line: `Gated testing mode — local subset: <command or none>; gated tests run only at gates, by the controller.`
-4. Task reviewer per task, as usual — but mark the task complete only after the phase's Gate GREEN.
-5. YOU run Gate GREEN (full suite, no filter). Failures → ONE fix subagent with the complete findings → re-round. Refactor only after green.
+1. ONE test-writer subagent for the whole phase, working on the integration branch B directly (no task worktree — its RED commits must be in B before implementers branch off): dispatch it (implementer template) with every task's brief, instructed to execute ONLY the test-writing and RED-commit steps of each brief, to run at most the declared local subset, and never to attempt gated tests.
+2. YOU run Gate RED, in the integration worktree. Invalid RED → fix subagent scoped to the affected test files → narrowed re-round.
+3. After Gate RED, run the phase's tasks per this skill's scheduling: branch + worktree per ready task off B, honoring the `Depends on:` edges between the phase's tasks; per-task review; serialized merges into B. Tasks outside the phase stay pending. Every gated-phase dispatch (test-writer, implementer, fixer, reviewer) carries one line: `Gated testing mode — local subset: <command or none>; gated tests run only at gates, by the controller.`
+4. Task reviewer per task, as usual — but mark a task complete only after the phase's Gate GREEN.
+5. When every task of the phase is merged into B, YOU run Gate GREEN (full suite, no filter, in the integration worktree). Failures → ONE fix subagent with the complete findings, working on B directly → re-round. Refactor only after green.
 
 **Verification Contract, gated:** for gated tests the required evidence is the round output YOU hold, recorded in the round ledger (`.superpowers/rounds.md`). Implementer reports NAME the gated tests covering their change instead of pasting their output; local-subset tests keep normal TDD evidence in the report. Task-complete requires all three: implementer report + reviewer verdicts + the covering Gate GREEN round.
 
@@ -359,67 +359,46 @@ a ledger file, not only in todos.
 ## Example Workflow
 
 ```
-You: I'm using Subagent-Driven Development to execute this plan.
+You: I'm using Subagent-Driven Development — Parallel to execute this plan.
 
-[Read plan file once: docs/superpowers/plans/feature-plan.md]
-[Create todos for all tasks]
+[Read plan once; build the DAG from Depends on: lines —
+ Task 1: none; Task 2: none; Task 3: after 1, 2; Task 4: after 3]
+[Create todos; ensure integration worktree with branch B]
 
-Task 1: Hook installation script
+Ready set: {1, 2}
 
-[Run task-brief for Task 1; dispatch implementer with brief + report paths + context]
+[Create task/1 and task/2 branches + worktrees off B; run task-brief for
+ each in its own worktree]
+[ONE message: dispatch implementer for Task 1 AND implementer for Task 2]
 
-Implementer: "Before I begin - should the hook be installed at user or system level?"
+Task 1 implementer: DONE — 5/5 passing, committed.
+[Run review-package in task-1 worktree; dispatch task reviewer]
+Task 1 reviewer: Spec ✅. Task quality: Approved.
+[YOU merge task/1 into B; remove worktree + branch; ledger:
+ Task 1: merged — commits a1b2c3d..d4e5f6a, reviews clean]
+Ready set: {} — Task 3 still waits for Task 2
 
-You: "User level (~/.config/superpowers/hooks/)"
+Task 2 implementer: DONE — 8/8 passing.
+[review-package; dispatch task reviewer]
+Task 2 reviewer: Spec ❌ — missing progress reporting. Important: magic number.
+[Dispatch fix subagent in the task-2 worktree]
+Fixer: fixed both, covering tests re-run, report appended.
+[Regenerate review package; re-review]
+Task 2 reviewer: Spec ✅. Task quality: Approved.
+[YOU merge task/2 into B — merge conflicts with Task 1's changes:
+ dispatch fix subagent to rebase task/2 onto B; rebase invalidates the
+ verdict → regenerate package for the post-rebase range → re-review →
+ clean → merge]
+Ready set: {3}
 
-Implementer: "Got it. Implementing now..."
-[Later] Implementer:
-  - Implemented install-hook command
-  - Added tests, 5/5 passing
-  - Self-review: Found I missed --force flag, added it
-  - Committed
+[Create task/3 branch + worktree from B tip; dispatch implementer]
+...Task 3 merges → ready set {4} → Task 4 merges.
 
-[Run review-package, dispatch task reviewer with the printed path]
-Task reviewer: Spec ✅ - all requirements met, nothing extra.
-  Strengths: Good test coverage, clean. Issues: None. Task quality: Approved.
-
-[Mark Task 1 complete in TodoWrite]
-
-Task 2: Recovery modes
-
-[Run task-brief for Task 2; dispatch implementer with brief + report paths + context]
-
-Implementer: [No questions, proceeds]
-Implementer:
-  - Added verify/repair modes
-  - 8/8 tests passing
-  - Self-review: All good
-  - Committed
-
-[Run review-package, dispatch task reviewer with the printed path]
-Task reviewer: Spec ❌:
-  - Missing: Progress reporting (spec says "report every 100 items")
-  - Extra: Added --json flag (not requested)
-  Issues (Important): Magic number (100)
-
-[Dispatch fix subagent with all findings]
-Fixer: Removed --json flag, added progress reporting, extracted PROGRESS_INTERVAL constant
-
-[Task reviewer reviews again]
-Task reviewer: Spec ✅. Task quality: Approved.
-
-[Mark Task 2 complete in TodoWrite]
-
-...
-
-[After all tasks]
-[Dispatch final code reviewer: sdd-high agent + requesting-code-review/code-reviewer.md over the full branch range]
-Final reviewer: All requirements met, ready to merge
+[Dispatch final code reviewer: sdd-high agent +
+ requesting-code-review/code-reviewer.md over MERGE_BASE..B]
+Final reviewer: All requirements met, ready to merge.
 
 [Use superpowers:project-registry (op 5 — register shipped)]
-  - Remove the spec's STATE line
-  - Add a SHIPPED row (When | What | Decisions)
-
 [Use superpowers:finishing-a-development-branch]
 
 Done!
@@ -439,6 +418,7 @@ Done!
 - Continuous progress (no waiting)
 
 **Efficiency gains:**
+- Wall-clock scales with the DAG's critical path, not the task count
 - Controller curates exactly what context is needed; bulk artifacts move
   as files, not pasted text
 - Subagent gets complete information upfront
@@ -463,7 +443,11 @@ Done!
 - Start implementation on main/master branch without explicit user consent
 - Skip task review, or accept a report missing either verdict (spec compliance AND task quality are both required)
 - Proceed with unfixed issues
-- Dispatch multiple implementation subagents in parallel (conflicts)
+- Run two subagents concurrently in the same worktree
+- Dispatch a task whose dependencies are not ALL merged (review-clean is not merged)
+- Merge a branch state that was not itself review-approved — a rebase or any post-review commit invalidates the verdict; re-review first
+- Delegate a merge or a gate to a subagent — merges and gates are yours
+- Run two tasks concurrently whose `Files:` blocks overlap
 - Make a subagent read the whole plan file (hand it its task brief —
   `scripts/task-brief` — instead)
 - Skip scene-setting context (subagent needs to understand where task fits)
@@ -509,5 +493,6 @@ Done!
 **Subagents should use:**
 - **superpowers:test-driven-development** - Subagents follow TDD for each task, unless the task brief explicitly waives it
 
-**Alternative workflow:**
+**Alternative workflows:**
+- **superpowers:subagent-driven-development** - Sequential fallback: tightly-coupled plans, or when your human partner asks for strictly sequential execution
 - **superpowers:executing-plans** - Use when subagent dispatch is unavailable
