@@ -135,7 +135,7 @@ conflicts that only emerge from implementation.
 - Create the integration worktree ONCE (superpowers:using-git-worktrees) with integration branch B. The plan and the progress ledger live here.
 - When task T becomes ready, create its branch and worktree from the current tip of B and record the branch point — it is the task's review BASE:
   `git worktree add -b task/T <task-worktree-path> B` (run from the integration worktree).
-- The dispatch prompt names the task worktree path as the working directory. The implementer, every fix subagent, and every re-review for T use that same path. Do NOT use harness-native per-dispatch worktree isolation — the worktree must persist across the implementer → reviewer → fixer chain.
+- The dispatch prompt names the task worktree path as the working directory. The implementer, every fix subagent, and every re-review for T use that same path. Do NOT use harness-native per-dispatch worktree isolation — the worktree must persist across the implementer → reviewer → fixer chain. A native worktree tool may stand in for the raw `git worktree add` only if it yields a persistent, named worktree that survives that whole chain.
 - Task artifacts (brief, report, review package) live in the task worktree's own `.superpowers/sdd/`: run `scripts/task-brief` and `scripts/review-package` from inside the task worktree, pointing task-brief at the plan file in the integration worktree. The progress ledger is the exception — ONE file, in the integration worktree.
 - The review pipeline per task is unchanged from sequential SDD (report file → review package over `BASE..task/T` → task reviewer → fix subagent → re-review); it simply runs concurrently across tasks.
 - **Merging is yours, and serialized.** After a clean review, merge task/T into B — one merge at a time, never delegated to a subagent. On merge conflict, dispatch a fix subagent to rebase task/T onto B and resolve; a rebase invalidates the prior review verdict — the approved diff no longer exists — so regenerate the review package for the post-rebase range and re-review before merging.
@@ -461,7 +461,7 @@ Done!
 - Dispatch a task reviewer without a diff file — generate it first
   (`scripts/review-package BASE HEAD`) and name the printed path in the
   prompt
-- Move to next task while the review has open Critical/Important issues
+- Merge/finalize a task while its review has open Critical/Important issues
 - Re-dispatch a task the progress ledger already marks complete — check
   the ledger (and `git log`) after any compaction or resume
 - Dispatch any reviewer via a specialized/registered code-review agent (e.g. `feature-dev:code-reviewer`) instead of the `sdd-high` agent + the reviewer template
