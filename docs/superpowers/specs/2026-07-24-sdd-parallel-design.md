@@ -59,7 +59,8 @@ Full copy of `skills/subagent-driven-development/` (SKILL.md, implementer-prompt
 
 - Task template gains a mandatory line after **Interfaces:**: `**Depends on:** Task N, Task M` or `**Depends on:** none` — derived from Interfaces (Consumes ⊆ union of the dependencies' Produces).
 - Guidance: prefer decompositions that minimize dependency chains — a short critical path maximizes parallel execution.
-- Self-review gains one check: DAG acyclic; every Consumes covered by a declared dependency; no two mutually independent tasks share files.
+- Plan header gains a **Dependency overview** section: DAG levels as a list (`Level 0: Tasks 1, 2 — Level 1: Task 3 (after 1), …`) so the human reviewer sees at a glance how much parallelism the plan yields.
+- Self-review gains one check: DAG acyclic; every Consumes covered by a declared dependency; no two mutually independent tasks share files; Dependency overview consistent with the per-task `Depends on:` lines.
 - Plan header boilerplate and Execution Handoff: name `subagent-driven-development-parallel` as the recommended default; sequential `subagent-driven-development` and `executing-plans` remain listed alternatives.
 
 ## Component 3: testing (writing-skills RED-GREEN-REFACTOR)
