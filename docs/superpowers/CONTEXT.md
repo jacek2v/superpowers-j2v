@@ -12,6 +12,8 @@
 
 Specs in flight — ONE line each: link + status ≤10 words.
 
+- [2026-07-24-sdd-parallel-design.md](specs/2026-07-24-sdd-parallel-design.md) — spec approved, awaiting implementation plan
+
 ## DECISIONS
 
 One decision per line. ✓ adopted, ✗ rejected direction. Never delete — supersede.
@@ -39,6 +41,11 @@ One decision per line. ✓ adopted, ✗ rejected direction. Never delete — sup
 - **D-021** ✓ brainstorming gates every direction before presenting it (question set, approaches, composed design, revisions); pre-spec check is a conditional re-check only — never approve-then-warn [2026-07-11](specs/2026-07-11-brainstorming-early-gate-design.md)
 - **D-022** ✓ op-3 reversals edit the entry in place (same D-ID + inline `(prev: <compressed>)`); strikethrough reserved for op-6 abandon; gate (op 4 / a-b-c) unchanged — one entry per topic, no scattered mutually-exclusive lines [2026-07-14](specs/2026-07-14-op3-edit-in-place-design.md)
 - **D-023** ✓ new Rebuild op converts legacy superseded chains (mechanical) and gated implicit reversals between active entries (Case 2) to edit-in-place — one-time, offered never silent [2026-07-14](specs/2026-07-14-op3-edit-in-place-design.md)
+- **D-024** ✓ parallel SDD is a separate full-copy skill `subagent-driven-development-parallel`; sequential skill stays byte-identical — sequential fallback, eval baseline, upstream mergeability [2026-07-24](specs/2026-07-24-sdd-parallel-design.md)
+- **D-025** ✓ parallel skill is the default executor via routing (writing-plans handoff + plan header), not explicit activation — speed goal outranks the activation pattern; escape hatch = invoke sequential skill [2026-07-24](specs/2026-07-24-sdd-parallel-design.md)
+- **D-026** ✓ task dependencies declared at plan time: mandatory `Depends on:` per task + Dependency overview in header, no runtime inference — plan author holds the whole-system view [2026-07-24](specs/2026-07-24-sdd-parallel-design.md)
+- **D-027** ✓ unit of parallelism = task, event-driven ready-set scheduling, no wave barriers; in-task TDD stays sequential — a slow task must not block independent DAG branches [2026-07-24](specs/2026-07-24-sdd-parallel-design.md)
+- **D-028** ✓ worktree-per-task with controller-serialized merges; dependents unblock on merge, not review-clean — they need merged interfaces; shared worktree races git state and voids test evidence [2026-07-24](specs/2026-07-24-sdd-parallel-design.md)
 
 ## SHIPPED
 
