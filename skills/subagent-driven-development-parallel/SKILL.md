@@ -52,7 +52,8 @@ digraph process {
     rankdir=TB;
 
     subgraph cluster_per_task {
-        label="Per Task";
+        label="Per task — pipeline unchanged, runs concurrently across tasks";
+        "Create task branch + worktree from integration tip" [shape=box];
         "Dispatch implementer subagent (./implementer-prompt.md)" [shape=box];
         "Implementer subagent asks questions?" [shape=diamond];
         "Answer questions, provide context" [shape=box];
@@ -60,16 +61,20 @@ digraph process {
         "Write diff file, dispatch task reviewer subagent (./task-reviewer-prompt.md)" [shape=box];
         "Task reviewer reports spec ✅ and quality approved?" [shape=diamond];
         "Dispatch fix subagent for Critical/Important findings" [shape=box];
-        "Mark task complete in todo list and progress ledger" [shape=box];
+        "YOU merge task branch into integration branch (serialized)" [shape=box];
+        "Remove worktree + branch, update ledger, recompute ready set" [shape=box];
     }
 
-    "Read plan, note context and global constraints, create todos" [shape=box];
-    "More tasks remain?" [shape=diamond];
+    "Read plan, build dependency DAG, note global constraints, create todos" [shape=box];
+    "Dispatch ALL ready tasks (one message, concurrent)" [shape=box];
+    "All tasks merged?" [shape=diamond];
     "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" [shape=box];
     "Use superpowers:project-registry\n(op 5 — register shipped)" [shape=box];
     "Use superpowers:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
-    "Read plan, note context and global constraints, create todos" -> "Dispatch implementer subagent (./implementer-prompt.md)";
+    "Read plan, build dependency DAG, note global constraints, create todos" -> "Dispatch ALL ready tasks (one message, concurrent)";
+    "Dispatch ALL ready tasks (one message, concurrent)" -> "Create task branch + worktree from integration tip";
+    "Create task branch + worktree from integration tip" -> "Dispatch implementer subagent (./implementer-prompt.md)";
     "Dispatch implementer subagent (./implementer-prompt.md)" -> "Implementer subagent asks questions?";
     "Implementer subagent asks questions?" -> "Answer questions, provide context" [label="yes"];
     "Answer questions, provide context" -> "Dispatch implementer subagent (./implementer-prompt.md)";
@@ -78,20 +83,44 @@ digraph process {
     "Write diff file, dispatch task reviewer subagent (./task-reviewer-prompt.md)" -> "Task reviewer reports spec ✅ and quality approved?";
     "Task reviewer reports spec ✅ and quality approved?" -> "Dispatch fix subagent for Critical/Important findings" [label="no"];
     "Dispatch fix subagent for Critical/Important findings" -> "Write diff file, dispatch task reviewer subagent (./task-reviewer-prompt.md)" [label="re-review"];
-    "Task reviewer reports spec ✅ and quality approved?" -> "Mark task complete in todo list and progress ledger" [label="yes"];
-    "Mark task complete in todo list and progress ledger" -> "More tasks remain?";
-    "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
-    "More tasks remain?" -> "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" [label="no"];
+    "Task reviewer reports spec ✅ and quality approved?" -> "YOU merge task branch into integration branch (serialized)" [label="yes"];
+    "YOU merge task branch into integration branch (serialized)" -> "Remove worktree + branch, update ledger, recompute ready set";
+    "Remove worktree + branch, update ledger, recompute ready set" -> "All tasks merged?";
+    "All tasks merged?" -> "Dispatch ALL ready tasks (one message, concurrent)" [label="no — dispatch newly ready"];
+    "All tasks merged?" -> "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" [label="yes"];
     "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" -> "Use superpowers:project-registry\n(op 5 — register shipped)";
     "Use superpowers:project-registry\n(op 5 — register shipped)" -> "Use superpowers:finishing-a-development-branch";
 }
 ```
 
+## Task States and Ready-Set Scheduling
+
+Track every task through: `pending → ready → implementing → reviewing → fixing → merged`.
+
+A task is **ready** when ALL its `Depends on:` tasks are **merged** — not merely review-clean. Its implementer branches from the integration branch tip, and only a merge puts the interfaces it consumes there.
+
+Scheduling is event-driven — no wave barriers:
+
+- Dispatch every ready task's implementer immediately, in ONE message — multiple dispatches run concurrently in the background.
+- On each completion notification, advance that one task's pipeline a single step: implementer DONE → review package + task reviewer; review clean → merge; findings → fix subagent; fix reported → re-review.
+- After every merge, recompute the ready set and dispatch newly ready tasks in the same turn.
+- Never hold newly ready work until other running tasks finish — a slow task must not block independent DAG branches.
+
+Inside a task nothing is parallel: its TDD cycle, review loop, and fixes stay strictly sequential in its own worktree.
+
+**Failures don't stall the DAG:** handle BLOCKED, NEEDS_CONTEXT, and DONE_WITH_CONCERNS per task exactly as in Handling Implementer Status while the other pipelines keep running. A failed task's dependents stay pending; independent DAG branches continue. If a blocker is unresolvable, dispatch no new work and stop per the escalation rules.
+
+**Legacy plans (no `Depends on:` lines):** treat the plan as a chain — Task N depends on Task N−1 — and offer your human partner a one-time annotation of the plan with real `Depends on:` lines before starting. On decline, execute the chain (sequential behavior).
+
 ## Pre-Flight Plan Review
 
-Before dispatching Task 1, ensure an isolated workspace exists (**REQUIRED SUB-SKILL:** superpowers:using-git-worktrees). If `docs/superpowers/CONTEXT.md` exists, run project-registry op 4 (conflict gate) over the plan's tasks — the plan may predate a newer decision; registry gates belong to YOU, the coordinator, never to subagents. Mid-execution, the moment your human partner condemns a direction or reverses a recorded decision, record it via project-registry op 3 (immediate write) before dispatching further work. Then scan the plan once for conflicts:
+Before the first dispatch, ensure the integration worktree exists (**REQUIRED SUB-SKILL:** superpowers:using-git-worktrees); its branch is the integration branch B. If `docs/superpowers/CONTEXT.md` exists, run project-registry op 4 (conflict gate) over the plan's tasks — the plan may predate a newer decision; registry gates belong to YOU, the coordinator, never to subagents. Mid-execution, the moment your human partner condemns a direction or reverses a recorded decision, record it via project-registry op 3 (immediate write) before dispatching further work. Then scan the plan once for conflicts:
 
 - tasks that contradict each other or the plan's Global Constraints
+- a dependency DAG problem: a cycle in the `Depends on:` lines; an interface
+  a task Consumes that no declared dependency Produces (a missing edge); or
+  two tasks with no dependency path between them whose `Files:` blocks
+  overlap — they could run concurrently, so force an edge or a plan fix
 - anything the plan explicitly mandates that the review rubric treats as a
   defect (a test that asserts nothing, verbatim duplication of a logic block)
 
