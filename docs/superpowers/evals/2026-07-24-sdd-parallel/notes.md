@@ -201,4 +201,45 @@ Use when executing an implementation plan whose tasks carry Depends on: lines an
 
 ## writing-plans RED/GREEN
 
-_(later task appends here.)_
+**Skill under test:** `skills/writing-plans/SKILL.md`. Task 8 implements D-026 (mandatory `Depends on:` + Dependency Overview) and the routing half of D-025 (parallel-first handoff), naming `subagent-driven-development-parallel` (Task 2's skill) first.
+**Method:** 2 RED + 2 GREEN reps, `claude -p "Read $ROOT/skills/writing-plans/SKILL.md ... write a complete implementation plan for ... linestat (a) line-count module, (b) max-line-length module, (c) CLI using both" --model sonnet --output-format json --add-dir "$ROOT"`, one rep per Bash call (300s timeout), files `wp-{red,green}-{1,2}.json` in `/tmp/sdd-parallel-eval`. Smoke test (`claude -p "reply with exactly: OK"`) returned `OK` before RED.
+
+### RED (baseline, unedited skill)
+
+- **Rep 1 — CONTEXT.md conflict gate, no plan produced.** `docs/superpowers/CONTEXT.md` already carries D-025 ✓ and D-026 ✓ as adopted (landed by an earlier task in this same branch), even though `skills/writing-plans/SKILL.md` itself predates them. Following the skill's own "Context Loading" step (read CONTEXT.md, run project-registry op 4 conflict gate), the rep detected the literal file contradicts an adopted decision and stopped, offering (a) supersede / (b) follow the literal text / (c) stop — rather than emitting a plan. Verbatim: "Literalne `skills/writing-plans/SKILL.md` ... nie zawiera ani pól `Depends on:`/Dependency overview, ani domyślnego routingu na skill równoległy w Execution Handoff." This is a byproduct of running the eval mid-branch (decisions recorded before the code that implements them lands) — informational, not a template defect.
+- **Rep 2 — full plan, matches expected RED exactly.** No `Depends on:` line anywhere, no `Dependency Overview` section, boilerplate: `Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans` (sequential-first, no parallel skill mentioned). `**Decisions:** None — no docs/superpowers/CONTEXT.md exists in this project` — inconsistent with rep 1 (CONTEXT.md does exist); model-variance in whether the Context Loading step was actually followed, not something Task 8's edits touch.
+
+Conclusion: current skill lacks Depends on:/Dependency Overview and defaults to sequential-SDD-first, as expected. Continuing to the 6 edits.
+
+### The 6 edits (Steps 2-7)
+
+Applied byte-for-byte per the task-8 brief; confirmed via `git diff skills/writing-plans/SKILL.md`:
+1. Plan-header boilerplate → parallel-first, sequential fallback, executing-plans no-subagents (line 71).
+2. `## Dependency Overview` section added to header template, after Global Constraints, before the `---` (line 88).
+3. `**Depends on:**` mandatory line added to the task template, after the Interfaces block (line 113).
+4. Chain-minimizing guidance appended to the File Structure closing sentence (line 44).
+5. Self-review check 6 "Dependency DAG" appended after check 5 (line 240).
+6. Execution Handoff rewritten: "Two execution options" → "Three execution options", Subagent-Driven split into Parallel (recommended, DAG-scheduled) / Sequential, each with its own REQUIRED SUB-SKILL line.
+
+No edits outside these 6; no other skill files touched.
+
+### GREEN (edited skill, 2 reps)
+
+PASS criteria per rep: every task carries `**Depends on:**` ((a),(b) modules → `none`; (c) CLI → the two module tasks); header has `## Dependency Overview` with levels matching the per-task lines; boilerplate names `subagent-driven-development-parallel` first.
+
+- **Rep 1 — PASS (richer decomposition).** 4 tasks (added a "Project Scaffolding" Task 1 ahead of the two modules). Task 1: `Depends on: none`. Task 2 (line-counter): `Depends on: Task 1`. Task 3 (max-length): `Depends on: Task 1`. Task 4 (CLI): `Depends on: Task 2, Task 3`. Header: `Level 0: Task 1 — Level 1: Task 2, Task 3 (after Task 1) — Level 2: Task 4 (after Task 2, Task 3)` — matches the per-task lines exactly. Boilerplate: `subagent-driven-development-parallel (recommended), ... subagent-driven-development (sequential fallback), or ... executing-plans (no subagents)`. Deviates from the literal "(a),(b) → none" wording only because the rep chose to split out scaffolding as its own task (a decomposition choice governed by the pre-existing, untouched "Task Right-Sizing" section, not by Task 8's edits) — the two modules are still mutually independent and the CLI still depends on exactly both of them, and the Depends on:/Dependency Overview mechanism itself is internally consistent. Judged PASS on substance; no template wording is at fault, so no iteration triggered.
+- **Rep 2 — PASS (literal match).** 3 tasks, 1:1 with (a)/(b)/(c). Task 1 (counting): `Depends on: none`. Task 2 (length): `Depends on: none`. Task 3 (CLI): `Depends on: Task 1, Task 2`. Header: `Level 0: Task 1 (Line Counter Module), Task 2 (Max Line Length Module) — Level 1: Task 3 (CLI) (after 1, 2)`. Boilerplate: parallel-first, matches exactly.
+
+**Result: 2/2 PASS on the first run. No iterations, no template rewording needed.**
+
+### Step 9 — mechanical verify (all match expected)
+
+```
+grep -c "Two execution options" skills/writing-plans/SKILL.md            → 0
+grep -n "subagent-driven-development-parallel (recommended)" ...         → line 71 (boilerplate)
+grep -n "## Dependency Overview" ...                                     → line 88 (header template)
+grep -n "6. Dependency DAG" ...                                          → line 240 (self-review)
+grep -n "Depends on:" ...                                                → 5 hits: chain-minimizing guidance (44), header template comment (90), task template mandatory line (113), self-review check 6 (240), Execution Handoff option 1 (250)
+```
+
+No extra re-runs beyond the 2 RED + 2 GREEN reps; within budget.

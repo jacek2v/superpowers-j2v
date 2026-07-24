@@ -41,7 +41,7 @@ Before defining tasks, map out which files will be created or modified and what 
 - Files that change together should live together. Split by responsibility, not by technical layer.
 - In existing codebases, follow established patterns. If the codebase uses large files, don't unilaterally restructure - but if a file you're modifying has grown unwieldy, including a split in the plan is reasonable.
 
-This structure informs the task decomposition. Each task should produce self-contained changes that make sense independently.
+This structure informs the task decomposition. Each task should produce self-contained changes that make sense independently. Prefer decompositions that minimize dependency chains between tasks — executors schedule from the `Depends on:` DAG, and a short critical path maximizes concurrent execution.
 
 ## Task Right-Sizing
 
@@ -68,7 +68,7 @@ independently testable deliverable.
 ```markdown
 # [Feature Name] Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development-parallel (recommended), superpowers:subagent-driven-development (sequential fallback), or superpowers:executing-plans (no subagents) to implement this plan task-by-task.
 
 **Goal:** [One sentence describing what this builds]
 
@@ -84,6 +84,12 @@ independently testable deliverable.
 naming and copy rules, platform requirements — one line each, with exact
 values copied verbatim from the spec. Every task's requirements implicitly
 include this section.]
+
+## Dependency Overview
+
+[The DAG the tasks' `Depends on:` lines form, as levels:
+`Level 0: Tasks 1, 2 — Level 1: Task 3 (after 1, 2) — Level 2: Task 4 (after 3)`.
+Every task appears exactly once; levels must match the per-task lines.]
 
 ---
 ```
@@ -103,6 +109,10 @@ include this section.]
 - Produces: [what later tasks rely on — exact function names, parameter
   and return types. A task's implementer sees only their own task; this
   block is how they learn the names and types neighboring tasks use.]
+
+**Depends on:** [Task N, Task M — every task whose Produces this task
+  Consumes; `none` for an independent task. Mandatory for every task —
+  an executor schedules parallel work from these lines.]
 
 - [ ] **Step 1: Write the failing test**
 
@@ -227,21 +237,29 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 
 **5. Decision traceability:** If CONTEXT.md exists, verify each D-XXX listed in the header maps to at least one task that implements it or embeds it as a constraint. If a decision has no corresponding task, either add one or note why it's already satisfied.
 
+**6. Dependency DAG:** Are the `Depends on:` lines acyclic? Is every interface a task Consumes produced by one of its declared dependencies? Do two tasks with no dependency path between them touch the same file? Does the header's Dependency Overview list every task exactly once, consistent with the per-task lines? An executor schedules parallel work from these lines — a wrong edge here is a race at execution time.
+
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 
 ## Execution Handoff
 
 After the Self-Review passes, commit the plan file to git — execution starts in a fresh worktree, and an uncommitted plan won't exist there. Then offer execution choice:
 
-**"Plan complete and committed to `docs/superpowers/plans/<filename>.md`. Two execution options:**
+**"Plan complete and committed to `docs/superpowers/plans/<filename>.md`. Three execution options:**
 
-**1. Subagent-Driven (recommended)** - I dispatch a fresh subagent per task, review between tasks, fast iteration
+**1. Parallel Subagent-Driven (recommended)** - fresh subagent per task; independent tasks run concurrently per the plan's `Depends on:` DAG; review between tasks
 
-**2. Inline Execution** - I execute tasks directly in this session without subagents, using executing-plans
+**2. Sequential Subagent-Driven** - fresh subagent per task, one task at a time, review between tasks
+
+**3. Inline Execution** - I execute tasks directly in this session without subagents, using executing-plans
 
 **Which approach?"**
 
-**If Subagent-Driven chosen:**
+**If Parallel Subagent-Driven chosen:**
+- **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development-parallel
+- Fresh subagent per task + two-stage review; DAG-scheduled concurrency
+
+**If Sequential Subagent-Driven chosen:**
 - **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
 - Fresh subagent per task + two-stage review
 
