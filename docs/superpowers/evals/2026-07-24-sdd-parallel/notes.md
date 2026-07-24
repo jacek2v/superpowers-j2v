@@ -44,7 +44,48 @@
 
 ## GREEN
 
-_(Task 6 appends here — reruns scenario-a.md / scenario-b.md against the new `subagent-driven-development-parallel` skill.)_
+**Skill under test:** `skills/subagent-driven-development-parallel/SKILL.md` (new skill). Only substitution vs. RED: `{SKILL_PATH}` → this file; `{PLAN_PATH}` unchanged (fixture-plan.md).
+**Method + budget:** same as RED — 6 non-interactive reps (3 per scenario), one `claude -p ... --model sonnet --output-format json --add-dir "$ROOT"` per Bash call. Smoke test (`claude -p "reply with exactly: OK" --model sonnet`) returned `OK` before running reps. Actual: 5 turns/rep uniformly, 40-100s/rep, $0.19-$0.34/rep, total ≈399s compute / ≈$1.59. All 6 `.json` outputs parsed cleanly on first attempt — no re-runs, no fix-loop iterations needed.
+**Contamination caveat:** same as RED — nested sessions may load other skills or reply in Polish; verdicts below judge ORCHESTRATION STRUCTURE against the stated criteria only.
+
+### Verdict table
+
+| Scenario | Rep | Pass/Fail | Evidence quote |
+|---|---|---|---|
+| A | 1 | PASS | "Dispatch obu w JEDNEJ wiadomości" (Task 1+2); "Task 3 ... ready dopiero gdy oba są MERGED do B (nie tylko review-clean)"; "Merge zawsze wykonuję JA, nigdy subagent, i zawsze serializowane (jeden merge naraz)". |
+| A | 2 | PASS | "Task 1 i Task 2 muszą być w stanie `merged` do B — nie tylko review-clean"; "ja, controller, serializowanie merguję task/N→B — nigdy nie deleguję merge subagentowi". |
+| A | 3 | PASS | "Task 3 i 4 nie dispatchuję — ich zależności nie są merged."; "Task 1 **i** Task 2 muszą być w stanie `merged` w B — nie samo 'review clean'"; "Merge do B robię wyłącznie ja, serializowanie". |
+| B | 1 | PASS | "Merguję `task/1` do `B` natychmiast, nie czekam na Task 2 ... Wykonuję **ja**, nigdy subagent"; "Task 1 i Task 2 oba mają status `merged` w ledgerze/`git log` na `B` — nie 'review-clean'"; conflict path table names rebase/fix as subagent, merge as controller-only. |
+| B | 2 | PASS | "Merguję task/1 do B **natychmiast** — nie czekam na Task 2. Merge zawsze wykonuję ja, nigdy subagent"; "Task 3 wchodzi do ready set dopiero gdy **obie** linie ledgera pokazują `merged`"; full conflict path: abort → fix subagent rebases → new review package → re-review → controller merge. |
+| B | 3 | PASS | "Merguję `task/1` do `B` od razu — nie czekam na Task 2. Wykonuję **ja**, nie subagent"; "**Oba, Task 1 I Task 2, mają status `merged` w B** — nie 'review-clean', nie 'implementer DONE'"; table marks merge as "ja — nigdy subagent", rebase/fix as subagent.
+
+**Result: 6/6 pass. No fix-loop iterations triggered.**
+
+### Criteria checklist per rep
+
+**Scenario A** (1: Tasks 1+2 dispatched now in one message, 3&4 not; 2: separate task worktrees off B, never integration/shared; 3: Task 3 precondition = both merged, not review-clean; 4: merges controller-only, serialized, after clean review)
+
+| Rep | 1 | 2 | 3 | 4 |
+|---|---|---|---|---|
+| A-1 | ✓ (implicit — only 1+2 addressed, dispatch answer scoped to "right now") | ✓ (`task/1`/`task/2` off B, distinct worktrees) | ✓ | ✓ |
+| A-2 | ✓ | ✓ | ✓ | ✓ |
+| A-3 | ✓ (explicit: "Task 3 i 4 nie dispatchuję") | ✓ | ✓ | ✓ |
+
+**Scenario B** (1: two separate task worktrees off B; 2: controller merges task/1 after clean review, no subagent, no wait for Task 2; 3: Task 3 dispatchable exactly when both merged; 4: conflict = fix subagent rebases task/2 onto B → new review package → re-review → clean → controller merges; 5: merges/gates controller-only, implementation/rebase/fix subagent-allowed)
+
+| Rep | 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|---|---|
+| B-1 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| B-2 | ✓ | ✓ | ✓ | ✓ (adds `git merge --abort` before rebase — extra safety step, not a deviation) | ✓ |
+| B-3 | ✓ | ✓ | ✓ | ✓ | ✓ |
+
+### Iteration log
+
+No fixes needed — all 6 GREEN reps passed on the first run. SKILL.md unchanged from Tasks 2-5 state (commit `5d28552`).
+
+### Rationalizations for Task 7
+
+**Empty list.** No rep produced a rationalization for skipping/weakening the parallel protocol; all 6 reps correctly reconstructed worktree-per-task, merge-only-by-controller, merged-not-review-clean gating, and (Scenario B) the rebase→re-review conflict path, each citing specific SKILL.md lines (e.g. SKILL.md:100, 104, 141, 446-449) rather than improvising. This is a valid GREEN outcome per the task brief.
 
 ## REFACTOR
 
