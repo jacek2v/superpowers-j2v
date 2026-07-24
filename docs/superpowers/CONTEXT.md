@@ -12,7 +12,7 @@
 
 Specs in flight — ONE line each: link + status ≤10 words.
 
-- [2026-07-24-sdd-parallel-design.md](specs/2026-07-24-sdd-parallel-design.md) — plan ready, awaiting execution
+_(none in flight)_
 
 ## DECISIONS
 
@@ -55,3 +55,4 @@ One decision per line. ✓ adopted, ✗ rejected direction. Never delete — sup
 | 2026-07-10 | CONTEXT.md decision log — D-XXX format, ops 1–7, hard gate across 6 skills | D-013..D-020 |
 | 2026-07-11 | Brainstorming early gate — every direction gated before presentation, conditional pre-spec re-check | D-021 |
 | 2026-07-15 | op-3 edit-in-place — reversals edit the D-entry in place (same ID + `(prev: …)`), strikethrough = op-6 abandon, new op 8 Rebuild converts legacy logs | D-022, D-023 |
+| 2026-07-24 | subagent-driven-development-parallel skill — DAG-scheduled concurrent SDD (full copy of sequential, byte-identical) + writing-plans mandatory Depends-on routing; eval-validated RED→GREEN→REFACTOR | D-024..D-028 |
