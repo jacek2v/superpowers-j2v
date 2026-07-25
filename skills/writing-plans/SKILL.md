@@ -114,7 +114,7 @@ Every task appears exactly once; levels must match the per-task lines.]
   Consumes; `none` for an independent task. Mandatory for every task —
   an executor schedules parallel work from these lines.]
 
-- [ ] **Step 1: Write the failing test**
+**Step 1: Write the failing test**
 
 ```python
 def test_specific_behavior():
@@ -122,24 +122,24 @@ def test_specific_behavior():
     assert result == expected
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+**Step 2: Run test to verify it fails**
 
 Run: `pytest tests/path/test.py::test_name -v`
 Expected: FAIL with "function not defined"
 
-- [ ] **Step 3: Write minimal implementation**
+**Step 3: Write minimal implementation**
 
 ```python
 def function(input):
     return expected
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+**Step 4: Run test to verify it passes**
 
 Run: `pytest tests/path/test.py::test_name -v`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+**Step 5: Commit**
 
 ```bash
 git add tests/path/test.py src/path/file.py
@@ -174,7 +174,7 @@ Gated tests verify at phase gates, not inline — the plan must encode that:
 
 [all tasks' test-writing steps + RED commit steps]
 
-- [ ] **Gate RED — phase "<name>"**
+**Gate RED — phase "<name>"**
 
 ```
 ROUND <n> — RED, phase "<name>"
@@ -188,7 +188,7 @@ STOP: no implementation steps until this gate confirms every new test fails for 
 
 [all tasks' implementation steps + GREEN commit steps]
 
-- [ ] **Gate GREEN — phase "<name>"**
+**Gate GREEN — phase "<name>"**
 
 ```
 ROUND <n> — GREEN, phase "<name>"
@@ -200,7 +200,7 @@ Expected: all passed, 0 failed
 
 Gate GREEN always runs the full suite — no filter.
 
-- [ ] **Refactor — only after Gate GREEN**
+**Refactor — only after Gate GREEN**
 ````
 
 ## External Knowledge Verification
