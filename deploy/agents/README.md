@@ -9,8 +9,8 @@ are.
 
 | File | Dispatch name | Model / effort | Used for |
 |---|---|---|---|
-| `sdd-high.md` | `sdd-high` | sonnet / xhigh | task reviewer, final whole-branch reviewer |
-| `sdd-escalate.md` | `sdd-escalate` | opus / high | fix subagents, BLOCKED "needs more reasoning" escalation |
+| `sdd-reviewer.md` | `sdd-reviewer` | sonnet / xhigh | task reviewer, final whole-branch reviewer |
+| `sdd-rescue.md` | `sdd-rescue` | opus / high | fix subagents, BLOCKED "needs more reasoning" escalation |
 
 The normal implementer is NOT here — it dispatches as `general-purpose` with
 `model: sonnet` and inherits the session effort (see SKILL.md "Model Selection").
@@ -18,13 +18,13 @@ The normal implementer is NOT here — it dispatches as `general-purpose` with
 ## Install
 
 These files are stored here for versioning; they are **not** auto-registered
-from the repo. To make the `sdd-high` / `sdd-escalate` dispatch names resolve,
+from the repo. To make the `sdd-reviewer` / `sdd-rescue` dispatch names resolve,
 copy them into an agents directory Claude Code loads:
 
 ```bash
-cp sdd-high.md sdd-escalate.md ~/.claude/agents/        # user-level (all projects)
+cp sdd-reviewer.md sdd-rescue.md ~/.claude/agents/        # user-level (all projects)
 # or, project-scoped:
-cp sdd-high.md sdd-escalate.md <project>/.claude/agents/
+cp sdd-reviewer.md sdd-rescue.md <project>/.claude/agents/
 ```
 
 Keep them in sync with this copy after edits. The controller/session `model`

@@ -102,11 +102,11 @@ conflicts that only emerge from implementation.
 Fixed two-model scheme with per-role effort. Do NOT set the
 controller/session model or effort here — the operator sets those
 (`/model opus`, `/effort high`). Per-role effort is delivered by two
-predefined agents (`sdd-high`, `sdd-escalate`) because the dispatch tool
+predefined agents (`sdd-reviewer`, `sdd-rescue`) because the dispatch tool
 honors `model` per call but exposes **no inline effort parameter** — an
 inline `effort:` field is silently ignored, so a dispatched subagent
 inherits the session effort unless it targets a predefined agent whose
-frontmatter sets `effort`. The `sdd-high` / `sdd-escalate` definitions are
+frontmatter sets `effort`. The `sdd-reviewer` / `sdd-rescue` definitions are
 stored under [deploy/agents/](../../deploy/agents/) — install them per that
 directory's README so the dispatch names resolve.
 
@@ -114,19 +114,19 @@ directory's README so the dispatch names resolve.
 with `model: sonnet`. Effort inherits from the session — do NOT set effort
 inline (ignored).
 
-**Task reviewer AND final whole-branch reviewer:** dispatch the `sdd-high`
+**Task reviewer AND final whole-branch reviewer:** dispatch the `sdd-reviewer`
 agent (sonnet/xhigh).
 
 **Fix subagent** (Critical/Important task findings, and the single fixer for
-final-review findings): dispatch the `sdd-escalate` agent (opus/high) — a bad
+final-review findings): dispatch the `sdd-rescue` agent (opus/high) — a bad
 fix triggers a re-review loop, so fixes get opus's minimal-diff, high-robustness
-profile; the `sdd-high` reviewer re-checks every fix anyway.
+profile; the `sdd-reviewer` reviewer re-checks every fix anyway.
 
-**BLOCKED escalation** ("needs more reasoning"): dispatch the `sdd-escalate`
+**BLOCKED escalation** ("needs more reasoning"): dispatch the `sdd-rescue`
 agent (opus/high) — one decisive jump, NOT an effort ladder.
 
 **Always specify the dispatch target explicitly** — the agent type
-(`sdd-high`, `sdd-escalate`), or `general-purpose` + `model: sonnet`. An
+(`sdd-reviewer`, `sdd-rescue`), or `general-purpose` + `model: sonnet`. An
 omitted model inherits your session's model — often the most capable and
 most expensive — which silently defeats this routing. Per-role effort is
 delivered by the two predefined agents because the dispatch tool exposes no
@@ -150,7 +150,7 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 **BLOCKED:** The implementer cannot complete the task. Assess the blocker:
 1. If it's a context problem, provide more context and re-dispatch with the same model
 2. If the task requires more reasoning, re-dispatch the "needs more reasoning"
-   block via the `sdd-escalate` agent (opus/high) — one decisive jump
+   block via the `sdd-rescue` agent (opus/high) — one decisive jump
 3. If the task is too large, break it into smaller pieces
 4. If the plan itself is wrong, escalate to the human
 
@@ -305,7 +305,7 @@ a ledger file, not only in todos.
 - [task-reviewer-prompt.md](task-reviewer-prompt.md) - Dispatch task reviewer subagent (spec compliance + code quality)
 - Final whole-branch review: use superpowers:requesting-code-review's [code-reviewer.md](../requesting-code-review/code-reviewer.md)
 
-**Dispatch every reviewer through the `sdd-high` agent** (sonnet/xhigh) with the templates above — never a specialized/registered code-review agent (e.g. `feature-dev:code-reviewer`), even when one is available and looks purpose-built. Such agents override the template with their own methodology; `sdd-high` is a bare passthrough that carries only model and effort, so the template still governs. This routing is fixed, not a per-dispatch judgment call: implementer → `general-purpose`+`sonnet`, task/final reviewer → `sdd-high`, fixer + BLOCKED "needs more reasoning" → `sdd-escalate`.
+**Dispatch every reviewer through the `sdd-reviewer` agent** (sonnet/xhigh) with the templates above — never a specialized/registered code-review agent (e.g. `feature-dev:code-reviewer`), even when one is available and looks purpose-built. Such agents override the template with their own methodology; `sdd-reviewer` is a bare passthrough that carries only model and effort, so the template still governs. This routing is fixed, not a per-dispatch judgment call: implementer → `general-purpose`+`sonnet`, task/final reviewer → `sdd-reviewer`, fixer + BLOCKED "needs more reasoning" → `sdd-rescue`.
 
 ## Example Workflow
 
@@ -364,7 +364,7 @@ Task reviewer: Spec ✅. Task quality: Approved.
 ...
 
 [After all tasks]
-[Dispatch final code reviewer: sdd-high agent + requesting-code-review/code-reviewer.md over the full branch range]
+[Dispatch final code reviewer: sdd-reviewer agent + requesting-code-review/code-reviewer.md over the full branch range]
 Final reviewer: All requirements met, ready to merge
 
 [Use superpowers:project-registry (op 5 — register shipped)]
@@ -431,7 +431,7 @@ Done!
 - Move to next task while the review has open Critical/Important issues
 - Re-dispatch a task the progress ledger already marks complete — check
   the ledger (and `git log`) after any compaction or resume
-- Dispatch any reviewer via a specialized/registered code-review agent (e.g. `feature-dev:code-reviewer`) instead of the `sdd-high` agent + the reviewer template
+- Dispatch any reviewer via a specialized/registered code-review agent (e.g. `feature-dev:code-reviewer`) instead of the `sdd-reviewer` agent + the reviewer template
 
 **If subagent asks questions:**
 - Answer clearly and completely

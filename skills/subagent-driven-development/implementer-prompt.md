@@ -77,7 +77,7 @@ Subagent (general-purpose):
     **How to escalate:** Report back with status BLOCKED or NEEDS_CONTEXT. Describe
     specifically what you're stuck on, what you've tried, and what kind of help you need.
     The controller can provide more context, re-dispatch a "needs more reasoning"
-    block via the `sdd-escalate` agent (opus/high), or break the task into smaller
+    block via the `sdd-rescue` agent (opus/high), or break the task into smaller
     pieces.
 
     ## Before Reporting Back: Self-Review

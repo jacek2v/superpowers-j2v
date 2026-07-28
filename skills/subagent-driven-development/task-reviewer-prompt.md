@@ -8,7 +8,7 @@ code quality.
 more, nothing less) and is well-built (clean, tested, maintainable)
 
 ```
-Subagent (sdd-high):
+Subagent (sdd-reviewer):
   description: "Review Task N (spec + quality)"
   prompt: |
     You are reviewing one task's implementation: first whether it matches its
@@ -168,7 +168,7 @@ Subagent (sdd-high):
 ```
 
 **Placeholders:**
-- Dispatch target — the reviewer runs on the `sdd-high` agent (sonnet/xhigh);
+- Dispatch target — the reviewer runs on the `sdd-reviewer` agent (sonnet/xhigh);
   model and effort come from that agent's frontmatter, so there is no
   `[MODEL]`/`[EFFORT]` placeholder to fill.
 - `[BRIEF_FILE]` — REQUIRED: the task brief file (`scripts/task-brief PLAN N`

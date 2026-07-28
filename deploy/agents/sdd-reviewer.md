@@ -1,5 +1,5 @@
 ---
-name: sdd-high
+name: sdd-reviewer
 description: Fully-capable coding subagent for subagent-driven-development — task and final whole-branch reviewers (sonnet, xhigh effort)
 model: sonnet
 effort: xhigh

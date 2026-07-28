@@ -20,10 +20,10 @@ Skill dobiera sam, operator nic nie robi.
 |---|---|---|---|---|
 | orkiestrator | opus / high | sesja operatora | sonnet / medium | sesja operatora |
 | implementer (normalny) | sonnet / high | `general-purpose` + jawny `model: sonnet`; effort dziedziczy z sesji | sonnet / medium | dziedziczy z sesji |
-| recenzent zadaniowy | sonnet / xhigh | agent `sdd-high` | sonnet / high | agent `sdd-high` |
-| recenzent całej gałęzi | sonnet / xhigh | agent `sdd-high` | sonnet / high | agent `sdd-high` |
-| fix-subagent (Critical/Important) | opus / high | agent `sdd-escalate` | sonnet / high | agent `sdd-high` |
-| implementer BLOCKED → eskalacja | opus / high | agent `sdd-escalate` | opus / high | agent `sdd-escalate` |
+| recenzent zadaniowy | sonnet / xhigh | agent `sdd-reviewer` | sonnet / high | agent `sdd-reviewer` |
+| recenzent całej gałęzi | sonnet / xhigh | agent `sdd-reviewer` | sonnet / high | agent `sdd-reviewer` |
+| fix-subagent (Critical/Important) | opus / high | agent `sdd-rescue` | sonnet / high | agent `sdd-reviewer` |
+| implementer BLOCKED → eskalacja | opus / high | agent `sdd-rescue` | opus / high | agent `sdd-rescue` |
 
 Uzasadnienia:
 
@@ -36,7 +36,7 @@ Uzasadnienia:
   wymiarów (clarity, weryfikacja); koszt vs opus na tym poziomie ~1.01x.
 - **Fixer opus/high:** metryki to remis w szumie z sonnet/xhigh, ale profil roli
   sprzyja opusowi (diff minimality, robustness = anty-paliwo pętli re-review);
-  poprawkę i tak re-recenzuje sonnet/xhigh. Routing przez `sdd-escalate` —
+  poprawkę i tak re-recenzuje sonnet/xhigh. Routing przez `sdd-rescue` —
   wspólny „poziom naprawczy" z eskalacją.
 - **Eskalacja opus/high:** skok modelu (inne tryby błędów), nie drabinka effortu;
   benchmark tu milczy — uzasadnienie strukturalne, z projektu skilla.
@@ -45,10 +45,10 @@ Uzasadnienia:
   nieopłacalny; sonnet na max wręcz spada.
 
 Migracja w kodzie: **wykonana 2026-07-19**, zero nowych agentów. Zmienione pliki:
-`deploy/agents/sdd-high.md` (effort→xhigh, opis bez fixera),
-`deploy/agents/sdd-escalate.md` (opis + fixer), `deploy/agents/README.md`
+`deploy/agents/sdd-reviewer.md` (effort→xhigh, opis bez fixera),
+`deploy/agents/sdd-rescue.md` (opis + fixer), `deploy/agents/README.md`
 (tabela + sesja opus/high), `skills/subagent-driven-development/SKILL.md`
-(sesja, fixer→`sdd-escalate`, nawiasy xhigh, reguła routingu),
+(sesja, fixer→`sdd-rescue`, nawiasy xhigh, reguła routingu),
 `task-reviewer-prompt.md` (nawias xhigh). Kopie w `~/.claude/agents/`
 zsynchronizowane — rejestr agentów przeładowuje się w nowej sesji.
 

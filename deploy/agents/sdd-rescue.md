@@ -1,5 +1,5 @@
 ---
-name: sdd-escalate
+name: sdd-rescue
 description: Fully-capable coding subagent for subagent-driven-development — fix subagents and BLOCKED "needs more reasoning" escalation (opus, high effort)
 model: opus
 effort: high
