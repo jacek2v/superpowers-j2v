@@ -259,7 +259,7 @@ Then every line that says `research candidate` becomes a proposal before any app
 
 > "Three decisions here need more than a quick check: <Q1>, <Q2>, <Q3>. I can dispatch 3 read-only research subagents in parallel — one per decision — and come back with options, trade-offs, and a recommendation for each. It's token-intensive. Want me to? Trim or edit the question list first if any of these are already settled for you."
 
-**This proposal MUST be its own message.** Only the proposal — no clarifying question, no approaches, no design content. Wait for the answer. Nothing is dispatched until your human partner accepts; they may trim or edit the question list, and you dispatch exactly what they approved. If they decline, continue on the quick tier and don't propose again unless a new decision warrants it.
+**This proposal MUST be its own message.** Only the proposal — no clarifying question, no recommendation, no other design content; in per-approach mode it names the sketched approaches it will research, since those are the unit. Wait for the answer. Nothing is dispatched until your human partner accepts; they may trim or edit the question list, and you dispatch exactly what they approved. If they decline, continue on the quick tier and don't propose again unless a new decision warrants it.
 
 **Modes — pick one and name it in the proposal:**
 
