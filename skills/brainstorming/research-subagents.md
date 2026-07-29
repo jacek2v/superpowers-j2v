@@ -52,7 +52,13 @@ Acceptance may come trimmed or edited — dispatch exactly the list your human p
 
 ## Dispatching
 
-Dispatch every research subagent as `general-purpose` with `model: sonnet`. Issue ALL of them in a single message — several dispatch calls in one response run concurrently, one per response runs them sequentially (superpowers:dispatching-parallel-agents).
+Dispatch every research subagent as `general-purpose` with `model: sonnet`.
+
+**Compose the whole batch before you send anything.** Count the approved questions — call it N. The message you are drafting carries N dispatch calls: write the first prompt, then the second, then the rest, into that same message, and send only once the Nth is in it. A message holding fewer than N dispatch calls is an unfinished draft, not a dispatch. Several dispatch calls in one message run concurrently; one per message runs them sequentially (superpowers:dispatching-parallel-agents).
+
+The pull to send as soon as the first prompt is written is the ordinary tool-call reflex — call, read the result, decide what to do next. It does not apply here. The questions were approved as independent, so nothing in subagent 1's findings changes a word of any other prompt; every prompt is already fully writable now. There is nothing to wait for and nothing to learn by going one at a time — only wall clock to lose.
+
+Check before you send: the number of dispatch calls in this message equals the number of approved questions. If you have already sent a message carrying one dispatch while questions remain unsent, the round is sequential and cannot be undone — send the remaining ones and tell your human partner it ran serially when you present findings.
 
 Each subagent is read-only and stateless: it writes no file, edits no code, runs no git command, and makes no decision. It does not inherit your session's history — the prompt carries everything it needs.
 
