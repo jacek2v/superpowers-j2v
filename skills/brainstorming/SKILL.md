@@ -41,11 +41,11 @@ You MUST create a task for each of these items and complete them in order:
 2. **Project registry check (active)** — if `docs/superpowers/CONTEXT.md` exists, read DECISIONS and hold the active entries for the whole session (project-registry op 4, conflict gate). Standing obligations: never ask a clarifying question an active D-entry already answers — declare the assumption with its ID instead; and gate EVERY direction before presenting it — a clarifying-question set, proposed approaches, a composed design, a revision: the moment it collides with an active entry, run the gate protocol instead of presenting it.
 3. **Offer the visual companion just-in-time** — NOT upfront. The first time a question would genuinely be clearer shown than described, offer it then (its own message); on approval its browser tab opens for you. If no visual question ever arises, never offer it. See the Visual Companion section below.
 4. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
-5. **Research sanity check** — verify key assumptions before proposing: prior art, library/API existence, domain patterns. Skip when domain and tools are well-known.
+5. **Research check (two tiers)** — quick tier: verify key assumptions before proposing (prior art, library/API existence, domain patterns); skip when domain and tools are well-known. Deep tier: when an open design decision needs real investigation — unfamiliar domain, architecture choice, library comparison — propose deep research as its own message (question list, mode, subagent count) and dispatch only after your human partner accepts. See the Deep Research section below.
 6. **Propose 2-3 approaches** — with trade-offs and your recommendation, grounded in research findings
 7. **Gate, then present design** — run op 4 against the composed design before showing it; then present in sections scaled to their complexity, get user approval after each section. Any revision passes the gate again before being re-presented.
 8. **Pre-spec re-check (safety net)** — if any design content changed or was added since its last op-4 pass (e.g. amendments accepted during the approval dialogue), run op 4 once more before writing the spec; otherwise skip — the design was already gated. A collision stops work until your human partner picks supersede / change direction / stop.
-9. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
+9. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit; if deep research ran, the spec carries a decisions section and the full findings go to `docs/superpowers/research/YYYY-MM-DD-<topic>-analysis.md`, committed with it
 10. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 11. **User reviews written spec** — ask user to review the spec file before proceeding
 12. **Update CONTEXT.md** — create or update using project-registry skill (op 1 or 2): add the spec's STATE line, record the session's decisions as D-entries (✓ adopted; ✗ for directions explicitly condemned). Commit.
@@ -60,7 +60,12 @@ digraph brainstorming {
     "Read DECISIONS — op 4 active:\ngate EVERY direction\nbefore presenting it" [shape=box];
     "Ask clarifying questions" [shape=box];
     "Research needed?" [shape=diamond];
-    "Research sanity check" [shape=box];
+    "Research sanity check (quick)" [shape=box];
+    "Open decision needs\ndeep research?" [shape=diamond];
+    "Propose deep research (own message):\nquestions, mode, subagent count" [shape=box];
+    "Human partner accepts?" [shape=diamond];
+    "Dispatch parallel read-only\nresearch subagents (one message)" [shape=box];
+    "Present findings; partner approves\neach decision separately" [shape=box];
     "Propose 2-3 approaches\n(grounded in research)" [shape=box];
     "Gate composed design\n(op 4): collision?" [shape=diamond];
     "Hard-gate protocol:\nsupersede / change direction / stop" [shape=box];
@@ -68,7 +73,7 @@ digraph brainstorming {
     "User approves design?" [shape=diamond];
     "Design changed since\nlast gate pass?" [shape=diamond];
     "Pre-spec re-check (op 4)" [shape=box];
-    "Write design doc" [shape=box];
+    "Write design doc\n(+ research analysis file)" [shape=box];
     "Spec self-review\n(fix inline)" [shape=box];
     "User reviews spec?" [shape=diamond];
     "Update CONTEXT.md\n(STATE + DECISIONS)" [shape=box];
@@ -79,9 +84,17 @@ digraph brainstorming {
     "CONTEXT.md exists?" -> "Ask clarifying questions" [label="no"];
     "Read DECISIONS — op 4 active:\ngate EVERY direction\nbefore presenting it" -> "Ask clarifying questions";
     "Ask clarifying questions" -> "Research needed?";
-    "Research needed?" -> "Research sanity check" [label="unfamiliar domain\nor unverified deps"];
+    "Research needed?" -> "Research sanity check (quick)" [label="unfamiliar domain\nor unverified deps"];
     "Research needed?" -> "Propose 2-3 approaches\n(grounded in research)" [label="well-known territory"];
-    "Research sanity check" -> "Propose 2-3 approaches\n(grounded in research)";
+    "Research sanity check (quick)" -> "Open decision needs\ndeep research?";
+    "Open decision needs\ndeep research?" -> "Propose deep research (own message):\nquestions, mode, subagent count" [label="yes"];
+    "Open decision needs\ndeep research?" -> "Propose 2-3 approaches\n(grounded in research)" [label="no"];
+    "Propose deep research (own message):\nquestions, mode, subagent count" -> "Human partner accepts?";
+    "Human partner accepts?" -> "Dispatch parallel read-only\nresearch subagents (one message)" [label="yes\n(list may be trimmed)"];
+    "Human partner accepts?" -> "Propose 2-3 approaches\n(grounded in research)" [label="declined"];
+    "Dispatch parallel read-only\nresearch subagents (one message)" -> "Present findings; partner approves\neach decision separately";
+    "Present findings; partner approves\neach decision separately" -> "Propose 2-3 approaches\n(grounded in research)";
+    "Propose 2-3 approaches\n(grounded in research)" -> "Propose deep research (own message):\nquestions, mode, subagent count" [label="per-approach mode:\ndeepen each sketch"];
     "Propose 2-3 approaches\n(grounded in research)" -> "Gate composed design\n(op 4): collision?";
     "Gate composed design\n(op 4): collision?" -> "Hard-gate protocol:\nsupersede / change direction / stop" [label="hit"];
     "Hard-gate protocol:\nsupersede / change direction / stop" -> "Gate composed design\n(op 4): collision?" [label="adjusted direction"];
@@ -90,12 +103,12 @@ digraph brainstorming {
     "User approves design?" -> "Gate composed design\n(op 4): collision?" [label="no, revise\n(re-gate)"];
     "User approves design?" -> "Design changed since\nlast gate pass?" [label="yes"];
     "Design changed since\nlast gate pass?" -> "Pre-spec re-check (op 4)" [label="yes"];
-    "Design changed since\nlast gate pass?" -> "Write design doc" [label="no"];
-    "Pre-spec re-check (op 4)" -> "Write design doc" [label="clear"];
+    "Design changed since\nlast gate pass?" -> "Write design doc\n(+ research analysis file)" [label="no"];
+    "Pre-spec re-check (op 4)" -> "Write design doc\n(+ research analysis file)" [label="clear"];
     "Pre-spec re-check (op 4)" -> "Hard-gate protocol:\nsupersede / change direction / stop" [label="hit"];
-    "Write design doc" -> "Spec self-review\n(fix inline)";
+    "Write design doc\n(+ research analysis file)" -> "Spec self-review\n(fix inline)";
     "Spec self-review\n(fix inline)" -> "User reviews spec?";
-    "User reviews spec?" -> "Write design doc" [label="changes requested"];
+    "User reviews spec?" -> "Write design doc\n(+ research analysis file)" [label="changes requested"];
     "User reviews spec?" -> "Update CONTEXT.md\n(STATE + DECISIONS)" [label="approved"];
     "Update CONTEXT.md\n(STATE + DECISIONS)" -> "Stop: instruct user to invoke\nwriting-plans in a new session";
 }
@@ -116,7 +129,7 @@ digraph brainstorming {
 - Focus on understanding: purpose, constraints, success criteria
 - Before asking, check the active D-entries (step 2): a question an active entry already answers is not asked — declare the assumption with its ID ("assuming per D-014: runner = operator")
 
-**Research sanity check:**
+**Research check — quick tier:**
 
 Before proposing approaches, verify that key assumptions hold. This is a quick check, not exhaustive research.
 
@@ -125,6 +138,8 @@ Before proposing approaches, verify that key assumptions hold. This is a quick c
 - **Domain patterns**: When working in an unfamiliar domain, search for established patterns before reasoning from general knowledge.
 
 Skip this step when the domain and tooling are well-known. When you do research, briefly share what you found before proposing approaches — "I checked and X library handles this, Y is deprecated, Z pattern is standard in this ecosystem."
+
+When the quick check is not enough — an open decision turns on an architecture choice, a library comparison, or a domain whose patterns you would otherwise reason about from memory — propose the deep tier instead of guessing. See the Deep Research section below; it never runs unproposed and never runs unaccepted.
 
 **Exploring approaches:**
 
@@ -163,6 +178,7 @@ Skip this step when the domain and tooling are well-known. When you do research,
 
 - Write the validated design (spec) to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`
   - (User preferences for spec location override this default)
+- If deep research ran, write the full findings to `docs/superpowers/research/YYYY-MM-DD-<topic>-analysis.md` and commit it together with the spec — the spec keeps the decisions and their short rationales; the analysis file keeps the rejected options, the comparisons, and the sources
 - Use elements-of-style:writing-clearly-and-concisely skill if available
 - Commit the design document to git
 
@@ -225,3 +241,23 @@ A question about a UI topic is not automatically a visual question. "What does p
 
 If they agree to the companion, read the detailed guide before proceeding:
 `skills/brainstorming/visual-companion.md`
+
+## Deep Research
+
+Parallel read-only research subagents that settle open design decisions before the design is presented. Available as a tool — not a mode. Most brainstorms never need it: the quick tier (step 5) settles most questions, and a decision an active D-entry already answers is never a research question.
+
+**Proposing deep research (just-in-time):** the moment an open decision needs real investigation — unfamiliar domain, architecture choice, library comparison, contested prior art — propose it, as its own message:
+
+> "Three decisions here need more than a quick check: <Q1>, <Q2>, <Q3>. I can dispatch 3 read-only research subagents in parallel — one per decision — and come back with options, trade-offs, and a recommendation for each. It's token-intensive. Want me to? Trim or edit the question list first if any of these are already settled for you."
+
+**This proposal MUST be its own message.** Only the proposal — no clarifying question, no approaches, no design content. Wait for the answer. Nothing is dispatched until your human partner accepts; they may trim or edit the question list, and you dispatch exactly what they approved. If they decline, continue on the quick tier and don't propose again unless a new decision warrants it.
+
+**Modes — pick one and name it in the proposal:**
+
+- **Per-decision** — one open decision = one research question = one subagent. Runs before you propose approaches; the findings feed them.
+- **Per-approach** — sketch 2-3 approaches first, then one subagent deepens each (feasibility, prior art, risks). Runs after the sketch, before your recommendation.
+
+**Subagents never decide.** They are read-only fact-finders — codebase, web, library docs. They write no files and pick no direction. You synthesize, your human partner approves each decision separately, and every approved direction still passes the op-4 gate before it is presented.
+
+If they accept, read the detailed guide before dispatching:
+`skills/brainstorming/research-subagents.md`
