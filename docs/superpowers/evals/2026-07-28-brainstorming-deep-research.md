@@ -453,7 +453,7 @@ All 14 turns `subtype=success`.
 `HOME`; only N1 has 4 reps there. Nothing here measures a *different* user's
 global instructions.
 
-### V4 — after the per-approach wording fix (`abb34b6`), N1 ×4 under the real `HOME`
+### V4 — after the per-approach wording fix (`abb34b6`): full suite at HEAD, real `HOME`
 
 `SKILL.md` and `research-subagents.md` both said the proposal message may
 contain "no approaches", while D-030's per-approach mode dispatches one
@@ -479,6 +479,43 @@ All 12 turns `subtype=success`; tool inventory carries **0 `Agent` blocks**.
 shape from V3), and the per-approach proposal is now internally consistent
 with the mode it names. **n=1 for the fixed clause** — the mode is chosen by
 the agent, and only `rep3` picked per-approach. No scenario forces it.
+
+#### V4b — full suite at HEAD (N2 ×2, N4 ×2, N3 ×1, N1 ×4 more), real `HOME`
+
+Run to close the "only N1 measured at HEAD" gap and to raise the per-approach
+sample. 33 turns, all `subtype=success`.
+
+| Scenario | Rep | Mode | Verdict |
+|---|---|---|---|
+| N2 | 1 | per-approach | **see finding below** — 3 dispatches under one `message.id` |
+| N2 | 2 | per-decision | PASS — 2 dispatches (3 − 1 trimmed) under one `message.id`; findings cite Obsidian Sync, CouchDB/PouchDB, Standard Notes, Bear; spec + analysis written and committed at t7 |
+| N4 | 1 | per-approach | PASS — proposal at t3 (3 named approaches), decline at t4 honoured, 0 `Agent` in 5 turns |
+| N4 | 2 | per-decision | PASS — same shape, 0 `Agent` |
+| N3 | 1 | n/a | PASS — states the quick tier explicitly (*"domena znana (argparse, json…), żadna decyzja nie wymaga głębszego researchu"*), 0 `Agent` |
+| N1 | 5,6,7 | per-approach | PASS — proposal names the sketched approaches, no recommendation, no design content |
+| N1 | 8 | per-decision | PASS |
+
+**Per-approach is no longer n=1**: 6 reps at HEAD picked it (N2 `rep1`,
+N4 `rep1`, N1 `rep5/6/7`, plus V4 `rep3`). No regression appeared in any.
+
+**FINDING — a trim cannot reduce cost in per-approach mode (N2 `rep1`).**
+The scenario's acceptance is *"drop the last question on that list, it's the
+least urgent one for me and I don't want to spend the tokens on it. Run the
+rest."* In per-approach mode the proposal's list is **approaches**, not
+questions, so the instruction has no referent there. The agent dropped the
+catch-up *topic* from every subagent's brief (*"bez wątku nadrabiania
+zaległości, zgodnie z Twoją prośbą"*) and still dispatched **3** subagents —
+one per approach. The literal request was honoured; the stated motive (spend
+fewer tokens) was not.
+
+This is not a regression from `abb34b6` and not a trim violation in the
+per-decision sense — it is a gap in the skill: `research-subagents.md` says
+*"dispatch exactly the list your human partner approved"*, but when the
+approved list is approaches and the trim names a question, nothing defines
+what happens to the subagent count. **Unfixed.** N2's stated assertion
+("3 proposed − 1 trimmed = 2 dispatched") is therefore only meaningful when
+the agent picks per-decision; `rep1` is recorded as not-applicable for that
+assertion rather than as a pass or a fail.
 
 **Open, and NOT caused by this fix:** "the proposal MUST be its own message"
 is honoured as a separate `message.id` in only 1 of 4 reps here (`rep4`) and
@@ -701,26 +738,21 @@ each carry both dispatches under one `message.id`.
   reps (rep1–rep7 for N1) were run under different conditions (contaminated
   HOME, different skill state, or a pre-realignment script) and are not
   independent replications of the final result.
-- **Only N1 has been measured at the current skill state.** `abb34b6` (the
-  per-approach wording fix) touches the proposal sentence in both
-  `SKILL.md` and `research-subagents.md`, and only V4's four N1 reps ran
-  against it. **N2, N3 and N4 have no measurement at HEAD** — accept/trim/
-  dispatch/persist, the well-known-territory control and the decline path
-  were all last measured on the pre-`abb34b6` text (V3b). The edit only
-  widens what a proposal may contain, so a regression on the control path
-  (N3, which never proposes) is unlikely, but N2 and N4 both produce
-  proposals and are untested against it.
+- **Every scenario is now measured at HEAD** (V4/V4b: N1 ×8, N2 ×2, N4 ×2,
+  N3 ×1), but **N3 is n=1 there** and one N2 rep is not scorable against its
+  own trim assertion (see the V4b finding). No regression from `abb34b6` was
+  observed in any of the 13 reps.
 - **No measurement at HEAD uses an isolated `HOME`.** Every current-state
   result carries this machine's amended global `CLAUDE.md`.
 - **v2 N4's decline path is n=1** and, unlike v1 R4, actually exercises the
   decline (the proposal existed to decline). It has not been repeated.
-- **The per-approach proposal mode** (as opposed to per-decision) has never
-  been a designed scenario — no fixture selects for it. It has been observed
-  three times unprompted: once as a side effect of a script divergence in `n2
-  rep1`, and twice in V3 (`realhome rep2`, `rep3`), each time with the same
-  shape (subagent count, cost, trim offer). Which mode a run picks is
-  therefore uncontrolled; there is no scenario that forces one and asserts
-  against it.
+- **The per-approach proposal mode has never been a designed scenario** — no
+  fixture selects for it, and which mode a run picks stays uncontrolled. It
+  has now been observed 9 times unprompted (v2 `n2 rep1`; V3 `rep2`, `rep3`;
+  V3b `n4 rep3`; V4 `rep3`; V4b `n2 rep1`, `n4 rep1`, `n1 rep5/6/7`). The
+  V4b finding shows why a designed scenario is still needed: the trim
+  assertion in N2 only has meaning under per-decision, so half the runs
+  cannot be scored against it.
 - **Turn-budget sensitivity is real but uncharacterized.** `n1 rep7` shows
   the number of clarifying-question rounds before the verdict is not fixed
   (1 round in some runs, 2+ in others); the realigned scripts route around
