@@ -1,0 +1,1 @@
+Take your recommendation on the interface question — approved. The three things I listed are still open though: how the index gets built and stored, how ranking should work, and how to handle stemming and non-English text. Carry on.
