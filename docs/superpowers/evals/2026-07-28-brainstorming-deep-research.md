@@ -1,21 +1,50 @@
 # Eval: brainstorming deep research (parallel read-only research subagents)
 
-Date: 2026-07-28
+Date: 2026-07-28 – 2026-07-29
 Skill(s): `brainstorming` (checklist steps 5 and 9, research prose, Process
 Flow digraph, new `## Deep Research` section) + new reference file
 `skills/brainstorming/research-subagents.md` — spec
 `specs/2026-07-28-brainstorming-subagent-research-design.md`, decisions
 D-029..D-033.
 Method: writing-skills RED → edit → GREEN. Scenarios = `claude -p` toy
-sessions (sonnet, isolated /tmp repos) against the new `feedmix` fixture;
-R2–R4 are multi-turn via `--session-id`/`--resume` with scripted answers.
-Budget (human-approved via the implementation plan): baselines R1×2 R2×1
-R3×1; GREEN R1×2 R2×2 R3×2 R4×1 (+re-runs after fixes). Branch:
+sessions (sonnet, isolated /tmp repos), multi-turn via
+`--session-id`/`--resume` with scripted answers. Branch:
 `feat/brainstorm-deep-research` off `main`.
 
-Scenario ↔ assertion map: R1→proposal exists and is its own message;
-R2→acceptance-gated dispatch, trimmed list honoured, per-decision approval,
-persistence; R3→no behavior change in well-known territory; R4→decline path.
+**⚠ Every passing result in this document was obtained with `HOME` pointed at
+`/tmp/eval-home` — a copy of `~/.claude` with `CLAUDE.md` removed.** This
+machine's global instructions ("be extremely concise", "answer first", no
+meta-narration) suppress the tier entirely: 0 proposals across 30 turns run
+under the real `HOME`, on both fixtures, at every skill state. Behavior under
+a user's own global `CLAUDE.md` is **not established** — see **Not exercised /
+not established**.
+
+Two fixtures, because the first one never elicited the feature:
+
+- **`feedmix`** (`evals/deep-research/`) — full-text-search request,
+  scenarios R1–R4. The tier never fired, in any of 4 scenarios or 18 GREEN
+  turns. Root cause was the fixture, not the skill: active entries
+  D-001/D-002 collapse the backend to a single candidate (SQLite FTS5), so
+  the decision it was built around is only nominally open and the skill
+  correctly declines to propose. What it establishes: **no false trigger**,
+  and no regression on the well-known-territory control.
+  Map: R1→proposal exists and is its own message; R2→acceptance-gated
+  dispatch, trimmed list honoured, per-decision approval, persistence;
+  R3→no behavior change in well-known territory; R4→decline path.
+- **`notekeep`** (`evals/deep-research-v2/`) — built 2026-07-29 by human
+  decision: offline-first multi-device note sync, where the merge strategy is
+  genuinely open. Scenarios N1–N4, all PASS at the final skill state, and
+  **every positive result in this document comes from here**.
+  Map: N1→verdict + proposal as its own message, nothing dispatched;
+  N2→accept-with-trim, single-message parallel dispatch, per-decision
+  approval, hold honoured, spec + analysis file committed together;
+  N3→well-known-territory control (no proposal); N4→decline honoured.
+
+Budget: the plan's human-approved allocation (baselines R1×2 R2×1 R3×1; GREEN
+R1×2 R2×2 R3×2 R4×1) was extended by human decision on 2026-07-29 to cover the
+second fixture, the contamination diagnosis, and the script realignment. Every
+v2 verdict below is n=1 per scenario.
+
 Contamination caveat: toy sessions inherit the real plugin bootstrap; the
 loaded skill content is the same text under test, so contamination points
 toward the same text (2026-07-05 precedent).
