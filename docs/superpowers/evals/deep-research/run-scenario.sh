@@ -4,7 +4,7 @@
 # file), save stream-json transcripts per turn, print the toy dir path.
 set -euo pipefail
 
-HERE="$(cd "$(dirname "$0")" && pwd)"
+HERE="${DR_FIXTURE:-$(cd "$(dirname "$0")" && pwd)}"
 SCENARIO="${1:?usage: run-scenario.sh <r1|r2|r3|r4> <baseline|green> [rep]}"
 PHASE="${2:?phase: baseline|green}"
 REP="${3:-1}"

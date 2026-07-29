@@ -1,0 +1,1 @@
+Yes, run the research — but drop anything about how this surfaces in the CLI or UI, we haven't designed that yet and it's not what's blocking me. Keep everything about how the merge itself actually gets resolved. Go ahead with the rest.

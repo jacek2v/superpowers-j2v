@@ -1,0 +1,1 @@
+Take your recommendation on whatever you just asked about — approved. The thing I actually need settled is still the merge question: how divergent edits to the same note get reconciled once two devices come back online. Carry on.
