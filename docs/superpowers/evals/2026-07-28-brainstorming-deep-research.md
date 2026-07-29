@@ -489,8 +489,11 @@ for no behavioral gain. **Reverted** same day (`50c0e0b`);
 count).
 
 **Working skill (final state, this doc's evidence basis) = T3 (`cd1d9ec`) +
-T4 (`6112338`) + L1 (`31a434b`) + L2 (`f9c5d50`).** `research-subagents.md`
-is unmodified from T3.
+T4 (`6112338`) + L1 (`31a434b`) + L2 (`f9c5d50`) + the final-review digraph
+fix (`579eb48`).** `research-subagents.md` is unmodified from T3. The firing
+path (N1/N2) was measured on the state before `579eb48`; only the control
+path (N3 rep4) was re-measured after it — see *Not exercised / not
+established*.
 
 ## Method corrections
 
