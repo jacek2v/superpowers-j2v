@@ -517,6 +517,49 @@ what happens to the subagent count. **Unfixed.** N2's stated assertion
 the agent picks per-decision; `rep1` is recorded as not-applicable for that
 assertion rather than as a pass or a fail.
 
+#### V5 — trim-gap fix (`ff34c5d`) is UNMEASURED, and why
+
+`ff34c5d` added a rule to `research-subagents.md`: when an approved trim
+leaves the subagent count unchanged, state the count and ask before
+dispatching. Measured with N2 ×4 at HEAD, real `HOME` (`trimfix-n2-rep1..4`),
+32 turns, all `subtype=success`.
+
+| Rep | Mode | Guide read before dispatch? | Dispatches | Scorable for the fix |
+|---|---|---|---|---|
+| 1 | per-approach | **no** | 3 | no — rule never in context |
+| 2 | per-decision | yes | 2 | n/a — trim maps to the list, count drops normally |
+| 3 | per-approach | **no** | 3 | no — rule never in context |
+| 4 | per-decision | yes | 2 | n/a |
+
+Both per-approach reps dispatched immediately — the first tool call of turn 4
+is `Agent`, with no `Read` of `research-subagents.md` anywhere in the run.
+`SKILL.md` says *"If they accept, read the detailed guide before dispatching"*
+and they did not. **The fix's wording was never exercised**; the run measured
+the load step, not the rule.
+
+**Root defect — the reference guide is skipped in a substantial fraction of
+runs.** Across all 10 N2 runs in this document:
+
+| Run | Mode | Guide read | Dispatches |
+|---|---|---|---|
+| `green-n2-rep1` | per-approach | no | 3 |
+| `green-n2-rep2` | per-decision | yes | 2 |
+| `green-n2-rep3` | per-approach | yes | 2 |
+| `postfix-n2-rep1` | per-approach | yes | 3 |
+| `postfix-n2-rep2` | per-decision | yes | 2 |
+| `realhome-n2-rep4` | per-decision | yes | 2 |
+| `trimfix-n2-rep1` | per-approach | **no** | 3 |
+| `trimfix-n2-rep2` | per-decision | yes | 2 |
+| `trimfix-n2-rep3` | per-approach | **no** | 3 |
+| `trimfix-n2-rep4` | per-decision | yes | 2 |
+
+3 of 10 runs dispatched research subagents without ever loading the file that
+defines the subagent prompt template, the read-only constraint and the
+single-message dispatch rule — all three of them in per-approach mode; every
+per-decision run loaded it. n=10, so the association is suggestive, not
+established. This is a defect in the D-033 loading pattern itself, not in any
+wording added later, and it is **unfixed**.
+
 **Open, and NOT caused by this fix:** "the proposal MUST be its own message"
 is honoured as a separate `message.id` in only 1 of 4 reps here (`rep4`) and
 1 of 4 in V3 (`rep4`). In the other six the verdict and the proposal ride in
