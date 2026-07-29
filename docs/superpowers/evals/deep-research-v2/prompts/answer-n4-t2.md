@@ -1,1 +1,3 @@
-No — skip the research, it is too expensive right now. Carry on with your own judgment.
+Take your recommendation on whatever you just asked about — I don't need to be consulted on that one. What is still not settled is the list I gave you: how divergent edits to the same note get merged, what each device has to retain about a note's change history without that record growing without bound, and how a device that has been offline for weeks or is brand new catches up. Those three are still open and I have not answered them.
+
+If what you just sent me was a plan to go research something rather than a question, then read this message as neither a yes nor a no — I have not decided yet. Put the plan in front of me and I will answer it directly in my next message.

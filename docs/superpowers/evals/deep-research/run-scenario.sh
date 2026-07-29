@@ -47,7 +47,7 @@ PROMPT="$(cat "$PROMPT_FILE")"
     --verbose \
     --output-format stream-json > "$OUT" 2>&1) || true
 
-for T in 2 3 4 5; do
+for T in 2 3 4 5 6 7 8; do
   A="$HERE/prompts/answer-${SCENARIO}-t${T}.md"
   [[ -f "$A" ]] || break
   OUT_T="$HERE/transcripts/${PHASE}-${SCENARIO}-rep${REP}-t${T}.jsonl"

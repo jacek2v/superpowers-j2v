@@ -1,1 +1,1 @@
-Looks right so far — finish presenting anything that remains, but do NOT write the spec yet; I'll give final approval in my next message.
+Yes, go ahead — but drop the last question on that list, it's the least urgent one for me and I don't want to spend the tokens on it. Run the rest.
