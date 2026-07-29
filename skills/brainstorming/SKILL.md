@@ -85,7 +85,7 @@ digraph brainstorming {
     "Read DECISIONS — op 4 active:\ngate EVERY direction\nbefore presenting it" -> "Ask clarifying questions";
     "Ask clarifying questions" -> "Research needed?";
     "Research needed?" -> "Research sanity check (quick)" [label="unfamiliar domain\nor unverified deps"];
-    "Research needed?" -> "Propose 2-3 approaches\n(grounded in research)" [label="well-known territory"];
+    "Research needed?" -> "Open decision needs\ndeep research?" [label="well-known territory"];
     "Research sanity check (quick)" -> "Open decision needs\ndeep research?";
     "Open decision needs\ndeep research?" -> "Propose deep research (own message):\nquestions, mode, subagent count" [label="yes"];
     "Open decision needs\ndeep research?" -> "Propose 2-3 approaches\n(grounded in research)" [label="no"];
