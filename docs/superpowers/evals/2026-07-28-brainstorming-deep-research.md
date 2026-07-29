@@ -453,6 +453,43 @@ All 14 turns `subtype=success`.
 `HOME`; only N1 has 4 reps there. Nothing here measures a *different* user's
 global instructions.
 
+### V4 — after the per-approach wording fix (`abb34b6`), N1 ×4 under the real `HOME`
+
+`SKILL.md` and `research-subagents.md` both said the proposal message may
+contain "no approaches", while D-030's per-approach mode dispatches one
+subagent **per sketched approach** — so a per-approach proposal cannot state
+its subagent count without naming them. Three runs hit this before the fix
+(V3 `n1 rep2`, `n1 rep3`, V3b `n4 rep3`): each put the sketches in the
+proposal message, as the mode requires and the sentence forbade. The fix
+re-aims the exclusion at what must actually stay out — clarifying questions,
+the recommendation, other design content.
+
+Re-measured: `postfix-n1-rep1..4`, same conditions as V3.
+
+| Rep | Verdict | Mode | Evidence |
+|---|---|---|---|
+| 1 | PASS | per-decision | Verdict 3/3, then 3 subagents proposed, cost stated, trim offered; t3 restates the proposal alone. |
+| 2 | PASS | per-decision | Verdict 3/3 + proposal; t3 refuses to substitute a default for consent (*"jedyne pytanie to zgoda na odpalenie badania"*) and asks for **odpal / odrzuć / przytnij**. |
+| 3 | **PASS — the only rep exercising the fixed clause** | per-approach | Names 3 sketched approaches (LWW whole-note; version vectors + GC'd edit log; CRDT via automerge/pycrdt), one subagent each, states what each subagent must check (pure-Python licence per D-002, memory bound, catch-up mechanics, risks), cost stated. **No recommendation and no design content** — exactly what the amended clause permits and forbids. |
+| 4 | PASS | per-decision | t2 verdict ends *"Teraz wyślę osobną wiadomość z samą propozycją badania — bez dodatkowych treści"*, then the proposal in a separate `message.id` (`nzFMqc` → `3kHGpw`). |
+
+All 12 turns `subtype=success`; tool inventory carries **0 `Agent` blocks**.
+
+**What this establishes:** no regression on per-decision (3/3 unchanged in
+shape from V3), and the per-approach proposal is now internally consistent
+with the mode it names. **n=1 for the fixed clause** — the mode is chosen by
+the agent, and only `rep3` picked per-approach. No scenario forces it.
+
+**Open, and NOT caused by this fix:** "the proposal MUST be its own message"
+is honoured as a separate `message.id` in only 1 of 4 reps here (`rep4`) and
+1 of 4 in V3 (`rep4`). In the other six the verdict and the proposal ride in
+one message. Whether that counts as a violation is genuinely ambiguous in
+the current text: step 5 requires the verdict in the message where clarifying
+questions end, and the proposal is required to stand alone — when both fall
+in the same turn, the skill does not say which wins. The proposal was never
+buried among clarifying questions or design content in any rep, which is what
+the rule exists to prevent. Unresolved; no measurement targets it.
+
 ## Refactor loop
 
 Three wording levers were tried against `notekeep`/N1, in order, before the
