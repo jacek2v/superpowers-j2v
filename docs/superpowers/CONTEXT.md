@@ -12,7 +12,7 @@
 
 Specs in flight — ONE line each: link + status ≤10 words.
 
-- [2026-07-28-brainstorming-subagent-research-design.md](specs/2026-07-28-brainstorming-subagent-research-design.md) — spec approved, awaiting implementation plan
+_(none in flight)_
 
 ## DECISIONS
 
@@ -61,3 +61,4 @@ One decision per line. ✓ adopted, ✗ rejected direction. Never delete — sup
 | 2026-07-11 | Brainstorming early gate — every direction gated before presentation, conditional pre-spec re-check | D-021 |
 | 2026-07-15 | op-3 edit-in-place — reversals edit the D-entry in place (same ID + `(prev: …)`), strikethrough = op-6 abandon, new op 8 Rebuild converts legacy logs | D-022, D-023 |
 | 2026-07-24 | subagent-driven-development-parallel skill — DAG-scheduled concurrent SDD (full copy of sequential, byte-identical) + writing-plans mandatory Depends-on routing; eval-validated RED→GREEN→REFACTOR | D-024..D-028 |
+| 2026-07-29 | Brainstorming deep research — propose-then-accept parallel read-only research subagents, per-decision approval, research analysis files; eval-validated on a second fixture under an isolated HOME | D-029..D-033 |
