@@ -370,7 +370,7 @@ single-message parallel dispatch — the apparent "sequential dispatch" defect
 recorded earlier in the campaign was a counting artifact, not a behavior
 (see **Refactor loop**, **Method corrections**).
 
-### V3 — `notekeep`/N1 under the operator's REAL `HOME` (×4 reps, 3 turns each, skill at HEAD `ccd917e`)
+### V3 — `notekeep` under the operator's REAL `HOME` (N1 ×4, then N2/N4/N3 ×1 — skill at HEAD `ccd917e`)
 
 This is the only measurement in the document taken with the machine's global
 `~/.claude/CLAUDE.md` present. It tests a change to that file, not to the
@@ -420,10 +420,38 @@ result subtypes: {'success': 12}
   confirms nothing runs before consent; it does not re-test dispatch itself
   (that is N2).
 
-**What it does not establish:** N2, N3 and N4 were not re-run under the real
-`HOME`. The accept/trim/dispatch/persist path, the well-known-territory
-control and the decline path have no measurement with the global file
-present.
+#### V3b — N2, N4 and N3 under the real `HOME` (×1 rep each, same skill state)
+
+Run immediately after V3's N1 reps, same conditions, to close the remaining
+scenarios. All three PASS.
+
+**N2 `rep4`** (7 turns — accept-with-trim → dispatch → per-decision approval →
+hold → write):
+
+| Turn | Verdict | Evidence |
+|---|---|---|
+| 2 | PASS | Per-decision verdict 3/3 after one scope assumption (2–5 devices). |
+| 4 | **PASS** | Scripted accept-with-trim honoured: exactly **2** `Agent` blocks (3 proposed − 1 trimmed), both under one `message.id` (`msg_011CdWGCmp7qJXZhMne8Vfs3`) — single-message parallel dispatch. Subagents did real work: 18 `WebSearch` + 13 `WebFetch`. Findings report constraint-excluded options correctly — Automerge/`pycrdt` *"odpada — wiązania Pythona to skompilowane rozszerzenia Rust, nie czysty Python"* (D-002), CouchDB/PouchDB *"wymaga aktywnego serwera interpretującego drzewo rewizji, koliduje z D-003"*. Ends on **one** decision: *"Zatwierdzasz zegar wektorowy per pole jako mechanizm scalania?"* |
+| 5 | PASS | Op-4 gate stated against all three D-entries before any design section. |
+| 6 | PASS (hold honoured) | Tool inventory empty — no `Write`, no `Bash`. |
+| 7 | PASS | `Write` to `specs/2026-07-29-note-sync-design.md` and `research/2026-07-29-note-sync-analysis.md`, then one `git add` of exactly those two paths + one `git commit` — spec and analysis committed together. |
+
+**N4 `rep3`** (5 turns — decline path): proposal at t3 (per-approach, 3 named
+patterns), scripted decline at t4 (*"No — skip the research, it is too
+expensive right now"*) honoured — t4 presents 3 design variants from the
+agent's own judgment, t5 continues to design. **0 `Agent` blocks in all 5
+turns**; no re-proposal.
+
+**N3 `rep5`** (2 turns — well-known-territory control): 0 `Agent`, 0 hits for
+`werdykt|subagent|równoległ|parallel|dispatch|deep research` across both
+turns, ends asking for approval before writing the spec. No false trigger
+under the real `HOME`.
+
+All 14 turns `subtype=success`.
+
+**What V3+V3b do not establish:** each of N2, N3, N4 is n=1 under the real
+`HOME`; only N1 has 4 reps there. Nothing here measures a *different* user's
+global instructions.
 
 ## Refactor loop
 
@@ -612,10 +640,10 @@ each carry both dispatches under one `message.id`.
   not measured anywhere in this eval.
 - **Every V1/V2 result reported as PASS was obtained with `HOME` pointed at
   an isolated copy of `~/.claude` with `CLAUDE.md` removed.** V3 closes this
-  for scenario N1 on this machine only (4/4 under the real `HOME`, after the
-  operator's exemption bullet). Still open: N2, N3 and N4 have **no**
-  measurement with any global `CLAUDE.md` present, and behavior under a
-  *different* user's global instructions is untested. What remains
+  on this machine only: N1 4/4 plus N2/N4/N3 1/1 each under the real `HOME`,
+  after the operator's exemption bullet (V3, V3b). Still open: behavior under
+  a *different* user's global instructions is untested, and every non-N1
+  scenario is n=1 there. What remains
   established as a real limitation: a concision/no-meta-narration global
   instruction suppresses the tier entirely unless it carves out
   skill-mandated messages (0/30 proposals before the carve-out; see V3).
@@ -631,10 +659,9 @@ each carry both dispatches under one `message.id`.
 - **The skill state the V2 N1/N2/N4 PASSes were measured against is not the
   current HEAD.** `579eb48` (Process Flow digraph edit) landed after those
   runs. It has since been measured on both paths: the control path by N3
-  `rep4` (n=1) and the firing path by V3's four N1 reps (n=4, though those
-  also carry the amended global `CLAUDE.md`). **N2 and N4 remain unreproduced
-  at HEAD** — no post-`579eb48` measurement exists for accept/trim/dispatch
-  or for the decline path.
+  `rep4` (n=1) and the firing path by V3/V3b (N1 ×4, N2/N4/N3 ×1 each) — all
+  of which also carry the amended global `CLAUDE.md`, so HEAD has **no**
+  measurement under an isolated `HOME`.
 - **v2 N4's decline path is n=1** and, unlike v1 R4, actually exercises the
   decline (the proposal existed to decline). It has not been repeated.
 - **The per-approach proposal mode** (as opposed to per-decision) has never
