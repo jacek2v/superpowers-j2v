@@ -613,10 +613,18 @@ count).
 
 **Working skill (final state, this doc's evidence basis) = T3 (`cd1d9ec`) +
 T4 (`6112338`) + L1 (`31a434b`) + L2 (`f9c5d50`) + the final-review digraph
-fix (`579eb48`).** `research-subagents.md` is unmodified from T3. V2's firing
-path (N1/N2) was measured on the state before `579eb48`; the control path was
-re-measured after it (N3 rep4), and the firing path was re-measured by V3's
-four N1 reps at HEAD `ccd917e` — see *Not exercised / not established*.
+fix (`579eb48`) + the per-approach wording fix (`abb34b6`).** Which state each
+section measures:
+
+| Section | Skill state | `HOME` |
+|---|---|---|
+| V1, V2 | before `579eb48` | isolated |
+| N3 `rep4` | after `579eb48` | isolated |
+| V3, V3b | after `579eb48`, before `abb34b6` | real |
+| V4 | after `abb34b6` (current) | real |
+
+No scenario has been measured at the current state under an isolated `HOME` —
+see *Not exercised / not established*.
 
 ## Method corrections
 
@@ -693,12 +701,17 @@ each carry both dispatches under one `message.id`.
   reps (rep1–rep7 for N1) were run under different conditions (contaminated
   HOME, different skill state, or a pre-realignment script) and are not
   independent replications of the final result.
-- **The skill state the V2 N1/N2/N4 PASSes were measured against is not the
-  current HEAD.** `579eb48` (Process Flow digraph edit) landed after those
-  runs. It has since been measured on both paths: the control path by N3
-  `rep4` (n=1) and the firing path by V3/V3b (N1 ×4, N2/N4/N3 ×1 each) — all
-  of which also carry the amended global `CLAUDE.md`, so HEAD has **no**
-  measurement under an isolated `HOME`.
+- **Only N1 has been measured at the current skill state.** `abb34b6` (the
+  per-approach wording fix) touches the proposal sentence in both
+  `SKILL.md` and `research-subagents.md`, and only V4's four N1 reps ran
+  against it. **N2, N3 and N4 have no measurement at HEAD** — accept/trim/
+  dispatch/persist, the well-known-territory control and the decline path
+  were all last measured on the pre-`abb34b6` text (V3b). The edit only
+  widens what a proposal may contain, so a regression on the control path
+  (N3, which never proposes) is unlikely, but N2 and N4 both produce
+  proposals and are untested against it.
+- **No measurement at HEAD uses an isolated `HOME`.** Every current-state
+  result carries this machine's amended global `CLAUDE.md`.
 - **v2 N4's decline path is n=1** and, unlike v1 R4, actually exercises the
   decline (the proposal existed to decline). It has not been repeated.
 - **The per-approach proposal mode** (as opposed to per-decision) has never
