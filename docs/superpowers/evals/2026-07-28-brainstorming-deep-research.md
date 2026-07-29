@@ -291,14 +291,43 @@ ToolSearch
 ```
 No `Agent` anywhere across all 3 turns — 0 dispatches, n=1.
 
-#### N3 — well-known-territory request (`--json` flag), ×1 rep, 2 turns — healthy control (`rep3`)
+#### N3 — well-known-territory request (`--json` flag), ×2 reps, 2 turns each — healthy control (`rep3` pre-digraph-fix, `rep4` post-digraph-fix)
 
 | Rep | Turn | Verdict | Evidence |
 |---|---|---|---|
 | 3 | 1 | PASS | One scope question; dispatch `0`; 0 research-language mentions. |
 | 3 | 2 | PASS | Full design presented (output format, error handling, tests), ends *"Czy ten projekt wygląda dobrze? Jeśli tak, zapisuję go jako spec..."* — nothing written yet. |
+| 4 | 1 | PASS | One scope question (the repo has no CLI at all yet, so `list` would be built from scratch); dispatch `0`; 0 research-language mentions. |
+| 4 | 2 | PASS | Design presented section by section after an explicit no-collision gate against D-001/D-002/D-003, ends *"Pasuje to do Ciebie? (Sekcja 1/4)"* — nothing written; toy repo `git log` still only `616816b toy: initial state`. |
 
-No regression from L1+L2 in isolation, n=1.
+No regression from L1+L2 in isolation, n=1 (`rep3`).
+
+`rep4` is the post-fix confirmation for `579eb48`, which re-pointed the Process
+Flow digraph's "well-known territory" edge into the deep-research decision node
+(it previously bypassed the node, contradicting checklist step 5's prose).
+Because that edit changes routing on exactly the path N3 walks, the control was
+re-run at HEAD: the well-known-territory branch still produces no proposal.
+Tool inventory across both turns is `Bash, Read, Skill` — no `Agent`; no
+`## Werdykt badawczy` and no research proposal in either turn's assistant text;
+no `docs/superpowers/research/` directory in the toy repo
+(`/tmp/deepresearch-eval-n3-green-tZRK`); both turns `subtype=success`.
+
+```
+$ jq -r 'select(.type=="assistant") | .message as $m
+         | ($m.content[]? | select(.type=="tool_use" and .name=="Agent") | $m.id)' \
+     green-n3-rep4.jsonl green-n3-rep4-t2.jsonl | sort | uniq -c
+(no output — 0 dispatch tool_use blocks, so no message ids to group)
+$ jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="text") | .text' \
+     green-n3-rep4.jsonl green-n3-rep4-t2.jsonl \
+  | grep -icE 'werdykt|subagent|równoległ|parallel|dispatch|research agent|deep research|propozycja badawcza'
+0
+```
+
+**What this establishes:** the digraph edit in `579eb48` did not cause the
+well-known-territory path to start proposing research. N3 is 4/4 clean across
+the campaign (`rep1` under L1, `rep2` under L2, `rep3` at HEAD before the
+digraph fix, `rep4` after it) — but only `rep4` measures the post-fix skill, so
+this is n=1 for that state, not a 4-rep replication of it.
 
 #### N4 — N1 + turn 4 declines (×1 rep, 5 turns — `rep2`)
 
@@ -536,6 +565,14 @@ each carry both dispatches under one `message.id`.
   reps (rep1–rep7 for N1) were run under different conditions (contaminated
   HOME, different skill state, or a pre-realignment script) and are not
   independent replications of the final result.
+- **The skill state the N1/N2/N4 PASSes were measured against is not the
+  current HEAD.** `579eb48` (Process Flow digraph edit) landed after those
+  runs; only N3 was re-measured against it (`rep4`). The post-fix state
+  therefore has n=1 on the control path and **n=0 on the firing path** — no N1,
+  N2 or N4 result has been reproduced under the digraph as it now stands. The
+  edit only re-points a well-known-territory edge into the decision node both
+  branches were already meant to reach, so a firing-path regression is
+  unlikely, but it is untested.
 - **v2 N4's decline path is n=1** and, unlike v1 R4, actually exercises the
   decline (the proposal existed to decline). It has not been repeated.
 - **The per-approach proposal mode** (as opposed to per-decision) was
