@@ -11,13 +11,16 @@ sessions (sonnet, isolated /tmp repos), multi-turn via
 `--session-id`/`--resume` with scripted answers. Branch:
 `feat/brainstorm-deep-research` off `main`.
 
-**⚠ Every passing result in this document was obtained with `HOME` pointed at
-`/tmp/eval-home` — a copy of `~/.claude` with `CLAUDE.md` removed.** This
-machine's global instructions ("be extremely concise", "answer first", no
-meta-narration) suppress the tier entirely: 0 proposals across 30 turns run
-under the real `HOME`, on both fixtures, at every skill state. Behavior under
-a user's own global `CLAUDE.md` is **not established** — see **Not exercised /
-not established**.
+**⚠ Every passing result in the V1/V2 sections was obtained with `HOME`
+pointed at `/tmp/eval-home` — a copy of `~/.claude` with `CLAUDE.md`
+removed.** This machine's global instructions ("be extremely concise",
+"answer first", no meta-narration) suppressed the tier entirely: 0 proposals
+across 30 turns run under the real `HOME`, on both fixtures, at every skill
+state. **V3 (2026-07-29) lifts that caveat for this machine only**: after the
+operator added a skill-mandated-message exemption to `~/.claude/CLAUDE.md`,
+N1 passes 4/4 under the real `HOME`. Behavior under any *other* user's global
+instructions remains **not established** — see **Not exercised / not
+established**.
 
 Two fixtures, because the first one never elicited the feature:
 
@@ -367,6 +370,61 @@ single-message parallel dispatch — the apparent "sequential dispatch" defect
 recorded earlier in the campaign was a counting artifact, not a behavior
 (see **Refactor loop**, **Method corrections**).
 
+### V3 — `notekeep`/N1 under the operator's REAL `HOME` (×4 reps, 3 turns each, skill at HEAD `ccd917e`)
+
+This is the only measurement in the document taken with the machine's global
+`~/.claude/CLAUDE.md` present. It tests a change to that file, not to the
+skill: `skills/brainstorming/` is byte-unchanged since `579eb48`
+(`git log 579eb48..HEAD -- skills/brainstorming/` is empty), so V3 also
+supplies the firing-path evidence the digraph fix previously lacked.
+
+**What changed outside the skill.** The global file's concision rules
+("answer first: 1–3 sentences", "no meta-narration — result only") were
+deciding *whether* to send the proposal, not just how to word it. The
+operator added a closing bullet to `## Common Guidance`:
+
+> These rules govern HOW you word a message, never WHETHER you take a step a
+> skill requires. A skill-mandated message — a proposal awaiting my approval,
+> an option menu, a required announcement, a verdict a skill tells you to
+> write — IS that step's result, not meta-narration, and is exempt from the
+> 1–3 sentence limit. […] If a rule above seems to argue for skipping such a
+> message, the rule loses.
+
+plus a pointer to it from the meta-narration rule. Runner invoked without the
+`HOME` override; everything else identical to V2 (fixture `notekeep`,
+scenario `n1`, `--model sonnet`, 3 turns).
+
+| Rep | Verdict | Mode | Evidence |
+|---|---|---|---|
+| 1 | **PASS** | per-decision | t1 asks an A/B/C merge-strategy question from memory; t2 opens by withdrawing it (*"pytanie A/B/C […] było mikro-decyzją techniczną wyciągniętą z pamięci"*), gives the per-decision **Werdykt badawczy** (3/3 research candidates), then proposes 3 subagents, states *"To jest kosztowne tokenowo"*, offers trim. |
+| 2 | **PASS** | per-approach | t2 opens with the frame *"to, co następuje, ustala, czy odpalam trzy równoległe read-only agenty badawcze"*, per-decision verdict 3/3, then sketches 3 candidate architectures (version vectors, LWW-Register CRDT, op-log + HLC) and proposes one subagent per candidate; cost stated, trim offered. |
+| 3 | **PASS** | per-approach | t1 asks one scope question (device count); t2 gives verdict 3/3 + a 3-sketch per-approach proposal, flags that op-log compaction may collide with D-003 and hands that to the subagent to verify. |
+| 4 | **PASS** | per-decision | t1 asks one scope question (is note deletion in scope); t2 verdict 3/3 announcing *"Zaraz wyślę osobną wiadomość z propozycją"*, then the proposal in a **separate `message.id`** (`msg_011CdWFRf3…` = verdict, `msg_011CdWFT5X…` = proposal); t3 restates the plan as a per-agent table and asks again. |
+
+```
+$ python3 - # tool inventory across all 12 realhome turns
+files: 12
+tools: Bash, Read, Skill, TaskCreate, TaskUpdate, ToolSearch
+Agent blocks: 0
+result subtypes: {'success': 12}
+```
+
+**What this establishes:**
+
+- The suppression was in the global file, not the skill: same skill text,
+  0/4 → 4/4 by editing `~/.claude/CLAUDE.md` alone.
+- The firing path works at HEAD (post-`579eb48`), n=4.
+- Both D-030 modes fire unprompted under real global instructions — 2
+  per-decision, 2 per-approach — chosen by the skill, not by the scenario.
+- 0 dispatches in all 12 turns. N1 never scripts an acceptance, so this
+  confirms nothing runs before consent; it does not re-test dispatch itself
+  (that is N2).
+
+**What it does not establish:** N2, N3 and N4 were not re-run under the real
+`HOME`. The accept/trim/dispatch/persist path, the well-known-territory
+control and the decline path have no measurement with the global file
+present.
+
 ## Refactor loop
 
 Three wording levers were tried against `notekeep`/N1, in order, before the
@@ -490,10 +548,10 @@ count).
 
 **Working skill (final state, this doc's evidence basis) = T3 (`cd1d9ec`) +
 T4 (`6112338`) + L1 (`31a434b`) + L2 (`f9c5d50`) + the final-review digraph
-fix (`579eb48`).** `research-subagents.md` is unmodified from T3. The firing
-path (N1/N2) was measured on the state before `579eb48`; only the control
-path (N3 rep4) was re-measured after it — see *Not exercised / not
-established*.
+fix (`579eb48`).** `research-subagents.md` is unmodified from T3. V2's firing
+path (N1/N2) was measured on the state before `579eb48`; the control path was
+re-measured after it (N3 rep4), and the firing path was re-measured by V3's
+four N1 reps at HEAD `ccd917e` — see *Not exercised / not established*.
 
 ## Method corrections
 
@@ -552,37 +610,40 @@ each carry both dispatches under one `message.id`.
   D-entries. Behavior when no project registry exists at all — whether the
   deep tier's openness/no-D-entry-settles-it filter degrades gracefully — is
   not measured anywhere in this eval.
-- **Every GREEN v2 result reported as PASS was obtained with `HOME` pointed
-  at an isolated copy of `~/.claude` with `CLAUDE.md` removed.** Behavior
-  under a user's own global `~/.claude/CLAUDE.md` — the actual environment
-  every real session runs in on this machine — is explicitly **not
-  established**. The one thing that IS established is that a
-  concision/no-meta-narration global instruction can suppress the tier
-  entirely (v1's 18 turns and v2's 12 L0–L2 contaminated turns, 0/30
-  proposals combined). Anyone relying on this feature under their own strict global
-  style instructions should not assume it fires; this is a real limitation,
-  not a hypothetical one.
+- **Every V1/V2 result reported as PASS was obtained with `HOME` pointed at
+  an isolated copy of `~/.claude` with `CLAUDE.md` removed.** V3 closes this
+  for scenario N1 on this machine only (4/4 under the real `HOME`, after the
+  operator's exemption bullet). Still open: N2, N3 and N4 have **no**
+  measurement with any global `CLAUDE.md` present, and behavior under a
+  *different* user's global instructions is untested. What remains
+  established as a real limitation: a concision/no-meta-narration global
+  instruction suppresses the tier entirely unless it carves out
+  skill-mandated messages (0/30 proposals before the carve-out; see V3).
+  Anyone relying on this feature under strict global style instructions
+  should check their own file rather than assume it fires.
 - **n=1 per scenario for every v2 verdict reported as PASS** (N1 `rep8`, N3
-  `rep3`, N4 `rep2`, N2 `rep2` + 1 confirmatory rerun `rep3`). No variance
-  data exists across reps at the final skill state; the campaign's earlier
+  `rep3`, N4 `rep2`, N2 `rep2` + 1 confirmatory rerun `rep3`). V3 raises N1
+  alone to n=4, but only under the amended global `CLAUDE.md`; for N2, N3 and
+  N4 no variance data exists at the final skill state. The campaign's earlier
   reps (rep1–rep7 for N1) were run under different conditions (contaminated
   HOME, different skill state, or a pre-realignment script) and are not
   independent replications of the final result.
-- **The skill state the N1/N2/N4 PASSes were measured against is not the
+- **The skill state the V2 N1/N2/N4 PASSes were measured against is not the
   current HEAD.** `579eb48` (Process Flow digraph edit) landed after those
-  runs; only N3 was re-measured against it (`rep4`). The post-fix state
-  therefore has n=1 on the control path and **n=0 on the firing path** — no N1,
-  N2 or N4 result has been reproduced under the digraph as it now stands. The
-  edit only re-points a well-known-territory edge into the decision node both
-  branches were already meant to reach, so a firing-path regression is
-  unlikely, but it is untested.
+  runs. It has since been measured on both paths: the control path by N3
+  `rep4` (n=1) and the firing path by V3's four N1 reps (n=4, though those
+  also carry the amended global `CLAUDE.md`). **N2 and N4 remain unreproduced
+  at HEAD** — no post-`579eb48` measurement exists for accept/trim/dispatch
+  or for the decline path.
 - **v2 N4's decline path is n=1** and, unlike v1 R4, actually exercises the
   decline (the proposal existed to decline). It has not been repeated.
-- **The per-approach proposal mode** (as opposed to per-decision) was
-  observed exactly once, as a side effect of a script divergence in `n2
-  rep1`, not as a designed, repeated scenario. It is real evidence the mode
-  exists and follows the same shape (subagent count, cost, trim offer), but
-  it is not a scored scenario rep.
+- **The per-approach proposal mode** (as opposed to per-decision) has never
+  been a designed scenario — no fixture selects for it. It has been observed
+  three times unprompted: once as a side effect of a script divergence in `n2
+  rep1`, and twice in V3 (`realhome rep2`, `rep3`), each time with the same
+  shape (subagent count, cost, trim offer). Which mode a run picks is
+  therefore uncontrolled; there is no scenario that forces one and asserts
+  against it.
 - **Turn-budget sensitivity is real but uncharacterized.** `n1 rep7` shows
   the number of clarifying-question rounds before the verdict is not fixed
   (1 round in some runs, 2+ in others); the realigned scripts route around
