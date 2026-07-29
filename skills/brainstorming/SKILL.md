@@ -41,7 +41,7 @@ You MUST create a task for each of these items and complete them in order:
 2. **Project registry check (active)** — if `docs/superpowers/CONTEXT.md` exists, read DECISIONS and hold the active entries for the whole session (project-registry op 4, conflict gate). Standing obligations: never ask a clarifying question an active D-entry already answers — declare the assumption with its ID instead; and gate EVERY direction before presenting it — a clarifying-question set, proposed approaches, a composed design, a revision: the moment it collides with an active entry, run the gate protocol instead of presenting it.
 3. **Offer the visual companion just-in-time** — NOT upfront. The first time a question would genuinely be clearer shown than described, offer it then (its own message); on approval its browser tab opens for you. If no visual question ever arises, never offer it. See the Visual Companion section below.
 4. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
-5. **Research check (two tiers)** — quick tier: verify key assumptions before proposing (prior art, library/API existence, domain patterns); skip when domain and tools are well-known. Deep tier: when an open design decision needs real investigation — unfamiliar domain, architecture choice, library comparison — propose deep research as its own message (question list, mode, subagent count) and dispatch only after your human partner accepts. See the Deep Research section below.
+5. **Research check (two tiers)** — quick tier: verify key assumptions before proposing (prior art, library/API existence, domain patterns); skip when domain and tools are well-known. Deep tier: when an open design decision still needs real investigation after the quick check — unfamiliar domain, architecture choice, library comparison, contested prior art — you MUST propose deep research as its own message (question list, mode, subagent count) BEFORE you present any approaches in step 6, and dispatch only after your human partner accepts. Going straight to step 6 with approaches built from memory is how this step gets skipped. See the Deep Research section below.
 6. **Propose 2-3 approaches** — with trade-offs and your recommendation, grounded in research findings
 7. **Gate, then present design** — run op 4 against the composed design before showing it; then present in sections scaled to their complexity, get user approval after each section. Any revision passes the gate again before being re-presented.
 8. **Pre-spec re-check (safety net)** — if any design content changed or was added since its last op-4 pass (e.g. amendments accepted during the approval dialogue), run op 4 once more before writing the spec; otherwise skip — the design was already gated. A collision stops work until your human partner picks supersede / change direction / stop.
@@ -246,6 +246,10 @@ If they agree to the companion, read the detailed guide before proceeding:
 
 Parallel read-only research subagents that settle open design decisions before the design is presented. Available as a tool — not a mode. Most brainstorms never need it: the quick tier (step 5) settles most questions, and a decision an active D-entry already answers is never a research question.
 
+**When an open decision meets one of the four criteria — unfamiliar domain, architecture choice, library or service comparison, contested prior art — you MUST propose deep research before you present approaches.** Not "may". Presenting 2-3 approaches with a recommendation forecloses the decision: from then on your human partner is choosing inside an option space you built from memory, and the question research would have answered is never asked. Propose first; approaches come after they accept or decline.
+
+**Do NOT propose it** when the domain and tooling are well-known and the quick tier already settled the question, when an active D-entry answers it (declare the assumption with its ID instead), or when one sentence from your human partner answers it. A tier that proposes itself everywhere is worse than no tier.
+
 **Proposing deep research (just-in-time):** the moment an open decision needs real investigation — unfamiliar domain, architecture choice, library comparison, contested prior art — propose it, as its own message:
 
 > "Three decisions here need more than a quick check: <Q1>, <Q2>, <Q3>. I can dispatch 3 read-only research subagents in parallel — one per decision — and come back with options, trade-offs, and a recommendation for each. It's token-intensive. Want me to? Trim or edit the question list first if any of these are already settled for you."
@@ -258,6 +262,16 @@ Parallel read-only research subagents that settle open design decisions before t
 - **Per-approach** — sketch 2-3 approaches first, then one subagent deepens each (feasibility, prior art, risks). Runs after the sketch, before your recommendation.
 
 **Subagents never decide.** They are read-only fact-finders — codebase, web, library docs. They write no files and pick no direction. You synthesize, your human partner approves each decision separately, and every approved direction still passes the op-4 gate before it is presented.
+
+**Red Flags — these thoughts mean you are about to skip the proposal:**
+
+| Thought | Reality |
+|---------|---------|
+| "I already know the options here" | Naming the options is not comparing them. You are being asked which one survives contact with this problem, and that is the part you have not checked. |
+| "I'll lay out the trade-offs and let my human partner choose" | They can only choose inside the option space you wrote from memory. The proposal is what gives them the choice of checking that space first. |
+| "There's no mature library for this" / "that one is unmaintained" | That is a checkable fact about the world and you did not check it. What exists, what is maintained, what is deprecated — research questions, not recollections. |
+| "The constraints we've settled already narrow this to one option" | Re-read the active entries. A constraint that rules out one option almost never picks the winner among the rest. If no active D-entry answers the question, it is still open. |
+| "This is too token-intensive to be worth it here" | That call is your human partner's, and the proposal exists to hand it to them. Deciding the cost for them means deciding the design question for them. |
 
 If they accept, read the detailed guide before dispatching:
 `skills/brainstorming/research-subagents.md`
