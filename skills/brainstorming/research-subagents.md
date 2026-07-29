@@ -48,7 +48,7 @@ Want me to run this? Trim or edit the question list first if any of these
 are already settled for you.
 ```
 
-Acceptance may come trimmed or edited — dispatch exactly the list your human partner approved, nothing added back. A decline ends the deep tier for this round: continue on the quick check and do not re-propose unless a new decision warrants it.
+Acceptance may come trimmed or edited — dispatch exactly the list your human partner approved, nothing added back. A trim that names something you did not list — a question, when you proposed approaches — narrows each subagent's scope without reducing how many you run. Do not dispatch on that silently: say what the trim removed, give the unchanged subagent count, and ask whether to run it or drop one of the listed items instead. A trim is usually a cost objection, and spending the same tokens answers the words and not the request. A decline ends the deep tier for this round: continue on the quick check and do not re-propose unless a new decision warrants it.
 
 ## Dispatching
 
