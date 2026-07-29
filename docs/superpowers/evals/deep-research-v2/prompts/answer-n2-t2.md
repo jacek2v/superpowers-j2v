@@ -1,1 +1,1 @@
-Yes, run the research — but drop anything about how this surfaces in the CLI or UI, we haven't designed that yet and it's not what's blocking me. Keep everything about how the merge itself actually gets resolved. Go ahead with the rest.
+Yes, go ahead — but drop the last question on that list, it's the least urgent one for me and I don't want to spend the tokens on it. Run the rest.
