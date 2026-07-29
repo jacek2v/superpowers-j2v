@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Assemble a feedmix toy repo for one deep-research eval scenario, run
+# Assemble the toy repo of the fixture named by DR_FIXTURE for one eval scenario, run
 # claude -p in it (multi-turn via --resume, one turn per existing answer
 # file), save stream-json transcripts per turn, print the toy dir path.
 set -euo pipefail
@@ -12,15 +12,21 @@ REP="${3:-1}"
 TOY="$(mktemp -d "/tmp/deepresearch-eval-${SCENARIO}-${PHASE}-XXXX")"
 mkdir -p "$TOY/tests" "$TOY/docs/superpowers/specs"
 
-cp "$HERE/base/pyproject.toml" "$TOY/pyproject.toml"
-cp "$HERE/base/CLAUDE.md" "$TOY/CLAUDE.md"
-cp "$HERE/base/README.md" "$TOY/README.md"
-cp "$HERE/base/feedmix.py" "$TOY/feedmix.py"
-cp "$HERE/base/test_store.py" "$TOY/tests/test_store.py"
+# base/ lands at the toy root as-is, whatever the fixture names its module
+for F in "$HERE"/base/*; do
+  case "$(basename "$F")" in
+    test_store.py) cp "$F" "$TOY/tests/test_store.py" ;;
+    *)             cp "$F" "$TOY/$(basename "$F")" ;;
+  esac
+done
 
 cp "$HERE/registries/context.md" "$TOY/docs/superpowers/CONTEXT.md"
-cp "$HERE/registries/spec-stub-store.md"  "$TOY/docs/superpowers/specs/2026-07-02-article-store-design.md"
-cp "$HERE/registries/spec-stub-export.md" "$TOY/docs/superpowers/specs/2026-07-20-cli-export-design.md"
+if [[ -d "$HERE/registries/specs" ]]; then
+  cp "$HERE"/registries/specs/*.md "$TOY/docs/superpowers/specs/"
+else
+  cp "$HERE/registries/spec-stub-store.md"  "$TOY/docs/superpowers/specs/2026-07-02-article-store-design.md"
+  cp "$HERE/registries/spec-stub-export.md" "$TOY/docs/superpowers/specs/2026-07-20-cli-export-design.md"
+fi
 
 git -C "$TOY" init -q
 git -C "$TOY" add -A
