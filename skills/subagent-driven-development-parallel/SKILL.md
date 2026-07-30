@@ -139,7 +139,10 @@ conflicts that only emerge from implementation.
 - Task artifacts (brief, report, review package) live in the task worktree's own `.superpowers/sdd/`: run `scripts/task-brief` and `scripts/review-package` from inside the task worktree, pointing task-brief at the plan file in the integration worktree. The progress ledger is the exception — ONE file, in the integration worktree.
 - The review pipeline per task is unchanged from sequential SDD (report file → review package over `BASE..task/T` → task reviewer → fix subagent → re-review); it simply runs concurrently across tasks.
 - **Merging is yours, and serialized.** After a clean review, merge task/T into B — one merge at a time, never delegated to a subagent. On merge conflict, dispatch a fix subagent to rebase task/T onto B and resolve; a rebase invalidates the prior review verdict — the approved diff no longer exists — so regenerate the review package for the post-rebase range and re-review before merging.
-- After a merge: `git worktree remove <task-worktree-path>`, `git branch -d task/T`, update the task's ledger line, recompute the ready set.
+- **Rescue the evidence before you destroy the worktree.** The brief, the implementer report and the review package are the evidence the Verification Contract requires, and they live in the task worktree that is about to be deleted — in gated mode the contract is not even checked until the phase's Gate GREEN, long after removal, and the final whole-branch reviewer may want to read any task's report. Copy them into the integration worktree's `.superpowers/sdd/` first:
+  `cp <task-worktree-path>/.superpowers/sdd/task-T-* <task-worktree-path>/.superpowers/sdd/review-*.diff <integration-worktree>/.superpowers/sdd/`
+  Nothing collides: briefs and reports carry the task number, and review packages are named after the SHA range they cover.
+- Then, after a merge: `git worktree remove <task-worktree-path>`, `git branch -d task/T`, update the task's ledger line, recompute the ready set.
 
 ## Model Selection
 
@@ -208,8 +211,11 @@ the required evidence is: the implementer's report file containing the
 test commands and their output (TDD evidence), plus the task reviewer's
 verdicts on the diff. Do not re-run the implementer's suite to
 double-check a clean report — but never mark a task complete without
-both pieces of evidence on file. The fresh full-suite verification
-happens once, in superpowers:finishing-a-development-branch.
+both pieces of evidence on file. "On file" means in the integration
+worktree: the task worktree holding the originals is deleted at merge,
+so the copy step in the Worktree-per-Task Protocol is what keeps this
+contract satisfiable. The fresh full-suite verification happens once, in
+superpowers:finishing-a-development-branch.
 
 ## Gated Testing Mode
 
