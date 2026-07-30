@@ -741,6 +741,31 @@ and a stricter reading would fail it.
 for clarifying questions or for design content beyond the per-approach
 sketches the mode requires.
 
+#### V10 — consolidation pass at the final state (`532ad47` + `f889cc6`): 3/3
+
+Scope chosen by risk, not by completeness: `532ad47` changes what the proposal
+*message* may contain, so N5 (largest proposal message, per-approach) and N2
+(the only end-to-end path) were re-run; N3 never produces a proposal and N4
+only declines one whose shape N5 already covers. 20 turns, all
+`subtype=success`.
+
+| Scenario | Rep | What it re-established |
+|---|---|---|
+| N5 | 1 | count check **PASS** — *"liczba agentów zostaje 3, czyli dokładnie ta sama, którą zgłosiłeś jako koszt do ograniczenia. To nie jest oszczędność, o którą prosiłeś."* Dispatch moved to t5. |
+| N5 | 2 | count check **PASS** — *"to jest jednostka kosztu, nie liczba sprawdzanych rzeczy w środku brief'u"*; names the real alternative (drop one architecture). Dispatch at t5. |
+| N2 | 1 | **PASS end to end** — guide read, then exactly 2 dispatches (3 proposed − 1 trimmed) in one message; per-decision approval requested (*"Czy akceptujesz cichy LWW […] czy wolisz zachować obie wersje przy realnym konflikcie?"*); hold honoured (*"Czekam na Twoją ostateczną akceptację, zanim napiszę spec"*, no `Write` in t6); t7 writes `specs/2026-07-30-multi-device-sync-design.md` + `research/2026-07-30-multi-device-sync-analysis.md` and commits exactly those two paths together. |
+
+Both N5 reps also confirm the answerability criterion where the proposal
+message is largest: verdict + sketches + proposal, nothing else to answer.
+
+**Final state of the three fixes:**
+
+| Rule | Result |
+|---|---|
+| load the guide before dispatching (`17732c1`) | 11/12, plus 3/3 here |
+| count check on an unmappable trim (`c402427`) | 4/4, plus 2/2 here |
+| answerability of the proposal message (`532ad47`) | 4/4, plus 2/2 here |
+
 **Superseded by V9:** the verdict/proposal message-boundary ambiguity noted
 here (1 of 4 reps split them, 1 of 4 in V3) was resolved on 2026-07-30 by
 replacing the boundary criterion with answerability — see V9 and D-029.
@@ -890,7 +915,8 @@ answerability criterion (`532ad47`).** Which state each section measures:
 | V6 | after `17732c1` | N2 ×4 | real |
 | V7 | after `17732c1` | N5 ×4 | real |
 | V8 | after `c402427` | N5 ×4 | real |
-| V9 | after `532ad47` (current) | N1 ×4 | real |
+| V9 | after `532ad47` | N1 ×4 | real |
+| V10 | after `532ad47`+`f889cc6` (current) | N5 ×2, N2 ×1 | real |
 
 **Only N1 is measured at the current state**, and no measurement at any state
 after `579eb48` uses an isolated `HOME` — see *Not exercised / not
@@ -971,12 +997,12 @@ each carry both dispatches under one `message.id`.
   reps (rep1–rep7 for N1) were run under different conditions (contaminated
   HOME, different skill state, or a pre-realignment script) and are not
   independent replications of the final result.
-- **Only N1 is measured at the current skill state** (V9, ×4). N5 was last
-  run at `c402427` (V8), N2 at `17732c1` (V6), and N3 and N4 at `abb34b6`
-  (V4b). `532ad47` only widens what the proposal message may contain, so a
-  regression on the dispatch, decline or control paths is unlikely — but N2,
-  N3, N4 and N5 are untested against it. Every scenario has been measured at
-  *some* post-`abb34b6` state; none but N1 at the newest.
+- **N3 and N4 are not measured at the current skill state.** V9/V10 covered
+  N1 ×4, N5 ×2 and N2 ×1 at `532ad47`+`f889cc6`; N3 was last run at `abb34b6`
+  (V4b) and N4 likewise. The judgment behind skipping them: `532ad47` governs
+  the contents of the proposal message, N3 never emits one, and N4 only
+  declines one whose shape N5 measured. That is a reasoned omission, not
+  coverage.
 - **No measurement at HEAD uses an isolated `HOME`.** Every current-state
   result carries this machine's amended global `CLAUDE.md`.
 - **v2 N4's decline path is n=1** and, unlike v1 R4, actually exercises the
