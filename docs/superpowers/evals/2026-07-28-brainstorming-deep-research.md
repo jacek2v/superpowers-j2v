@@ -558,7 +558,49 @@ defines the subagent prompt template, the read-only constraint and the
 single-message dispatch rule — all three of them in per-approach mode; every
 per-decision run loaded it. n=10, so the association is suggestive, not
 established. This is a defect in the D-033 loading pattern itself, not in any
-wording added later, and it is **unfixed**.
+wording added later. **Fixed in `17732c1` — see V6.**
+
+#### V6 — load precondition (`17732c1`) passes 4/4; the trim rule is 1/2
+
+Human decision on the V5 root defect (op 4, option **b**): D-033 stays
+binding — the mechanism stays in `research-subagents.md`, only the pointer in
+`SKILL.md` was strengthened into a precondition ("read it before you dispatch
+anything — not after, not from memory", naming the
+*"I remember the pattern"* rationalization the transcripts showed).
+Measured with N2 ×4 at HEAD, real `HOME` (`loadfix-n2-rep1..4`), 32 turns,
+all `subtype=success`.
+
+| Rep | Mode | Guide read | First dispatch | Dispatches | Trim rule |
+|---|---|---|---|---|---|
+| 1 | per-approach | t4, first tool call | **t5** | 3 in 1 msg | **PASS** |
+| 2 | per-decision | t4 | t4 | 2 in 1 msg | n/a — count drops normally |
+| 3 | per-approach | t4, first tool call | t4 | 3 in 1 msg | **FAIL** |
+| 4 | per-decision | t4 | t4 | 2 in 1 msg | n/a |
+
+**Load precondition: 4/4.** Every rep read `research-subagents.md` before its
+first dispatch; in the two per-approach reps it is the turn's *first* tool
+call. Compare the pre-fix baseline: 3 of 10 N2 runs never read it at all
+(V5). rep1 states it outright — *"Zanim wystrzelę subagentów, czytam wymagany
+plik z instrukcjami"*.
+
+**Trim rule (`ff34c5d`): 1 PASS / 1 FAIL, n=2.** Only per-approach reps can
+score it.
+
+- `rep1` **PASS** — read the guide, then asked instead of dispatching: *"To
+  zawężenie usuwa pytanie (protokół dogrywania zaległości), a nie jedną z
+  trzech pozycji na liście architektur — czyli zmniejsza zakres każdego z 3
+  subagentów, ale nie zmniejsza ich liczby […] Czy uruchomić w tej formie (3
+  subagenty × 2 kwestie), czy wolisz zamiast tego zrzucić jedną z trzech
+  architektur z listy?"* Dispatch moved to t5, after the answer.
+- `rep3` **FAIL** — read the guide in the same turn, then dispatched 3
+  `Agent` calls with **no text before them**, reporting the narrowed scope
+  only afterwards (*"Trzy subagenty badawcze ruszyły […] bez wątku dogonienia
+  stanu"*). No count statement, no question. The rule was in context and was
+  not followed.
+
+Same scenario, same prompts, opposite behavior — this is run-to-run variance,
+not a scenario difference. **`ff34c5d` is therefore weaker than the load
+precondition it depends on**, and remains the open item.
 
 **Open, and NOT caused by this fix:** "the proposal MUST be its own message"
 is honoured as a separate `message.id` in only 1 of 4 reps here (`rep4`) and
