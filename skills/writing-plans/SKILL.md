@@ -112,7 +112,10 @@ Every task appears exactly once; levels must match the per-task lines.]
 
 **Depends on:** [Task N, Task M — every task whose Produces this task
   Consumes; `none` for an independent task. Mandatory for every task —
-  an executor schedules parallel work from these lines.]
+  an executor schedules parallel work from these lines. May name only
+  LOWER-numbered tasks: a sequential executor runs the plan in document
+  order, so a forward reference makes it run a task before its dependency.
+  Renumber the tasks until every edge points backwards.]
 
 **Step 1: Write the failing test**
 
@@ -182,6 +185,7 @@ Source:  <worktree root>
 Files:   tests/test_a.py tests/test_b.py
 Command: pytest -q --tb=short tests/test_a.py tests/test_b.py
 Expected: <k> failed or <m> collection errors — all new tests, each attributable to the missing feature
+Paste back: the run's summary counts + every failure/error with its message; passing tests stay out of the paste
 ```
 
 STOP: no implementation steps until this gate confirms every new test fails for the right reason (superpowers:test-driven-development — Valid RED).
@@ -196,6 +200,7 @@ Source:  <worktree root>
 Files:   <all files changed in the phase>
 Command: pytest -q --tb=short
 Expected: all passed, 0 failed
+Paste back: the run's summary counts + every failure/error with its message; passing tests stay out of the paste
 ```
 
 Gate GREEN always runs the full suite — no filter.
@@ -237,7 +242,7 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 
 **5. Decision traceability:** If CONTEXT.md exists, verify each D-XXX listed in the header maps to at least one task that implements it or embeds it as a constraint. If a decision has no corresponding task, either add one or note why it's already satisfied.
 
-**6. Dependency DAG:** Are the `Depends on:` lines acyclic? Is every interface a task Consumes produced by one of its declared dependencies? Do two tasks with no dependency path between them touch the same file? Does the header's Dependency Overview list every task exactly once, consistent with the per-task lines? An executor schedules parallel work from these lines — a wrong edge here is a race at execution time.
+**6. Dependency DAG:** Are the `Depends on:` lines acyclic, and does every one of them name only lower-numbered tasks? Is every interface a task Consumes produced by one of its declared dependencies? Do two tasks with no dependency path between them touch the same file? Does the header's Dependency Overview list every task exactly once, consistent with the per-task lines? An executor schedules parallel work from these lines — a wrong edge here is a race at execution time.
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 

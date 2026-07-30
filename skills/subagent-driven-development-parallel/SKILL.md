@@ -66,15 +66,15 @@ digraph process {
     }
 
     "Read plan, build dependency DAG, note global constraints, create todos" [shape=box];
-    "Dispatch ALL ready tasks (one message, concurrent)" [shape=box];
+    "Compute ready set (all tasks whose dependencies are merged)" [shape=box];
     "All tasks merged?" [shape=diamond];
     "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" [shape=box];
     "Use superpowers:project-registry\n(op 5 — register shipped)" [shape=box];
     "Use superpowers:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
-    "Read plan, build dependency DAG, note global constraints, create todos" -> "Dispatch ALL ready tasks (one message, concurrent)";
-    "Dispatch ALL ready tasks (one message, concurrent)" -> "Create task branch + worktree from integration tip";
-    "Create task branch + worktree from integration tip" -> "Dispatch implementer subagent (./implementer-prompt.md)";
+    "Read plan, build dependency DAG, note global constraints, create todos" -> "Compute ready set (all tasks whose dependencies are merged)";
+    "Compute ready set (all tasks whose dependencies are merged)" -> "Create task branch + worktree from integration tip" [label="for EVERY ready task,\nbefore any dispatch"];
+    "Create task branch + worktree from integration tip" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="ALL ready tasks\nin ONE message"];
     "Dispatch implementer subagent (./implementer-prompt.md)" -> "Implementer subagent asks questions?";
     "Implementer subagent asks questions?" -> "Answer questions, provide context" [label="yes"];
     "Answer questions, provide context" -> "Dispatch implementer subagent (./implementer-prompt.md)";
@@ -86,7 +86,7 @@ digraph process {
     "Task reviewer reports spec ✅ and quality approved?" -> "YOU merge task branch into integration branch (serialized)" [label="yes"];
     "YOU merge task branch into integration branch (serialized)" -> "Remove worktree + branch, update ledger, recompute ready set";
     "Remove worktree + branch, update ledger, recompute ready set" -> "All tasks merged?";
-    "All tasks merged?" -> "Dispatch ALL ready tasks (one message, concurrent)" [label="no — dispatch newly ready"];
+    "All tasks merged?" -> "Compute ready set (all tasks whose dependencies are merged)" [label="no — newly ready tasks"];
     "All tasks merged?" -> "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" [label="yes"];
     "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" -> "Use superpowers:project-registry\n(op 5 — register shipped)";
     "Use superpowers:project-registry\n(op 5 — register shipped)" -> "Use superpowers:finishing-a-development-branch";
@@ -132,9 +132,9 @@ conflicts that only emerge from implementation.
 
 ## Worktree-per-Task Protocol
 
-- Create the integration worktree ONCE (superpowers:using-git-worktrees) with integration branch B. The plan and the progress ledger live here.
+- Create the integration worktree ONCE (superpowers:using-git-worktrees) with integration branch B. The plan and the progress ledger live here. **If your human partner declines worktree isolation, this skill does not apply — say so and use superpowers:subagent-driven-development instead.** Concurrent tasks in one checkout race git state and void every test result; there is no in-place variant of this protocol.
 - When task T becomes ready, create its branch and worktree from the current tip of B and record the branch point — it is the task's review BASE:
-  `git worktree add -b task/T <task-worktree-path> B` (run from the integration worktree).
+  `git worktree add -b task/T <integration-worktree>-task-T B` (run from the integration worktree). Task worktrees are siblings of the integration worktree, one directory per task, named after it — an integration worktree at `../myproj-sync` gives `../myproj-sync-task-3`.
 - The dispatch prompt names the task worktree path as the working directory. The implementer, every fix subagent, and every re-review for T use that same path. Do NOT use harness-native per-dispatch worktree isolation — the worktree must persist across the implementer → reviewer → fixer chain. A native worktree tool may stand in for the raw `git worktree add` only if it yields a persistent, named worktree that survives that whole chain.
 - Task artifacts (brief, report, review package) live in the task worktree's own `.superpowers/sdd/`: run `scripts/task-brief` and `scripts/review-package` from inside the task worktree, pointing task-brief at the plan file in the integration worktree. The progress ledger is the exception — ONE file, in the integration worktree.
 - The review pipeline per task is unchanged from sequential SDD (report file → review package over `BASE..task/T` → task reviewer → fix subagent → re-review); it simply runs concurrently across tasks.
