@@ -1,6 +1,6 @@
 # Eval: brainstorming deep research (parallel read-only research subagents)
 
-Date: 2026-07-28 – 2026-07-29
+Date: 2026-07-28 – 2026-07-30
 Skill(s): `brainstorming` (checklist steps 5 and 9, research prose, Process
 Flow digraph, new `## Deep Research` section) + new reference file
 `skills/brainstorming/research-subagents.md` — spec
@@ -8,8 +8,9 @@ Flow digraph, new `## Deep Research` section) + new reference file
 D-029..D-033.
 Method: writing-skills RED → edit → GREEN. Scenarios = `claude -p` toy
 sessions (sonnet, isolated /tmp repos), multi-turn via
-`--session-id`/`--resume` with scripted answers. Branch:
-`feat/brainstorm-deep-research` off `main`.
+`--session-id`/`--resume` with scripted answers. Branches:
+`feat/brainstorm-deep-research` off `main` (V1–V2, merged), then
+`fix/proposal-per-approach-wording` off `main` (V3–V9).
 
 **⚠ Every passing result in the V1/V2 sections was obtained with `HOME`
 pointed at `/tmp/eval-home` — a copy of `~/.claude` with `CLAUDE.md`
@@ -36,17 +37,20 @@ Two fixtures, because the first one never elicited the feature:
   R3→no behavior change in well-known territory; R4→decline path.
 - **`notekeep`** (`evals/deep-research-v2/`) — built 2026-07-29 by human
   decision: offline-first multi-device note sync, where the merge strategy is
-  genuinely open. Scenarios N1–N4, all PASS at the final skill state, and
-  **every positive result in this document comes from here**.
-  Map: N1→verdict + proposal as its own message, nothing dispatched;
+  genuinely open. Scenarios N1–N5, and **every positive result in this
+  document comes from here**.
+  Map: N1→verdict + proposal, answerability, nothing dispatched;
   N2→accept-with-trim, single-message parallel dispatch, per-decision
   approval, hold honoured, spec + analysis file committed together;
-  N3→well-known-territory control (no proposal); N4→decline honoured.
+  N3→well-known-territory control (no proposal); N4→decline honoured;
+  N5 (added 2026-07-30, V7)→elicits per-approach reliably so the
+  dispatch-count check is scorable at 4 reps per run instead of ~2.
 
 Budget: the plan's human-approved allocation (baselines R1×2 R2×1 R3×1; GREEN
 R1×2 R2×2 R3×2 R4×1) was extended by human decision on 2026-07-29 to cover the
-second fixture, the contamination diagnosis, and the script realignment. Every
-v2 verdict below is n=1 per scenario.
+second fixture, the contamination diagnosis, and the script realignment, and
+again on 2026-07-30 to cover four fix/measure cycles (V6–V9). V2's verdicts are
+n=1 per scenario; V3 onward states its own n per section.
 
 Contamination caveat: toy sessions inherit the real plugin bootstrap; the
 loaded skill content is the same text under test, so contamination points
@@ -872,18 +876,25 @@ count).
 
 **Working skill (final state, this doc's evidence basis) = T3 (`cd1d9ec`) +
 T4 (`6112338`) + L1 (`31a434b`) + L2 (`f9c5d50`) + the final-review digraph
-fix (`579eb48`) + the per-approach wording fix (`abb34b6`).** Which state each
-section measures:
+fix (`579eb48`) + the per-approach wording fix (`abb34b6`) + the load
+precondition (`17732c1`) + the relocated count check (`c402427`) + the
+answerability criterion (`532ad47`).** Which state each section measures:
 
-| Section | Skill state | `HOME` |
-|---|---|---|
-| V1, V2 | before `579eb48` | isolated |
-| N3 `rep4` | after `579eb48` | isolated |
-| V3, V3b | after `579eb48`, before `abb34b6` | real |
-| V4 | after `abb34b6` (current) | real |
+| Section | Skill state | Scenarios | `HOME` |
+|---|---|---|---|
+| V1, V2 | before `579eb48` | R1–R4, N1–N4 | isolated |
+| N3 `rep4` | after `579eb48` | N3 | isolated |
+| V3, V3b | after `579eb48` | N1 ×4, N2, N4, N3 | real |
+| V4, V4b | after `abb34b6` | N1 ×8, N2 ×2, N4 ×2, N3 | real |
+| V5 | after `ff34c5d` | N2 ×4 | real |
+| V6 | after `17732c1` | N2 ×4 | real |
+| V7 | after `17732c1` | N5 ×4 | real |
+| V8 | after `c402427` | N5 ×4 | real |
+| V9 | after `532ad47` (current) | N1 ×4 | real |
 
-No scenario has been measured at the current state under an isolated `HOME` —
-see *Not exercised / not established*.
+**Only N1 is measured at the current state**, and no measurement at any state
+after `579eb48` uses an isolated `HOME` — see *Not exercised / not
+established*.
 
 ## Method corrections
 
@@ -960,10 +971,12 @@ each carry both dispatches under one `message.id`.
   reps (rep1–rep7 for N1) were run under different conditions (contaminated
   HOME, different skill state, or a pre-realignment script) and are not
   independent replications of the final result.
-- **Every scenario is now measured at HEAD** (V4/V4b: N1 ×8, N2 ×2, N4 ×2,
-  N3 ×1), but **N3 is n=1 there** and one N2 rep is not scorable against its
-  own trim assertion (see the V4b finding). No regression from `abb34b6` was
-  observed in any of the 13 reps.
+- **Only N1 is measured at the current skill state** (V9, ×4). N5 was last
+  run at `c402427` (V8), N2 at `17732c1` (V6), and N3 and N4 at `abb34b6`
+  (V4b). `532ad47` only widens what the proposal message may contain, so a
+  regression on the dispatch, decline or control paths is unlikely — but N2,
+  N3, N4 and N5 are untested against it. Every scenario has been measured at
+  *some* post-`abb34b6` state; none but N1 at the newest.
 - **No measurement at HEAD uses an isolated `HOME`.** Every current-state
   result carries this machine's amended global `CLAUDE.md`.
 - **v2 N4's decline path is n=1** and, unlike v1 R4, actually exercises the
