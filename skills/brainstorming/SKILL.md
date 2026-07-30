@@ -278,5 +278,9 @@ Then every line that says `research candidate` becomes a proposal before any app
 | "The constraints we've settled already narrow this to one option" | Re-read the active entries. A constraint that rules out one option almost never picks the winner among the rest. If no active D-entry answers the question, it is still open. |
 | "This is too token-intensive to be worth it here" | That call is your human partner's, and the proposal exists to hand it to them. Deciding the cost for them means deciding the design question for them. |
 
-If they accept, read the detailed guide before dispatching:
-`skills/brainstorming/research-subagents.md`
+**If they accept, read `skills/brainstorming/research-subagents.md` before you
+dispatch anything — not after, not from memory.** It holds the subagent prompt
+template, the read-only constraint, the single-message dispatch rule, and what
+to do when their trim cannot reduce the subagent count. Dispatching a research
+subagent in a session where you have not read that file is always wrong, and
+"I remember the pattern" is the rationalization that makes it happen.
