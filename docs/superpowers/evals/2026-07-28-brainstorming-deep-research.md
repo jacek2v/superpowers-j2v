@@ -698,15 +698,56 @@ paragraph that already granted permission was followed ~50% of the time; the
 same rule as a precondition at the top of the section that performs the
 action, plus a named rationalization, was followed 4/4 and 11/12.
 
-**Open, and NOT caused by this fix:** "the proposal MUST be its own message"
-is honoured as a separate `message.id` in only 1 of 4 reps here (`rep4`) and
-1 of 4 in V3 (`rep4`). In the other six the verdict and the proposal ride in
-one message. Whether that counts as a violation is genuinely ambiguous in
-the current text: step 5 requires the verdict in the message where clarifying
-questions end, and the proposal is required to stand alone — when both fall
-in the same turn, the skill does not say which wins. The proposal was never
-buried among clarifying questions or design content in any rep, which is what
-the rule exists to prevent. Unresolved; no measurement targets it.
+#### V9 — "its own message" replaced by answerability (`532ad47`): 4/4
+
+The old rule assumed the verdict rides in a message that also carries
+clarifying questions (`SKILL.md` step 5). When the human's *answer* is what
+ends those questions, verdict and proposal necessarily land in the same turn
+and the text ruled on nothing — which is why 6 of 8 reps merged them (V4b,
+V6). Human decision at the op-4 gate (**option a**, 2026-07-30): supersede
+D-029's message-boundary criterion; recorded in place as D-029 with a
+`(prev: …)` note (`f9bd4cb`). The rule is now: **the proposal must be the only
+thing in its message the human has to answer**; the verdict may head it,
+nothing else may. Changed in all four places that stated it (`532ad47`).
+
+Measured on N1 ×4 at HEAD, real `HOME` (`answerfix-n1-rep1..4`), 12 turns, all
+`subtype=success`, 0 dispatches (N1 scripts no acceptance).
+
+| Rep | Verdict + proposal in one message | Clarifying question in it | Design content in it | Verdict |
+|---|---|---|---|---|
+| 1 | yes | no | no | **PASS** |
+| 2 | yes | no | no | **PASS** |
+| 3 | yes | **borderline** | 3 architecture sketches (per-approach — permitted) | **PASS, noted** |
+| 4 | yes | no | no | **PASS** |
+
+Every turn produced exactly one message (previously the split was 2 of 8).
+
+`rep4` quotes the new criterion back almost verbatim: *"To jest jedyna rzecz,
+na którą proszę o odpowiedź w tej wiadomości: mogę wysłać 3 podagentów
+badawczych…"*
+
+`rep3` is the borderline one and is recorded as such rather than scored clean:
+it states an assumption and invites correction — *"Zakładam też […] że
+usuwanie notatek nie istnieje […] powiedz, jeśli to złe założenie"*. That is
+an invitation to object, not a question demanding an answer, so it does not
+create a second thing to answer; but it is the nearest any rep came to one,
+and a stricter reading would fail it.
+
+**No sign of the risk the relaxation created** — no rep used the extra room
+for clarifying questions or for design content beyond the per-approach
+sketches the mode requires.
+
+**Superseded by V9:** the verdict/proposal message-boundary ambiguity noted
+here (1 of 4 reps split them, 1 of 4 in V3) was resolved on 2026-07-30 by
+replacing the boundary criterion with answerability — see V9 and D-029.
+
+**Still open — the visual-companion offer keeps the old formulation.**
+`SKILL.md` lines 42, 230 and 233 still say the offer "MUST be its own
+message", so the two just-in-time offers in this skill now state their rule
+differently. That text is upstream (`866f2bd`), predates this work, and no
+scenario in this eval exercises it; changing behavior-shaping content without
+a measurement is what this repo's CLAUDE.md forbids. Left deliberately
+untouched and recorded as an inconsistency, not a defect.
 
 ## Refactor loop
 
