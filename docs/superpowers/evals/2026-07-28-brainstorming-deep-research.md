@@ -602,6 +602,53 @@ Same scenario, same prompts, opposite behavior — this is run-to-run variance,
 not a scenario difference. **`ff34c5d` is therefore weaker than the load
 precondition it depends on**, and remains the open item.
 
+#### V7 — scenario N5 makes the trim rule scorable; the rule is 3/6
+
+Human decision after V6: rather than iterate the wording against ~2 scorable
+reps per run, build a scenario that reliably elicits per-approach. **N5**
+(`3d19b8d`) states the per-approach trigger `research-subagents.md` names —
+the questions are entangled and only make sense inside a whole design — asks
+for candidate designs compared side by side, and pre-answers the recurring
+scope questions so the proposal lands at t3. Its t4 acceptance trims a
+**question**, which a per-approach proposal does not list.
+
+**The instrument works: 4 of 4 reps chose per-approach** (previously ~50%),
+and the trim landed on the proposal in all 4 — no acceptance hit a vacuum.
+
+| Rep | Guide read before dispatch | Asked before dispatching | Trim rule |
+|---|---|---|---|
+| 1 | yes (t4, first tool call) | yes → dispatch moved to t5 | **PASS** |
+| 2 | **no** — never read it | no | **FAIL** |
+| 3 | yes, citing the rule verbatim | no — dispatched 3 in the same turn | **FAIL** |
+| 4 | yes | yes → dispatch moved to t5 | **PASS** |
+
+`rep1` and `rep4` state the cost arithmetic and offer the cheaper
+alternative — `rep4`: *"zawęża zakres researchu każdego z trzech subagentów
+[…] ale nie zmniejsza ich liczby — nadal 3 […] czy wolisz zamiast tego
+zrezygnować z jednej z architektur?"*
+
+`rep3` is the sharpest evidence of the limit: it read the guide **because the
+precondition told it to**, said so out loud (*"Zanim wyślę podagentów, muszę
+zgodnie z zasadami skill-a przeczytać szablon dyspozycji […] nie mogę wysyłać
+z pamięci"*), and then dispatched 3 subagents without addressing the trim at
+all. Having the rule in context is not sufficient.
+
+`rep2` dispatched as the turn's first action with no guide read — the load
+precondition is not absolute either.
+
+**Combined tallies at HEAD** (`loadfix` N2 ×4 + `headfix` N5 ×4):
+
+| Rule | Result | n |
+|---|---|---|
+| load the guide before dispatching (`17732c1`) | **7/8** | 8 reps, both scenarios |
+| ask when a trim cannot cut the count (`ff34c5d`) | **3/6** | 6 per-approach reps |
+
+`17732c1` is a real improvement over its 7/10 pre-fix baseline. `ff34c5d` is
+a coin flip and **does not work reliably**; it is left in place because it
+never made anything worse, but it should not be described as functioning.
+What V7 buys is the ability to measure it: N5 yields 4 scorable reps per run
+instead of ~2.
+
 **Open, and NOT caused by this fix:** "the proposal MUST be its own message"
 is honoured as a separate `message.id` in only 1 of 4 reps here (`rep4`) and
 1 of 4 in V3 (`rep4`). In the other six the verdict and the proposal ride in
@@ -831,8 +878,9 @@ each carry both dispatches under one `message.id`.
   result carries this machine's amended global `CLAUDE.md`.
 - **v2 N4's decline path is n=1** and, unlike v1 R4, actually exercises the
   decline (the proposal existed to decline). It has not been repeated.
-- **The per-approach proposal mode has never been a designed scenario** — no
-  fixture selects for it, and which mode a run picks stays uncontrolled. It
+- **The per-approach proposal mode had no designed scenario until N5**
+  (`3d19b8d`, V7), which elicits it 4/4. Before N5, which mode a run picked
+  was uncontrolled. It
   has now been observed 9 times unprompted (v2 `n2 rep1`; V3 `rep2`, `rep3`;
   V3b `n4 rep3`; V4 `rep3`; V4b `n2 rep1`, `n4 rep1`, `n1 rep5/6/7`). The
   V4b finding shows why a designed scenario is still needed: the trim
