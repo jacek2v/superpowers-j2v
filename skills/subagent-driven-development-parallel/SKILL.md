@@ -142,7 +142,7 @@ conflicts that only emerge from implementation.
 - **Rescue the evidence before you destroy the worktree.** The brief, the implementer report and the review package are the evidence the Verification Contract requires, and they live in the task worktree that is about to be deleted — in gated mode the contract is not even checked until the phase's Gate GREEN, long after removal, and the final whole-branch reviewer may want to read any task's report. Copy them into the integration worktree's `.superpowers/sdd/` first:
   `cp <task-worktree-path>/.superpowers/sdd/task-T-* <task-worktree-path>/.superpowers/sdd/review-*.diff <integration-worktree>/.superpowers/sdd/`
   Nothing collides: briefs and reports carry the task number, and review packages are named after the SHA range they cover.
-- Then, after a merge: `git worktree remove <task-worktree-path>`, `git branch -d task/T`, update the task's ledger line, recompute the ready set.
+- Then, after a merge: `git worktree remove --force <task-worktree-path>`, `git branch -d task/T`, update the task's ledger line, recompute the ready set. `--force` is required, not defensive: the report and review package are written after the task's last commit, so the worktree always holds untracked files and a plain `remove` refuses. You already copied them out in the previous step.
 
 ## Model Selection
 
