@@ -812,25 +812,86 @@ the file is first read at t5. The check therefore fired from the `SKILL.md`
 text alone, which is exactly the failure V11 set out to close. That path had
 no measurement before.
 
-**The one miss is not attributable to either fix, and n=3 cannot settle it.**
-Rep2 did not mishandle the new ordering — it never entered the tier, declining
-on the "well-known domain" criterion in *When To Propose* and the
-`"I already know the options here"` Red Flags row, neither of which `3861f58`
-touches. Against that: the previous skill state scored 8/8 on elicitation with
-this same scenario (V7 ×4, V8 ×4), so 2/3 is a drop that three reps cannot
-distinguish from noise. Recorded as unresolved rather than explained away. The
-consequence of the failure mode is mild — when the tier does not fire the
-session continues as an ordinary brainstorm, with no dispatch, no spend, and no
-unapproved decision presented as settled.
+**The one miss is not attributable to either fix.** Rep2 did not mishandle the
+new ordering — it never entered the tier, declining on the "well-known domain"
+criterion in *When To Propose* and the `"I already know the options here"` Red
+Flags row, neither of which `3861f58` touches. Against that: the previous skill
+state scored 8/8 on elicitation with this same scenario (V7 ×4, V8 ×4). **V12
+settles it — see below.**
 
-**Fixes shipped in the same branch with NO measurement at all:** the four
-consistency repairs in `subagent-driven-development-parallel` and
-`writing-plans` (digraph node ordering, task-worktree path convention and the
-declined-worktree fallback, topological task numbering, the `Paste back:` line
-in both embedded gate templates) and the evidence-preservation step before
-`git worktree remove`. They were verified by reading and, for the copy step, by
-one scratch-repo shell test — not by any eval scenario. Measuring them needs the
-SDD suite, not this one.
+#### V12 — A/B control: the elicitation drop is noise
+
+The 8/8 baseline was measured on earlier days. Comparing today's 2/3 against it
+compares two things at once — the text and the day. The control removes the
+second: `skills/brainstorming/SKILL.md` and `research-subagents.md` were checked
+out at `dafa8b1` (the pre-fix text) into the live working tree, N5 ×3 was run
+under the same conditions as V11 minutes earlier, and the files were restored
+from `main` afterwards.
+
+| Measure | Pre-fix text (`dafa8b1`) | Post-fix text (`3861f58`, V11) |
+|---|---|---|
+| Verdict written + proposal made | 3/3 | 2/3 |
+| Count check at the trim turn | **2/3** | 2/2 |
+
+One rep of difference in each direction at n=3 — Fisher's exact gives p=1.0 on
+both. **No effect detectable either way; `3861f58` stands.** The V11 miss is
+day-to-day variance in a decision the skill has always made unreliably, not a
+regression the fix introduced.
+
+**What the control did surface: the pre-fix text dispatched on a trim it should
+have questioned.** Control rep2 t4 issued all 3 subagents immediately —
+*"Wywołuję trzech równoległych agentów badawczych […] z zakresem zawężonym […]
+zgodnie z Twoim odcięciem"* — with `research-subagents.md` **read in that same
+turn**. So the count rule was in context and was ignored. That is a different
+failure from the one `3861f58` closes (a skipped load leaving no rule in context
+at all), and nothing here shows the new text would have caught it. The count
+check's real reliability is 4/4 (V8) + 2/2 (V10) + 2/2 (V11) with the new text
+and 2/3 here with the old — good, not solved.
+
+#### Probes — the SDD-parallel and writing-plans fixes, measured after all
+
+The four consistency repairs and the evidence-preservation step shipped with no
+eval coverage; two cheap probes closed most of that gap afterwards. Toy repos
+under the scratchpad, `claude -p --model sonnet`, current skill text.
+
+**Probe A — plan generation** (`tinycsv`, `## Gated testing` declared, one
+approved spec, prompt: turn the spec into a plan). The generated plan carries
+`Paste back:` in **all four** round requests (two Gate RED, two Gate GREEN) —
+finding 6 fixed. Its `Depends on:` lines are topological (tasks 1-3 independent,
+task 4 depends on 1, 2, 3) — consistent with finding 5, but weak evidence: that
+plan is topological by nature, so the rule was never under pressure.
+
+**Probe B — parallel execution** (same repo without the gated declaration, a
+hand-written 3-task independent plan). It ran the whole workflow: three
+implementers, three task reviewers, one fix subagent, a re-review and the final
+whole-branch review.
+
+- **Finding 2 fixed, and the one-message invariant held with it.** All three
+  worktrees were created first, in one command — `for n in 1 2 3; do git
+  worktree add -b task/$n "${INTWT}-task-$n" …` — and only then came the three
+  `Agent` dispatches, which share a single `.message.id`.
+- **Finding 3 fixed.** Every one of the three merges ran `cp
+  "$TWT"/.superpowers/sdd/task-N-* "$TWT"/.superpowers/sdd/review-*.diff
+  "$INTWT"/.superpowers/sdd/` before removing the worktree. The integration
+  worktree ends with 6 task artifacts and 5 review packages; no task worktree
+  survives.
+- **New defect found by the probe: the removal command as written fails.**
+  Step 98 ran `git worktree remove` without `--force` and was refused; the
+  controller retried with `--force` and continued. Cause: the report and review
+  package are written after the task's last commit, so the worktree always
+  carries untracked files. The scratch-repo test in `78f381a` missed this
+  because it created the files before the removal but never committed in
+  between. Fixed by requiring `--force` in the protocol.
+
+Probe B was meant to stop at the first dispatch; the stop condition never fired
+because turn 1 created its worktree instead of pausing to ask, so the run went
+to completion and cost several subagents' worth of tokens. The reward was
+finding 3 confirmed end to end and the `--force` defect, neither of which a
+stopped run would have shown.
+
+**Still unmeasured after the probes:** finding 4 (the declined-worktree fallback
+and the path convention — the probe's controller never declined) and finding 5
+under pressure (a spec that tempts a non-topological numbering).
 
 ## Refactor loop
 
@@ -972,6 +1033,7 @@ answerability criterion (`532ad47`).** Which state each section measures:
 | V9 | after `532ad47` | N1 ×4 | real |
 | V10 | after `532ad47`+`f889cc6` | N5 ×2, N2 ×1 | real |
 | V11 | after `3861f58` (current) | N5 ×3 | real |
+| V12 | control: back at `dafa8b1` | N5 ×3 | real |
 
 **At the current state only N5 is measured** (V11, ×3). N2's last measurement
 is V10, N1's is V9, and N3 and N4 were last measured at `abb34b6`. The only
@@ -1060,18 +1122,18 @@ each carry both dispatches under one `message.id`.
   the V11 scope: both fixes it carries are per-approach-specific, and N5 is the
   only scenario that reliably elicits that mode. A reasoned omission, not
   coverage.
-- **Elicitation dropped from 8/8 to 2/3 at `3861f58` and the cause is
-  unresolved.** V7 and V8 each elicited the per-approach proposal 4/4 with N5;
-  V11 got 2 of 3, and the miss declined the tier on criteria `3861f58` does not
-  touch. Three reps cannot separate a regression from noise. The run that would
-  have — N5 reps 4-6 — was stopped by the operator after rep3.
-- **The branch's four consistency fixes and the evidence-preservation step have
-  no eval coverage at all.** `subagent-driven-development-parallel` (digraph
-  dispatch ordering, worktree path convention, declined-worktree fallback,
-  copying task evidence before `git worktree remove`) and `writing-plans`
-  (topological task numbering, `Paste back:` in both embedded gate templates)
-  were verified by reading, plus one scratch-repo shell test of the copy step.
-  Measuring them belongs to the SDD suite, which this eval does not run.
+- **Elicitation is unreliable and always was — 2/3 at `3861f58`, 3/3 on the
+  pre-fix text run back-to-back (V12).** The fix is cleared; what remains open
+  is the underlying rate. V7/V8 scored 8/8 on earlier days, today's six reps
+  across both texts scored 5/6, and no run isolates which criterion the misses
+  turn on.
+- **Findings 2, 3 and 6 are n=1 from a single probe run; finding 4 and the
+  pressure case for finding 5 have no coverage at all.** See *Probes* under
+  V12 for what each probe did and did not establish.
+- **Superseded by the probes — kept for the record:** this bullet previously
+  read that the branch's four consistency fixes and the evidence-preservation
+  step had no eval coverage at all and that measuring them needed the SDD
+  suite. Two `claude -p` probes on toy repos covered three of them without it.
 - **No measurement at HEAD uses an isolated `HOME`.** Every current-state
   result carries this machine's amended global `CLAUDE.md`.
 - **The per-approach ordering rule is n=2.** Both passing V11 reps put the
