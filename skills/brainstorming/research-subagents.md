@@ -56,6 +56,8 @@ Acceptance may come trimmed or edited — dispatch exactly the list your human p
 
 Compare the number you are about to dispatch with the number you proposed. A trim that names something you never listed — a question, when your list was approaches — narrows every subagent's brief and leaves the count exactly where it was. That is not the trade they asked for: a trim is a cost objection, and the cost is the number of subagents, not the length of their briefs. Say the number, say the trim did not lower it, and ask whether to run it anyway or drop one of the items you listed instead. Then stop and wait, exactly as the proposal stopped and waited.
 
+This is a check on cost going *up* relative to what they approved. A list your human partner enlarged — they added a question or an approach — is approved as enlarged: dispatch it and do not re-ask.
+
 | Thought | Reality |
 |---------|---------|
 | "They said run the rest — that is approval" | They approved a cheaper run. Same count with narrower briefs costs what they objected to. |
