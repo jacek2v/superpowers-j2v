@@ -62,7 +62,7 @@ digraph brainstorming {
     "Research needed?" [shape=diamond];
     "Research sanity check (quick)" [shape=box];
     "Open decision needs\ndeep research?" [shape=diamond];
-    "Propose deep research (own message):\nquestions, mode, subagent count" [shape=box];
+    "Propose deep research\n(only thing to answer):\nquestions, mode, count" [shape=box];
     "Human partner accepts?" [shape=diamond];
     "Dispatch parallel read-only\nresearch subagents (one message)" [shape=box];
     "Present findings; partner approves\neach decision separately" [shape=box];
@@ -87,14 +87,14 @@ digraph brainstorming {
     "Research needed?" -> "Research sanity check (quick)" [label="unfamiliar domain\nor unverified deps"];
     "Research needed?" -> "Open decision needs\ndeep research?" [label="well-known territory"];
     "Research sanity check (quick)" -> "Open decision needs\ndeep research?";
-    "Open decision needs\ndeep research?" -> "Propose deep research (own message):\nquestions, mode, subagent count" [label="yes"];
+    "Open decision needs\ndeep research?" -> "Propose deep research\n(only thing to answer):\nquestions, mode, count" [label="yes"];
     "Open decision needs\ndeep research?" -> "Propose 2-3 approaches\n(grounded in research)" [label="no"];
-    "Propose deep research (own message):\nquestions, mode, subagent count" -> "Human partner accepts?";
+    "Propose deep research\n(only thing to answer):\nquestions, mode, count" -> "Human partner accepts?";
     "Human partner accepts?" -> "Dispatch parallel read-only\nresearch subagents (one message)" [label="yes\n(list may be trimmed)"];
     "Human partner accepts?" -> "Propose 2-3 approaches\n(grounded in research)" [label="declined"];
     "Dispatch parallel read-only\nresearch subagents (one message)" -> "Present findings; partner approves\neach decision separately";
     "Present findings; partner approves\neach decision separately" -> "Propose 2-3 approaches\n(grounded in research)";
-    "Propose 2-3 approaches\n(grounded in research)" -> "Propose deep research (own message):\nquestions, mode, subagent count" [label="per-approach mode:\ndeepen each sketch"];
+    "Propose 2-3 approaches\n(grounded in research)" -> "Propose deep research\n(only thing to answer):\nquestions, mode, count" [label="per-approach mode:\ndeepen each sketch"];
     "Propose 2-3 approaches\n(grounded in research)" -> "Gate composed design\n(op 4): collision?";
     "Gate composed design\n(op 4): collision?" -> "Hard-gate protocol:\nsupersede / change direction / stop" [label="hit"];
     "Hard-gate protocol:\nsupersede / change direction / stop" -> "Gate composed design\n(op 4): collision?" [label="adjusted direction"];
