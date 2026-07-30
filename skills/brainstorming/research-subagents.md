@@ -48,9 +48,19 @@ Want me to run this? Trim or edit the question list first if any of these
 are already settled for you.
 ```
 
-Acceptance may come trimmed or edited — dispatch exactly the list your human partner approved, nothing added back. A trim that names something you did not list — a question, when you proposed approaches — narrows each subagent's scope without reducing how many you run. Do not dispatch on that silently: say what the trim removed, give the unchanged subagent count, and ask whether to run it or drop one of the listed items instead. A trim is usually a cost objection, and spending the same tokens answers the words and not the request. A decline ends the deep tier for this round: continue on the quick check and do not re-propose unless a new decision warrants it.
+Acceptance may come trimmed or edited — dispatch exactly the list your human partner approved, nothing added back, and count it first (see Dispatching). A decline ends the deep tier for this round: continue on the quick check and do not re-propose unless a new decision warrants it.
 
 ## Dispatching
+
+**Count first. If the trim did not lower the count, you do not have approval yet.**
+
+Compare the number you are about to dispatch with the number you proposed. A trim that names something you never listed — a question, when your list was approaches — narrows every subagent's brief and leaves the count exactly where it was. That is not the trade they asked for: a trim is a cost objection, and the cost is the number of subagents, not the length of their briefs. Say the number, say the trim did not lower it, and ask whether to run it anyway or drop one of the items you listed instead. Then stop and wait, exactly as the proposal stopped and waited.
+
+| Thought | Reality |
+|---------|---------|
+| "They said run the rest — that is approval" | They approved a cheaper run. Same count with narrower briefs costs what they objected to. |
+| "I'll mention the narrowed scope in the dispatch message" | By then the subagents are running. Reporting a spend is not asking for it. |
+| "The trim obviously meant the third approach" | It named a question. Guessing which listed item they meant is the guess that costs them tokens — ask. |
 
 Dispatch every research subagent as `general-purpose` with `model: sonnet`. Issue ALL of them in a single message — several dispatch calls in one response run concurrently, one per response runs them sequentially (superpowers:dispatching-parallel-agents).
 
