@@ -9,7 +9,7 @@ Maximize wall-clock speed of plan execution by running independent tasks concurr
 
 ## Decision Summary
 
-- New skill `subagent-driven-development-parallel` is a **full copy** of `subagent-driven-development` adapted for parallel orchestration (approved variant: full copy, not a delta-by-reference). The old skill stays byte-identical — sequential fallback for tightly-coupled plans, eval baseline, upstream-mergeable.
+- New skill `subagent-driven-development-parallel` is a **full copy** of `subagent-driven-development` adapted for parallel orchestration (approved variant: full copy, not a delta-by-reference). The old skill stays byte-identical — sequential fallback for tightly-coupled plans, eval baseline, upstream-mergeable. **Superseded 2026-07-28 (D-024):** the byte-freeze is lifted; the two skills are synchronized copies and a shared change lands in both.
 - The parallel skill is the **default entry point**, delivered by routing, not hierarchy: writing-plans' Execution Handoff and the generated plan header name it first. The old skill knows nothing about the new one.
 - Task dependencies are declared at **plan time**: writing-plans emits a mandatory `Depends on:` line per task. No runtime dependency inference.
 - Unit of parallelism = task. Inside a task the TDD cycle stays sequential.
@@ -74,7 +74,7 @@ Per superpowers:writing-skills (Iron Law: no skill change without a failing test
 
 ## Compatibility
 
-- Old skill directory: **zero edits** (byte-identical guarantee).
+- Old skill directory: **zero edits** (byte-identical guarantee). **Superseded 2026-07-28 (D-024)** — shared changes now land in both copies.
 - Zero edits to: executing-plans, requesting-code-review, using-git-worktrees, test-driven-development, finishing-a-development-branch, `deploy/agents/`.
 - Accepted cost of the full copy: future fixes to the sequential skill must be mirrored manually into the parallel copy; upstream merges touch only the sequential copy.
 

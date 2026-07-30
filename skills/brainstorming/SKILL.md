@@ -41,7 +41,7 @@ You MUST create a task for each of these items and complete them in order:
 2. **Project registry check (active)** — if `docs/superpowers/CONTEXT.md` exists, read DECISIONS and hold the active entries for the whole session (project-registry op 4, conflict gate). Standing obligations: never ask a clarifying question an active D-entry already answers — declare the assumption with its ID instead; and gate EVERY direction before presenting it — a clarifying-question set, proposed approaches, a composed design, a revision: the moment it collides with an active entry, run the gate protocol instead of presenting it.
 3. **Offer the visual companion just-in-time** — NOT upfront. The first time a question would genuinely be clearer shown than described, offer it then (its own message); on approval its browser tab opens for you. If no visual question ever arises, never offer it. See the Visual Companion section below.
 4. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
-5. **Research check (two tiers)** — quick tier: verify key assumptions before proposing (prior art, library/API existence, domain patterns); skip when domain and tools are well-known. Then, in the same message where your clarifying questions end and BEFORE any approach, **write the research verdict** (format in the Deep Research section): name each design decision that is still genuinely open and give it one line — either `research candidate` plus which of the four criteria it hits (unfamiliar domain, architecture choice, library comparison, contested prior art), or `quick tier` plus the fact that settles it. A decision the existing code, an active D-entry, or your human partner's answers already fix is not open — don't list it; if that leaves nothing to list, write no verdict and go to step 6. Every decision the verdict marks a research candidate MUST go into a deep-research proposal — the only thing in its message you ask them to answer — before step 6, and dispatch only after your human partner accepts. An unwritten verdict is an unmade decision. See the Deep Research section below.
+5. **Research check (two tiers)** — quick tier: verify key assumptions before proposing (prior art, library/API existence, domain patterns); skip when domain and tools are well-known. Then, in the same message where your clarifying questions end and BEFORE any approach, **write the research verdict** (format in the Deep Research section): name each design decision that is still genuinely open and give it one line — either `research candidate` plus which of the four criteria it hits (unfamiliar domain, architecture choice, library comparison, contested prior art), or `quick tier` plus the fact that settles it. A decision the existing code, an active D-entry, or your human partner's answers already fix is not open — don't list it; if that leaves nothing to list, write no verdict and go to step 6. Every decision the verdict marks a research candidate MUST go into a deep-research proposal — the only thing in its message you ask them to answer — and nothing is dispatched until your human partner accepts. Where that proposal falls depends on the mode: **per-decision** proposes before step 6 and its findings feed the approaches; **per-approach** sketches the 2-3 approaches inside the proposal message itself, because the sketch is what the subagents are given, and step 6's trade-off comparison and recommendation then wait for the findings. An unwritten verdict is an unmade decision. See the Deep Research section below.
 6. **Propose 2-3 approaches** — with trade-offs and your recommendation, grounded in research findings
 7. **Gate, then present design** — run op 4 against the composed design before showing it; then present in sections scaled to their complexity, get user approval after each section. Any revision passes the gate again before being re-presented.
 8. **Pre-spec re-check (safety net)** — if any design content changed or was added since its last op-4 pass (e.g. amendments accepted during the approval dialogue), run op 4 once more before writing the spec; otherwise skip — the design was already gated. A collision stops work until your human partner picks supersede / change direction / stop.
@@ -94,7 +94,7 @@ digraph brainstorming {
     "Human partner accepts?" -> "Propose 2-3 approaches\n(grounded in research)" [label="declined"];
     "Dispatch parallel read-only\nresearch subagents (one message)" -> "Present findings; partner approves\neach decision separately";
     "Present findings; partner approves\neach decision separately" -> "Propose 2-3 approaches\n(grounded in research)";
-    "Propose 2-3 approaches\n(grounded in research)" -> "Propose deep research\n(only thing to answer):\nquestions, mode, count" [label="per-approach mode:\ndeepen each sketch"];
+    "Propose 2-3 approaches\n(grounded in research)" -> "Propose deep research\n(only thing to answer):\nquestions, mode, count" [label="per-approach mode:\nsketch rides in the proposal,\nrecommendation waits"];
     "Propose 2-3 approaches\n(grounded in research)" -> "Gate composed design\n(op 4): collision?";
     "Gate composed design\n(op 4): collision?" -> "Hard-gate protocol:\nsupersede / change direction / stop" [label="hit"];
     "Hard-gate protocol:\nsupersede / change direction / stop" -> "Gate composed design\n(op 4): collision?" [label="adjusted direction"];
@@ -264,7 +264,7 @@ Then every line that says `research candidate` becomes a proposal before any app
 **Modes — pick one and name it in the proposal:**
 
 - **Per-decision** — one open decision = one research question = one subagent. Runs before you propose approaches; the findings feed them.
-- **Per-approach** — sketch 2-3 approaches first, then one subagent deepens each (feasibility, prior art, risks). Runs after the sketch, before your recommendation.
+- **Per-approach** — one sketched approach = one subagent, which deepens it (feasibility, prior art, risks). The sketch goes in the proposal message, so your partner sees what each subagent would be given; your trade-off comparison and recommendation come after the findings, not before.
 
 **Subagents never decide.** They are read-only fact-finders — codebase, web, library docs. They write no files and pick no direction. You synthesize, your human partner approves each decision separately, and every approved direction still passes the op-4 gate before it is presented.
 
@@ -278,9 +278,15 @@ Then every line that says `research candidate` becomes a proposal before any app
 | "The constraints we've settled already narrow this to one option" | Re-read the active entries. A constraint that rules out one option almost never picks the winner among the rest. If no active D-entry answers the question, it is still open. |
 | "This is too token-intensive to be worth it here" | That call is your human partner's, and the proposal exists to hand it to them. Deciding the cost for them means deciding the design question for them. |
 
+**A trim that does not lower the number of subagents is not approval.** They
+objected to a cost, and the cost is how many subagents run — not how long each
+brief is. Say the number, say the trim did not lower it, and ask whether to run
+it anyway or drop one of the items you listed. A list they made *longer* is
+approved as they enlarged it — dispatch it.
+
 **If they accept, read `skills/brainstorming/research-subagents.md` before you
 dispatch anything — not after, not from memory.** It holds the subagent prompt
-template, the read-only constraint, the single-message dispatch rule, and what
-to do when their trim cannot reduce the subagent count. Dispatching a research
+template, the read-only constraint, the single-message dispatch rule, and the
+full version of the count check above. Dispatching a research
 subagent in a session where you have not read that file is always wrong, and
 "I remember the pattern" is the rationalization that makes it happen.

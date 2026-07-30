@@ -778,6 +778,60 @@ scenario in this eval exercises it; changing behavior-shaping content without
 a measurement is what this repo's CLAUDE.md forbids. Left deliberately
 untouched and recorded as an inconsistency, not a defect.
 
+#### V11 — after the pre-push review fixes (`3861f58`): both fixes 2/2, elicitation 2/3
+
+An independent whole-branch review (`../reviews/2026-07-30-pre-push-review.md`)
+ran before the push and returned no Critical findings and eight Important ones.
+Two touch this skill and were fixed in `3861f58`:
+
+- **Per-approach ordering.** Step 5 required the proposal "before step 6"
+  unconditionally, while per-approach mode by definition sketches approaches
+  first — three places in `SKILL.md` stated three different orderings. The
+  checklist now names the ordering per mode: per-approach puts the sketch in
+  the proposal message and holds the comparison and recommendation until the
+  findings arrive.
+- **Count-guard reachability.** The count check lived only in
+  `research-subagents.md`, whose load precondition measures 11/12 — in the one
+  run that skipped the file the rule was not in context at all. It is now
+  stated in `SKILL.md` too. Both files also gained the ruling the review found
+  missing: a list the human *enlarged* is approved as enlarged.
+
+N5 ×3, real `HOME`. The operator stopped the run after rep3, so reps 4-6 were
+never issued and rep3 lost its t6 (the driver was killed mid-scenario; t1-t5
+completed and are intact).
+
+| Rep | Verdict + per-approach proposal | Count check (t4) | Dispatch |
+|---|---|---|---|
+| 1 | **PASS** — 3 whole-design sketches inside the proposal, recommendation withheld | **PASS** — *"Twoja prośba nie zmniejsza tej liczby: nadal wychodzi 3 subagenty, bo dzielą się po całym projekcie, nie po temacie"* | guide read, 3 `Agent` calls, one message |
+| 3 | **PASS** — *"a dopiero potem dostajesz porównanie kompromisów i moją rekomendację"* | **PASS** — *"nadal byłyby 3 wywołania"*, offers (a) run 3 anyway / (b) drop one sketch | guide read, 3 `Agent` calls, one message |
+| 2 | **FAIL** — no verdict written at all: *"Weryfikacja wstępna (quick tier, bez potrzeby dispatchu badawczego) […] nie proponuję deep research"*, then straight to a comparison table with a recommendation | n/a | n/a |
+
+**New evidence for the count guard, stronger than intended.** In both passing
+reps the refusal at t4 happened with `research-subagents.md` still unread —
+the file is first read at t5. The check therefore fired from the `SKILL.md`
+text alone, which is exactly the failure V11 set out to close. That path had
+no measurement before.
+
+**The one miss is not attributable to either fix, and n=3 cannot settle it.**
+Rep2 did not mishandle the new ordering — it never entered the tier, declining
+on the "well-known domain" criterion in *When To Propose* and the
+`"I already know the options here"` Red Flags row, neither of which `3861f58`
+touches. Against that: the previous skill state scored 8/8 on elicitation with
+this same scenario (V7 ×4, V8 ×4), so 2/3 is a drop that three reps cannot
+distinguish from noise. Recorded as unresolved rather than explained away. The
+consequence of the failure mode is mild — when the tier does not fire the
+session continues as an ordinary brainstorm, with no dispatch, no spend, and no
+unapproved decision presented as settled.
+
+**Fixes shipped in the same branch with NO measurement at all:** the four
+consistency repairs in `subagent-driven-development-parallel` and
+`writing-plans` (digraph node ordering, task-worktree path convention and the
+declined-worktree fallback, topological task numbering, the `Paste back:` line
+in both embedded gate templates) and the evidence-preservation step before
+`git worktree remove`. They were verified by reading and, for the copy step, by
+one scratch-repo shell test — not by any eval scenario. Measuring them needs the
+SDD suite, not this one.
+
 ## Refactor loop
 
 Three wording levers were tried against `notekeep`/N1, in order, before the
@@ -916,10 +970,13 @@ answerability criterion (`532ad47`).** Which state each section measures:
 | V7 | after `17732c1` | N5 ×4 | real |
 | V8 | after `c402427` | N5 ×4 | real |
 | V9 | after `532ad47` | N1 ×4 | real |
-| V10 | after `532ad47`+`f889cc6` (current) | N5 ×2, N2 ×1 | real |
+| V10 | after `532ad47`+`f889cc6` | N5 ×2, N2 ×1 | real |
+| V11 | after `3861f58` (current) | N5 ×3 | real |
 
-**Only N1 is measured at the current state**, and no measurement at any state
-after `579eb48` uses an isolated `HOME` — see *Not exercised / not
+**At the current state only N5 is measured** (V11, ×3). N2's last measurement
+is V10, N1's is V9, and N3 and N4 were last measured at `abb34b6`. The only
+isolated-`HOME` runs are V1, V2 and N3 `rep4` — every measurement from V3 on
+uses the operator's real global `CLAUDE.md`. See *Not exercised / not
 established*.
 
 ## Method corrections
@@ -997,14 +1054,29 @@ each carry both dispatches under one `message.id`.
   reps (rep1–rep7 for N1) were run under different conditions (contaminated
   HOME, different skill state, or a pre-realignment script) and are not
   independent replications of the final result.
-- **N3 and N4 are not measured at the current skill state.** V9/V10 covered
-  N1 ×4, N5 ×2 and N2 ×1 at `532ad47`+`f889cc6`; N3 was last run at `abb34b6`
-  (V4b) and N4 likewise. The judgment behind skipping them: `532ad47` governs
-  the contents of the proposal message, N3 never emits one, and N4 only
-  declines one whose shape N5 measured. That is a reasoned omission, not
+- **N1, N2, N3 and N4 are not measured at the current skill state** (`3861f58`,
+  V11) — only N5 ×3 is. N1 was last run at `532ad47` (V9), N2 at
+  `532ad47`+`f889cc6` (V10), N3 and N4 at `abb34b6` (V4b). The judgment behind
+  the V11 scope: both fixes it carries are per-approach-specific, and N5 is the
+  only scenario that reliably elicits that mode. A reasoned omission, not
   coverage.
+- **Elicitation dropped from 8/8 to 2/3 at `3861f58` and the cause is
+  unresolved.** V7 and V8 each elicited the per-approach proposal 4/4 with N5;
+  V11 got 2 of 3, and the miss declined the tier on criteria `3861f58` does not
+  touch. Three reps cannot separate a regression from noise. The run that would
+  have — N5 reps 4-6 — was stopped by the operator after rep3.
+- **The branch's four consistency fixes and the evidence-preservation step have
+  no eval coverage at all.** `subagent-driven-development-parallel` (digraph
+  dispatch ordering, worktree path convention, declined-worktree fallback,
+  copying task evidence before `git worktree remove`) and `writing-plans`
+  (topological task numbering, `Paste back:` in both embedded gate templates)
+  were verified by reading, plus one scratch-repo shell test of the copy step.
+  Measuring them belongs to the SDD suite, which this eval does not run.
 - **No measurement at HEAD uses an isolated `HOME`.** Every current-state
   result carries this machine's amended global `CLAUDE.md`.
+- **The per-approach ordering rule is n=2.** Both passing V11 reps put the
+  sketches in the proposal and withheld the recommendation, but two reps is
+  the whole evidence base for that clause.
 - **v2 N4's decline path is n=1** and, unlike v1 R4, actually exercises the
   decline (the proposal existed to decline). It has not been repeated.
 - **The per-approach proposal mode had no designed scenario until N5**
