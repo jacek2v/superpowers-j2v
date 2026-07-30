@@ -28,7 +28,7 @@ Name the mode in the proposal. One mode per round: if a per-decision round leave
 
 ## The Proposal
 
-Its own message: research questions, mode, subagent count, cost. In per-approach mode it also names the sketched approaches — that is the unit being researched. Nothing beyond that: no clarifying question, no recommendation, no design content. Then stop and wait.
+The only thing in its message your human partner has to answer: research questions, mode, subagent count, cost. In per-approach mode it also names the sketched approaches — that is the unit being researched. The research verdict may head it; nothing else may — no clarifying question, no recommendation, no design content. Then stop and wait.
 
 ```
 Three decisions here need more than a quick check:
