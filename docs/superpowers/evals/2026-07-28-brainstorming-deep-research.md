@@ -644,10 +644,59 @@ precondition is not absolute either.
 | ask when a trim cannot cut the count (`ff34c5d`) | **3/6** | 6 per-approach reps |
 
 `17732c1` is a real improvement over its 7/10 pre-fix baseline. `ff34c5d` is
-a coin flip and **does not work reliably**; it is left in place because it
-never made anything worse, but it should not be described as functioning.
+a coin flip and **does not work reliably** — superseded by `c402427`, see V8.
 What V7 buys is the ability to measure it: N5 yields 4 scorable reps per run
-instead of ~2.
+instead of ~2, which is what made V8's verdict meaningful.
+
+#### V8 — the count check, relocated and restated (`c402427`): 4/4
+
+V7 left `ff34c5d` at 3/6. The three failures shared a shape rather than a
+wording problem: the rule sat mid-paragraph under `## The Proposal`, behind a
+first clause reading *"dispatch exactly the list your human partner
+approved"*, while the action it governs happens under `## Dispatching` —
+which itself opened with *"Dispatch every research subagent as…"*. An agent
+looking for permission found it twice before reaching the qualifier.
+
+`c402427` changes location and form, not just words:
+
+- the check opens `## Dispatching`: **"Count first. If the trim did not lower the count, you do not have approval yet."**
+- it names what the cost is — the number of subagents, not the length of their briefs;
+- the acceptance paragraph reverts to a short pointer, so the rule lives in one place;
+- a `Thought | Reality` table names the three rationalizations the transcripts
+  showed, including *"They said run the rest — that is approval"*. This idiom
+  is what worked for the load precondition (7/8) where prose did not (3/6).
+
+Measured on N5 ×4 at HEAD, real `HOME` (`countfix-n5-rep1..4`), 24 turns, all
+`subtype=success`.
+
+| Rep | Guide read | Dispatched at t4? | Count stated | Cheaper alternative offered | Verdict |
+|---|---|---|---|---|---|
+| 1 | t4 | no | 3, unchanged | drop one candidate → 2 | **PASS** |
+| 2 | t4 | no | 3, unchanged | named all three, asked which to drop | **PASS** |
+| 3 | t4 | no | 3, unchanged | drop one sketch → 2 | **PASS** |
+| 4 | t4 (×2) | no | 3, unchanged | proposed *which* to drop, with a reason | **PASS** |
+
+Every rep dispatched at t5, after the resolving answer. Representative — rep2:
+
+> *"Twoje »drop the third one« nazwało pytanie […] a moja lista do zbadania to
+> były 3 całe kandydatury projektu […] To nie to samo cięcie. […] koszt
+> zostaje 3 subagenty, czyli dokładnie tyle, ile pierwotnie proponowałem. To
+> nie jest tańszy przebieg."*
+
+**Result: 4/4, up from 3/6.** The rule as it now stands (`c402427`) is the
+measured one; V7's 3/6 verdict applies to the superseded `ff34c5d` wording.
+
+**Cumulative at HEAD:**
+
+| Rule | Result |
+|---|---|
+| load the guide before dispatching (`17732c1`) | **11/12** (V6 4/4, V7 3/4, V8 4/4) |
+| count check on an unmappable trim (`c402427`) | **4/4** |
+
+The lesson that generalizes: in this skill, a rule stated as prose inside a
+paragraph that already granted permission was followed ~50% of the time; the
+same rule as a precondition at the top of the section that performs the
+action, plus a named rationalization, was followed 4/4 and 11/12.
 
 **Open, and NOT caused by this fix:** "the proposal MUST be its own message"
 is honoured as a separate `message.id` in only 1 of 4 reps here (`rep4`) and
