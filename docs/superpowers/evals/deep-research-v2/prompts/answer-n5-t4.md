@@ -1,0 +1,1 @@
+Yes, go ahead — but drop the third question, the one about catching up after weeks offline or on a fresh device. It's the least urgent one for me and I don't want to spend the tokens on it. Run the rest.

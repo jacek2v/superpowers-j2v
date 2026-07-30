@@ -1,6 +1,6 @@
 # Eval: brainstorming deep research (parallel read-only research subagents)
 
-Date: 2026-07-28 – 2026-07-29
+Date: 2026-07-28 – 2026-07-30
 Skill(s): `brainstorming` (checklist steps 5 and 9, research prose, Process
 Flow digraph, new `## Deep Research` section) + new reference file
 `skills/brainstorming/research-subagents.md` — spec
@@ -8,8 +8,9 @@ Flow digraph, new `## Deep Research` section) + new reference file
 D-029..D-033.
 Method: writing-skills RED → edit → GREEN. Scenarios = `claude -p` toy
 sessions (sonnet, isolated /tmp repos), multi-turn via
-`--session-id`/`--resume` with scripted answers. Branch:
-`feat/brainstorm-deep-research` off `main`.
+`--session-id`/`--resume` with scripted answers. Branches:
+`feat/brainstorm-deep-research` off `main` (V1–V2, merged), then
+`fix/proposal-per-approach-wording` off `main` (V3–V9).
 
 **⚠ Every passing result in the V1/V2 sections was obtained with `HOME`
 pointed at `/tmp/eval-home` — a copy of `~/.claude` with `CLAUDE.md`
@@ -36,17 +37,20 @@ Two fixtures, because the first one never elicited the feature:
   R3→no behavior change in well-known territory; R4→decline path.
 - **`notekeep`** (`evals/deep-research-v2/`) — built 2026-07-29 by human
   decision: offline-first multi-device note sync, where the merge strategy is
-  genuinely open. Scenarios N1–N4, all PASS at the final skill state, and
-  **every positive result in this document comes from here**.
-  Map: N1→verdict + proposal as its own message, nothing dispatched;
+  genuinely open. Scenarios N1–N5, and **every positive result in this
+  document comes from here**.
+  Map: N1→verdict + proposal, answerability, nothing dispatched;
   N2→accept-with-trim, single-message parallel dispatch, per-decision
   approval, hold honoured, spec + analysis file committed together;
-  N3→well-known-territory control (no proposal); N4→decline honoured.
+  N3→well-known-territory control (no proposal); N4→decline honoured;
+  N5 (added 2026-07-30, V7)→elicits per-approach reliably so the
+  dispatch-count check is scorable at 4 reps per run instead of ~2.
 
 Budget: the plan's human-approved allocation (baselines R1×2 R2×1 R3×1; GREEN
 R1×2 R2×2 R3×2 R4×1) was extended by human decision on 2026-07-29 to cover the
-second fixture, the contamination diagnosis, and the script realignment. Every
-v2 verdict below is n=1 per scenario.
+second fixture, the contamination diagnosis, and the script realignment, and
+again on 2026-07-30 to cover four fix/measure cycles (V6–V9). V2's verdicts are
+n=1 per scenario; V3 onward states its own n per section.
 
 Contamination caveat: toy sessions inherit the real plugin bootstrap; the
 loaded skill content is the same text under test, so contamination points
@@ -453,6 +457,327 @@ All 14 turns `subtype=success`.
 `HOME`; only N1 has 4 reps there. Nothing here measures a *different* user's
 global instructions.
 
+### V4 — after the per-approach wording fix (`abb34b6`): full suite at HEAD, real `HOME`
+
+`SKILL.md` and `research-subagents.md` both said the proposal message may
+contain "no approaches", while D-030's per-approach mode dispatches one
+subagent **per sketched approach** — so a per-approach proposal cannot state
+its subagent count without naming them. Three runs hit this before the fix
+(V3 `n1 rep2`, `n1 rep3`, V3b `n4 rep3`): each put the sketches in the
+proposal message, as the mode requires and the sentence forbade. The fix
+re-aims the exclusion at what must actually stay out — clarifying questions,
+the recommendation, other design content.
+
+Re-measured: `postfix-n1-rep1..4`, same conditions as V3.
+
+| Rep | Verdict | Mode | Evidence |
+|---|---|---|---|
+| 1 | PASS | per-decision | Verdict 3/3, then 3 subagents proposed, cost stated, trim offered; t3 restates the proposal alone. |
+| 2 | PASS | per-decision | Verdict 3/3 + proposal; t3 refuses to substitute a default for consent (*"jedyne pytanie to zgoda na odpalenie badania"*) and asks for **odpal / odrzuć / przytnij**. |
+| 3 | **PASS — the only rep exercising the fixed clause** | per-approach | Names 3 sketched approaches (LWW whole-note; version vectors + GC'd edit log; CRDT via automerge/pycrdt), one subagent each, states what each subagent must check (pure-Python licence per D-002, memory bound, catch-up mechanics, risks), cost stated. **No recommendation and no design content** — exactly what the amended clause permits and forbids. |
+| 4 | PASS | per-decision | t2 verdict ends *"Teraz wyślę osobną wiadomość z samą propozycją badania — bez dodatkowych treści"*, then the proposal in a separate `message.id` (`nzFMqc` → `3kHGpw`). |
+
+All 12 turns `subtype=success`; tool inventory carries **0 `Agent` blocks**.
+
+**What this establishes:** no regression on per-decision (3/3 unchanged in
+shape from V3), and the per-approach proposal is now internally consistent
+with the mode it names. **n=1 for the fixed clause** — the mode is chosen by
+the agent, and only `rep3` picked per-approach. No scenario forces it.
+
+#### V4b — full suite at HEAD (N2 ×2, N4 ×2, N3 ×1, N1 ×4 more), real `HOME`
+
+Run to close the "only N1 measured at HEAD" gap and to raise the per-approach
+sample. 33 turns, all `subtype=success`.
+
+| Scenario | Rep | Mode | Verdict |
+|---|---|---|---|
+| N2 | 1 | per-approach | **see finding below** — 3 dispatches under one `message.id` |
+| N2 | 2 | per-decision | PASS — 2 dispatches (3 − 1 trimmed) under one `message.id`; findings cite Obsidian Sync, CouchDB/PouchDB, Standard Notes, Bear; spec + analysis written and committed at t7 |
+| N4 | 1 | per-approach | PASS — proposal at t3 (3 named approaches), decline at t4 honoured, 0 `Agent` in 5 turns |
+| N4 | 2 | per-decision | PASS — same shape, 0 `Agent` |
+| N3 | 1 | n/a | PASS — states the quick tier explicitly (*"domena znana (argparse, json…), żadna decyzja nie wymaga głębszego researchu"*), 0 `Agent` |
+| N1 | 5,6,7 | per-approach | PASS — proposal names the sketched approaches, no recommendation, no design content |
+| N1 | 8 | per-decision | PASS |
+
+**Per-approach is no longer n=1**: 6 reps at HEAD picked it (N2 `rep1`,
+N4 `rep1`, N1 `rep5/6/7`, plus V4 `rep3`). No regression appeared in any.
+
+**FINDING — a trim cannot reduce cost in per-approach mode (N2 `rep1`).**
+The scenario's acceptance is *"drop the last question on that list, it's the
+least urgent one for me and I don't want to spend the tokens on it. Run the
+rest."* In per-approach mode the proposal's list is **approaches**, not
+questions, so the instruction has no referent there. The agent dropped the
+catch-up *topic* from every subagent's brief (*"bez wątku nadrabiania
+zaległości, zgodnie z Twoją prośbą"*) and still dispatched **3** subagents —
+one per approach. The literal request was honoured; the stated motive (spend
+fewer tokens) was not.
+
+This is not a regression from `abb34b6` and not a trim violation in the
+per-decision sense — it is a gap in the skill: `research-subagents.md` says
+*"dispatch exactly the list your human partner approved"*, but when the
+approved list is approaches and the trim names a question, nothing defines
+what happens to the subagent count. **Unfixed.** N2's stated assertion
+("3 proposed − 1 trimmed = 2 dispatched") is therefore only meaningful when
+the agent picks per-decision; `rep1` is recorded as not-applicable for that
+assertion rather than as a pass or a fail.
+
+#### V5 — trim-gap fix (`ff34c5d`) is UNMEASURED, and why
+
+`ff34c5d` added a rule to `research-subagents.md`: when an approved trim
+leaves the subagent count unchanged, state the count and ask before
+dispatching. Measured with N2 ×4 at HEAD, real `HOME` (`trimfix-n2-rep1..4`),
+32 turns, all `subtype=success`.
+
+| Rep | Mode | Guide read before dispatch? | Dispatches | Scorable for the fix |
+|---|---|---|---|---|
+| 1 | per-approach | **no** | 3 | no — rule never in context |
+| 2 | per-decision | yes | 2 | n/a — trim maps to the list, count drops normally |
+| 3 | per-approach | **no** | 3 | no — rule never in context |
+| 4 | per-decision | yes | 2 | n/a |
+
+Both per-approach reps dispatched immediately — the first tool call of turn 4
+is `Agent`, with no `Read` of `research-subagents.md` anywhere in the run.
+`SKILL.md` says *"If they accept, read the detailed guide before dispatching"*
+and they did not. **The fix's wording was never exercised**; the run measured
+the load step, not the rule.
+
+**Root defect — the reference guide is skipped in a substantial fraction of
+runs.** Across all 10 N2 runs in this document:
+
+| Run | Mode | Guide read | Dispatches |
+|---|---|---|---|
+| `green-n2-rep1` | per-approach | no | 3 |
+| `green-n2-rep2` | per-decision | yes | 2 |
+| `green-n2-rep3` | per-approach | yes | 2 |
+| `postfix-n2-rep1` | per-approach | yes | 3 |
+| `postfix-n2-rep2` | per-decision | yes | 2 |
+| `realhome-n2-rep4` | per-decision | yes | 2 |
+| `trimfix-n2-rep1` | per-approach | **no** | 3 |
+| `trimfix-n2-rep2` | per-decision | yes | 2 |
+| `trimfix-n2-rep3` | per-approach | **no** | 3 |
+| `trimfix-n2-rep4` | per-decision | yes | 2 |
+
+3 of 10 runs dispatched research subagents without ever loading the file that
+defines the subagent prompt template, the read-only constraint and the
+single-message dispatch rule — all three of them in per-approach mode; every
+per-decision run loaded it. n=10, so the association is suggestive, not
+established. This is a defect in the D-033 loading pattern itself, not in any
+wording added later. **Fixed in `17732c1` — see V6.**
+
+#### V6 — load precondition (`17732c1`) passes 4/4; the trim rule is 1/2
+
+Human decision on the V5 root defect (op 4, option **b**): D-033 stays
+binding — the mechanism stays in `research-subagents.md`, only the pointer in
+`SKILL.md` was strengthened into a precondition ("read it before you dispatch
+anything — not after, not from memory", naming the
+*"I remember the pattern"* rationalization the transcripts showed).
+Measured with N2 ×4 at HEAD, real `HOME` (`loadfix-n2-rep1..4`), 32 turns,
+all `subtype=success`.
+
+| Rep | Mode | Guide read | First dispatch | Dispatches | Trim rule |
+|---|---|---|---|---|---|
+| 1 | per-approach | t4, first tool call | **t5** | 3 in 1 msg | **PASS** |
+| 2 | per-decision | t4 | t4 | 2 in 1 msg | n/a — count drops normally |
+| 3 | per-approach | t4, first tool call | t4 | 3 in 1 msg | **FAIL** |
+| 4 | per-decision | t4 | t4 | 2 in 1 msg | n/a |
+
+**Load precondition: 4/4.** Every rep read `research-subagents.md` before its
+first dispatch; in the two per-approach reps it is the turn's *first* tool
+call. Compare the pre-fix baseline: 3 of 10 N2 runs never read it at all
+(V5). rep1 states it outright — *"Zanim wystrzelę subagentów, czytam wymagany
+plik z instrukcjami"*.
+
+**Trim rule (`ff34c5d`): 1 PASS / 1 FAIL, n=2.** Only per-approach reps can
+score it.
+
+- `rep1` **PASS** — read the guide, then asked instead of dispatching: *"To
+  zawężenie usuwa pytanie (protokół dogrywania zaległości), a nie jedną z
+  trzech pozycji na liście architektur — czyli zmniejsza zakres każdego z 3
+  subagentów, ale nie zmniejsza ich liczby […] Czy uruchomić w tej formie (3
+  subagenty × 2 kwestie), czy wolisz zamiast tego zrzucić jedną z trzech
+  architektur z listy?"* Dispatch moved to t5, after the answer.
+- `rep3` **FAIL** — read the guide in the same turn, then dispatched 3
+  `Agent` calls with **no text before them**, reporting the narrowed scope
+  only afterwards (*"Trzy subagenty badawcze ruszyły […] bez wątku dogonienia
+  stanu"*). No count statement, no question. The rule was in context and was
+  not followed.
+
+Same scenario, same prompts, opposite behavior — this is run-to-run variance,
+not a scenario difference. **`ff34c5d` is therefore weaker than the load
+precondition it depends on**, and remains the open item.
+
+#### V7 — scenario N5 makes the trim rule scorable; the rule is 3/6
+
+Human decision after V6: rather than iterate the wording against ~2 scorable
+reps per run, build a scenario that reliably elicits per-approach. **N5**
+(`3d19b8d`) states the per-approach trigger `research-subagents.md` names —
+the questions are entangled and only make sense inside a whole design — asks
+for candidate designs compared side by side, and pre-answers the recurring
+scope questions so the proposal lands at t3. Its t4 acceptance trims a
+**question**, which a per-approach proposal does not list.
+
+**The instrument works: 4 of 4 reps chose per-approach** (previously ~50%),
+and the trim landed on the proposal in all 4 — no acceptance hit a vacuum.
+
+| Rep | Guide read before dispatch | Asked before dispatching | Trim rule |
+|---|---|---|---|
+| 1 | yes (t4, first tool call) | yes → dispatch moved to t5 | **PASS** |
+| 2 | **no** — never read it | no | **FAIL** |
+| 3 | yes, citing the rule verbatim | no — dispatched 3 in the same turn | **FAIL** |
+| 4 | yes | yes → dispatch moved to t5 | **PASS** |
+
+`rep1` and `rep4` state the cost arithmetic and offer the cheaper
+alternative — `rep4`: *"zawęża zakres researchu każdego z trzech subagentów
+[…] ale nie zmniejsza ich liczby — nadal 3 […] czy wolisz zamiast tego
+zrezygnować z jednej z architektur?"*
+
+`rep3` is the sharpest evidence of the limit: it read the guide **because the
+precondition told it to**, said so out loud (*"Zanim wyślę podagentów, muszę
+zgodnie z zasadami skill-a przeczytać szablon dyspozycji […] nie mogę wysyłać
+z pamięci"*), and then dispatched 3 subagents without addressing the trim at
+all. Having the rule in context is not sufficient.
+
+`rep2` dispatched as the turn's first action with no guide read — the load
+precondition is not absolute either.
+
+**Combined tallies at HEAD** (`loadfix` N2 ×4 + `headfix` N5 ×4):
+
+| Rule | Result | n |
+|---|---|---|
+| load the guide before dispatching (`17732c1`) | **7/8** | 8 reps, both scenarios |
+| ask when a trim cannot cut the count (`ff34c5d`) | **3/6** | 6 per-approach reps |
+
+`17732c1` is a real improvement over its 7/10 pre-fix baseline. `ff34c5d` is
+a coin flip and **does not work reliably** — superseded by `c402427`, see V8.
+What V7 buys is the ability to measure it: N5 yields 4 scorable reps per run
+instead of ~2, which is what made V8's verdict meaningful.
+
+#### V8 — the count check, relocated and restated (`c402427`): 4/4
+
+V7 left `ff34c5d` at 3/6. The three failures shared a shape rather than a
+wording problem: the rule sat mid-paragraph under `## The Proposal`, behind a
+first clause reading *"dispatch exactly the list your human partner
+approved"*, while the action it governs happens under `## Dispatching` —
+which itself opened with *"Dispatch every research subagent as…"*. An agent
+looking for permission found it twice before reaching the qualifier.
+
+`c402427` changes location and form, not just words:
+
+- the check opens `## Dispatching`: **"Count first. If the trim did not lower the count, you do not have approval yet."**
+- it names what the cost is — the number of subagents, not the length of their briefs;
+- the acceptance paragraph reverts to a short pointer, so the rule lives in one place;
+- a `Thought | Reality` table names the three rationalizations the transcripts
+  showed, including *"They said run the rest — that is approval"*. This idiom
+  is what worked for the load precondition (7/8) where prose did not (3/6).
+
+Measured on N5 ×4 at HEAD, real `HOME` (`countfix-n5-rep1..4`), 24 turns, all
+`subtype=success`.
+
+| Rep | Guide read | Dispatched at t4? | Count stated | Cheaper alternative offered | Verdict |
+|---|---|---|---|---|---|
+| 1 | t4 | no | 3, unchanged | drop one candidate → 2 | **PASS** |
+| 2 | t4 | no | 3, unchanged | named all three, asked which to drop | **PASS** |
+| 3 | t4 | no | 3, unchanged | drop one sketch → 2 | **PASS** |
+| 4 | t4 (×2) | no | 3, unchanged | proposed *which* to drop, with a reason | **PASS** |
+
+Every rep dispatched at t5, after the resolving answer. Representative — rep2:
+
+> *"Twoje »drop the third one« nazwało pytanie […] a moja lista do zbadania to
+> były 3 całe kandydatury projektu […] To nie to samo cięcie. […] koszt
+> zostaje 3 subagenty, czyli dokładnie tyle, ile pierwotnie proponowałem. To
+> nie jest tańszy przebieg."*
+
+**Result: 4/4, up from 3/6.** The rule as it now stands (`c402427`) is the
+measured one; V7's 3/6 verdict applies to the superseded `ff34c5d` wording.
+
+**Cumulative at HEAD:**
+
+| Rule | Result |
+|---|---|
+| load the guide before dispatching (`17732c1`) | **11/12** (V6 4/4, V7 3/4, V8 4/4) |
+| count check on an unmappable trim (`c402427`) | **4/4** |
+
+The lesson that generalizes: in this skill, a rule stated as prose inside a
+paragraph that already granted permission was followed ~50% of the time; the
+same rule as a precondition at the top of the section that performs the
+action, plus a named rationalization, was followed 4/4 and 11/12.
+
+#### V9 — "its own message" replaced by answerability (`532ad47`): 4/4
+
+The old rule assumed the verdict rides in a message that also carries
+clarifying questions (`SKILL.md` step 5). When the human's *answer* is what
+ends those questions, verdict and proposal necessarily land in the same turn
+and the text ruled on nothing — which is why 6 of 8 reps merged them (V4b,
+V6). Human decision at the op-4 gate (**option a**, 2026-07-30): supersede
+D-029's message-boundary criterion; recorded in place as D-029 with a
+`(prev: …)` note (`f9bd4cb`). The rule is now: **the proposal must be the only
+thing in its message the human has to answer**; the verdict may head it,
+nothing else may. Changed in all four places that stated it (`532ad47`).
+
+Measured on N1 ×4 at HEAD, real `HOME` (`answerfix-n1-rep1..4`), 12 turns, all
+`subtype=success`, 0 dispatches (N1 scripts no acceptance).
+
+| Rep | Verdict + proposal in one message | Clarifying question in it | Design content in it | Verdict |
+|---|---|---|---|---|
+| 1 | yes | no | no | **PASS** |
+| 2 | yes | no | no | **PASS** |
+| 3 | yes | **borderline** | 3 architecture sketches (per-approach — permitted) | **PASS, noted** |
+| 4 | yes | no | no | **PASS** |
+
+Every turn produced exactly one message (previously the split was 2 of 8).
+
+`rep4` quotes the new criterion back almost verbatim: *"To jest jedyna rzecz,
+na którą proszę o odpowiedź w tej wiadomości: mogę wysłać 3 podagentów
+badawczych…"*
+
+`rep3` is the borderline one and is recorded as such rather than scored clean:
+it states an assumption and invites correction — *"Zakładam też […] że
+usuwanie notatek nie istnieje […] powiedz, jeśli to złe założenie"*. That is
+an invitation to object, not a question demanding an answer, so it does not
+create a second thing to answer; but it is the nearest any rep came to one,
+and a stricter reading would fail it.
+
+**No sign of the risk the relaxation created** — no rep used the extra room
+for clarifying questions or for design content beyond the per-approach
+sketches the mode requires.
+
+#### V10 — consolidation pass at the final state (`532ad47` + `f889cc6`): 3/3
+
+Scope chosen by risk, not by completeness: `532ad47` changes what the proposal
+*message* may contain, so N5 (largest proposal message, per-approach) and N2
+(the only end-to-end path) were re-run; N3 never produces a proposal and N4
+only declines one whose shape N5 already covers. 20 turns, all
+`subtype=success`.
+
+| Scenario | Rep | What it re-established |
+|---|---|---|
+| N5 | 1 | count check **PASS** — *"liczba agentów zostaje 3, czyli dokładnie ta sama, którą zgłosiłeś jako koszt do ograniczenia. To nie jest oszczędność, o którą prosiłeś."* Dispatch moved to t5. |
+| N5 | 2 | count check **PASS** — *"to jest jednostka kosztu, nie liczba sprawdzanych rzeczy w środku brief'u"*; names the real alternative (drop one architecture). Dispatch at t5. |
+| N2 | 1 | **PASS end to end** — guide read, then exactly 2 dispatches (3 proposed − 1 trimmed) in one message; per-decision approval requested (*"Czy akceptujesz cichy LWW […] czy wolisz zachować obie wersje przy realnym konflikcie?"*); hold honoured (*"Czekam na Twoją ostateczną akceptację, zanim napiszę spec"*, no `Write` in t6); t7 writes `specs/2026-07-30-multi-device-sync-design.md` + `research/2026-07-30-multi-device-sync-analysis.md` and commits exactly those two paths together. |
+
+Both N5 reps also confirm the answerability criterion where the proposal
+message is largest: verdict + sketches + proposal, nothing else to answer.
+
+**Final state of the three fixes:**
+
+| Rule | Result |
+|---|---|
+| load the guide before dispatching (`17732c1`) | 11/12, plus 3/3 here |
+| count check on an unmappable trim (`c402427`) | 4/4, plus 2/2 here |
+| answerability of the proposal message (`532ad47`) | 4/4, plus 2/2 here |
+
+**Superseded by V9:** the verdict/proposal message-boundary ambiguity noted
+here (1 of 4 reps split them, 1 of 4 in V3) was resolved on 2026-07-30 by
+replacing the boundary criterion with answerability — see V9 and D-029.
+
+**Still open — the visual-companion offer keeps the old formulation.**
+`SKILL.md` lines 42, 230 and 233 still say the offer "MUST be its own
+message", so the two just-in-time offers in this skill now state their rule
+differently. That text is upstream (`866f2bd`), predates this work, and no
+scenario in this eval exercises it; changing behavior-shaping content without
+a measurement is what this repo's CLAUDE.md forbids. Left deliberately
+untouched and recorded as an inconsistency, not a defect.
+
 ## Refactor loop
 
 Three wording levers were tried against `notekeep`/N1, in order, before the
@@ -576,10 +901,26 @@ count).
 
 **Working skill (final state, this doc's evidence basis) = T3 (`cd1d9ec`) +
 T4 (`6112338`) + L1 (`31a434b`) + L2 (`f9c5d50`) + the final-review digraph
-fix (`579eb48`).** `research-subagents.md` is unmodified from T3. V2's firing
-path (N1/N2) was measured on the state before `579eb48`; the control path was
-re-measured after it (N3 rep4), and the firing path was re-measured by V3's
-four N1 reps at HEAD `ccd917e` — see *Not exercised / not established*.
+fix (`579eb48`) + the per-approach wording fix (`abb34b6`) + the load
+precondition (`17732c1`) + the relocated count check (`c402427`) + the
+answerability criterion (`532ad47`).** Which state each section measures:
+
+| Section | Skill state | Scenarios | `HOME` |
+|---|---|---|---|
+| V1, V2 | before `579eb48` | R1–R4, N1–N4 | isolated |
+| N3 `rep4` | after `579eb48` | N3 | isolated |
+| V3, V3b | after `579eb48` | N1 ×4, N2, N4, N3 | real |
+| V4, V4b | after `abb34b6` | N1 ×8, N2 ×2, N4 ×2, N3 | real |
+| V5 | after `ff34c5d` | N2 ×4 | real |
+| V6 | after `17732c1` | N2 ×4 | real |
+| V7 | after `17732c1` | N5 ×4 | real |
+| V8 | after `c402427` | N5 ×4 | real |
+| V9 | after `532ad47` | N1 ×4 | real |
+| V10 | after `532ad47`+`f889cc6` (current) | N5 ×2, N2 ×1 | real |
+
+**Only N1 is measured at the current state**, and no measurement at any state
+after `579eb48` uses an isolated `HOME` — see *Not exercised / not
+established*.
 
 ## Method corrections
 
@@ -656,21 +997,24 @@ each carry both dispatches under one `message.id`.
   reps (rep1–rep7 for N1) were run under different conditions (contaminated
   HOME, different skill state, or a pre-realignment script) and are not
   independent replications of the final result.
-- **The skill state the V2 N1/N2/N4 PASSes were measured against is not the
-  current HEAD.** `579eb48` (Process Flow digraph edit) landed after those
-  runs. It has since been measured on both paths: the control path by N3
-  `rep4` (n=1) and the firing path by V3/V3b (N1 ×4, N2/N4/N3 ×1 each) — all
-  of which also carry the amended global `CLAUDE.md`, so HEAD has **no**
-  measurement under an isolated `HOME`.
+- **N3 and N4 are not measured at the current skill state.** V9/V10 covered
+  N1 ×4, N5 ×2 and N2 ×1 at `532ad47`+`f889cc6`; N3 was last run at `abb34b6`
+  (V4b) and N4 likewise. The judgment behind skipping them: `532ad47` governs
+  the contents of the proposal message, N3 never emits one, and N4 only
+  declines one whose shape N5 measured. That is a reasoned omission, not
+  coverage.
+- **No measurement at HEAD uses an isolated `HOME`.** Every current-state
+  result carries this machine's amended global `CLAUDE.md`.
 - **v2 N4's decline path is n=1** and, unlike v1 R4, actually exercises the
   decline (the proposal existed to decline). It has not been repeated.
-- **The per-approach proposal mode** (as opposed to per-decision) has never
-  been a designed scenario — no fixture selects for it. It has been observed
-  three times unprompted: once as a side effect of a script divergence in `n2
-  rep1`, and twice in V3 (`realhome rep2`, `rep3`), each time with the same
-  shape (subagent count, cost, trim offer). Which mode a run picks is
-  therefore uncontrolled; there is no scenario that forces one and asserts
-  against it.
+- **The per-approach proposal mode had no designed scenario until N5**
+  (`3d19b8d`, V7), which elicits it 4/4. Before N5, which mode a run picked
+  was uncontrolled. It
+  has now been observed 9 times unprompted (v2 `n2 rep1`; V3 `rep2`, `rep3`;
+  V3b `n4 rep3`; V4 `rep3`; V4b `n2 rep1`, `n4 rep1`, `n1 rep5/6/7`). The
+  V4b finding shows why a designed scenario is still needed: the trim
+  assertion in N2 only has meaning under per-decision, so half the runs
+  cannot be scored against it.
 - **Turn-budget sensitivity is real but uncharacterized.** `n1 rep7` shows
   the number of clarifying-question rounds before the verdict is not fixed
   (1 round in some runs, 2+ in others); the realigned scripts route around
