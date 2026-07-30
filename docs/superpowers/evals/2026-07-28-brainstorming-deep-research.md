@@ -918,9 +918,11 @@ answerability criterion (`532ad47`).** Which state each section measures:
 | V9 | after `532ad47` | N1 ×4 | real |
 | V10 | after `532ad47`+`f889cc6` (current) | N5 ×2, N2 ×1 | real |
 
-**Only N1 is measured at the current state**, and no measurement at any state
-after `579eb48` uses an isolated `HOME` — see *Not exercised / not
-established*.
+**At the current state only N5 and N2 are measured** (V10); N1's last
+measurement is V9, one commit earlier, and N3 and N4 were last measured at
+`abb34b6`. The only isolated-`HOME` runs are V1, V2 and N3 `rep4` — every
+measurement from V3 on uses the operator's real global `CLAUDE.md`. See
+*Not exercised / not established*.
 
 ## Method corrections
 
