@@ -154,7 +154,7 @@ When the quick check is not enough — an open decision turns on an architecture
 
 - Once you believe you understand what you're building, present the design
 - Run op 4 on the composed design before the first section goes out; re-gate any revised or added content before re-presenting it
-- Scale each section to its complexity: a few sentences if straightforward, up to 200-300 words if nuanced
+- Scale each section to its complexity: a few sentences if straightforward, up to 200-300 words if nuanced; present it as bullets/tables with minimal connecting prose
 - Ask after each section whether it looks right so far
 - Cover: architecture, components, data flow, error handling, testing
 - Be ready to go back and clarify if something doesn't make sense
