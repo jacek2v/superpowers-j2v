@@ -5,11 +5,11 @@ Use this template when dispatching a code reviewer subagent.
 **Purpose:** Review completed work against requirements and code quality standards before it cascades into more work.
 
 ```
-Subagent (general-purpose):
+Subagent (sdd-reviewer, in SDD and standalone alike; `general-purpose` only if that agent is missing from the registry):
   description: "Review code changes"
-  model: [MODEL — REQUIRED: for a final whole-branch review use the most
-         capable available model; an omitted model silently inherits the
-         session's model]
+  model: [MODEL — REQUIRED: sonnet; the `sdd-reviewer` agent carries sonnet/xhigh
+         itself, so fill this slot only on the `general-purpose` fallback, where
+         an omitted model silently inherits the session's model]
   prompt: |
     You are a Senior Code Reviewer with expertise in software architecture,
     design patterns, and best practices. Your job is to review completed work
@@ -140,7 +140,7 @@ Subagent (general-purpose):
 ```
 
 **Placeholders:**
-- `[MODEL]` — REQUIRED: reviewer model; a final whole-branch review gets the most capable available model
+- `[MODEL]` — REQUIRED: reviewer model; `sonnet` — the `sdd-reviewer` agent already carries sonnet/xhigh, so fill this slot only on the `general-purpose` fallback
 - `[DESCRIPTION]` — brief summary of what was built
 - `[PLAN_OR_REQUIREMENTS]` — what it should do (plan file path, task text, or requirements)
 - `[BASE_SHA]` — starting commit

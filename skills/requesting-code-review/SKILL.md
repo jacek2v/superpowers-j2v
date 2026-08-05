@@ -33,12 +33,12 @@ Never use `HEAD~1` as the base of a multi-commit range — it silently drops eve
 
 **2. Dispatch code reviewer subagent:**
 
-Dispatch a `general-purpose` subagent, filling the template at [code-reviewer.md](code-reviewer.md)
+Dispatch the `sdd-reviewer` agent, filling the template at [code-reviewer.md](code-reviewer.md). Its name records where it came from, not where it may be used — dispatch it for standalone reviews outside subagent-driven-development too. Only when that agent is missing from your agent registry, dispatch `general-purpose` with `model: sonnet`.
 
-**Always `general-purpose` — never a specialized review agent.** Even if your environment offers a purpose-built reviewer (e.g. `feature-dev:code-reviewer`, or anything named `code-reviewer`), do not dispatch it. Those agents carry their own review persona and methodology that override this template. Keeping the template but swapping the agent type is still wrong — dispatch `general-purpose` so the reviewer follows only `code-reviewer.md`.
+**Only `sdd-reviewer` (or bare `general-purpose`) — never a specialized review agent.** Even if your environment offers a purpose-built reviewer (e.g. `feature-dev:code-reviewer`, or anything named `code-reviewer`), do not dispatch it. Those agents carry their own review persona and methodology that override this template. `sdd-reviewer` is a bare passthrough that carries only model and effort (sonnet/xhigh), so the reviewer still follows only `code-reviewer.md`.
 
 **Placeholders (full definitions in the template):**
-- `[MODEL]` - REQUIRED: reviewer model; a final whole-branch review gets the most capable available model
+- `[MODEL]` - REQUIRED: reviewer model; `sonnet` — the `sdd-reviewer` agent already carries it, so repeat it only when falling back to `general-purpose`
 - `[DESCRIPTION]` - Brief summary of what you built
 - `[PLAN_OR_REQUIREMENTS]` - What it should do
 - `[BASE_SHA]` - Starting commit
@@ -65,8 +65,8 @@ You: Let me request the final code review before finishing.
 BASE_SHA=$(git merge-base main HEAD)
 HEAD_SHA=$(git rev-parse HEAD)
 
-[Dispatch code reviewer subagent]
-  MODEL: most capable available
+[Dispatch code reviewer subagent: sdd-reviewer agent]
+  MODEL: sonnet (carried by the agent)
   DESCRIPTION: Added verifyIndex() and repairIndex() with 4 issue types
   PLAN_OR_REQUIREMENTS: Task 2 from docs/superpowers/plans/deployment-plan.md
   BASE_SHA: a7981ec
@@ -107,7 +107,7 @@ You: [Fix progress indicators]
 - Ignore Critical issues
 - Proceed with unfixed Important issues
 - Argue with valid technical feedback
-- Swap `general-purpose` for a specialized/registered code-review agent (e.g. `feature-dev:code-reviewer`) because it looks purpose-built
+- Swap `sdd-reviewer` for a specialized/registered code-review agent (e.g. `feature-dev:code-reviewer`) because it looks purpose-built
 
 **If reviewer wrong:**
 - Push back with technical reasoning

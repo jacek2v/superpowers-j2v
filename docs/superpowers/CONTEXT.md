@@ -53,6 +53,8 @@ One decision per line. ✓ adopted, ✗ rejected direction. Never delete — sup
 - **D-033** ✓ research mechanism lives in reference file `research-subagents.md` loaded on acceptance (visual-companion pattern) — keeps SKILL.md lean; one exception: the consent guard on an unmappable trim is duplicated in SKILL.md, because the load precondition measures 11/12 and a skipped load leaves no count check in context at all [2026-07-30](specs/2026-07-28-brainstorming-subagent-research-design.md) (prev: no exceptions — the whole mechanism sat in the reference file)
 - **D-034** ✗ DO NOT add an informational-claims section to verification-before-completion — RED micro-tests 18/18 clean (sonnet+opus, false-premise and version-precision probes, under time pressure): current models already abstain, no failure to fix; factual-claims layer lives in the operator's global CLAUDE.md instead [2026-08-05](session)
 
+- **D-035** ✓ `requesting-code-review` dispatches the `sdd-reviewer` agent (sonnet/xhigh) in SDD and standalone alike, `general-purpose`+`model: sonnet` only when that agent is missing from the registry — the old "most capable available model" + "always general-purpose" wording predated the 2026-07-19 model/effort migration and sent standalone reviews to opus (RED 5/5) while forcing SDD runs to adjudicate the conflict (RED 5/5 flagged it); GREEN 5/5 after the fallback clause was tied to the registry, not to the workflow [2026-08-05](evals/2026-08-05-reviewer-dispatch-consistency.md)
+
 ## SHIPPED
 
 | When | What | Decisions |
