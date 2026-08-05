@@ -25,6 +25,16 @@ Skill dobiera sam, operator nic nie robi.
 | fix-subagent (Critical/Important) | opus / high | agent `sdd-rescue` | sonnet / high | agent `sdd-reviewer` |
 | implementer BLOCKED → eskalacja | opus / high | agent `sdd-rescue` | opus / high | agent `sdd-rescue` |
 
+## Recenzja poza SDD
+
+| Rola | Model / effort | Skąd |
+|---|---|---|
+| recenzent ad-hoc (`requesting-code-review`) | sonnet / xhigh | agent `sdd-reviewer`; `general-purpose` + `model: sonnet` tylko gdy agenta nie ma w rejestrze |
+
+Nazwa `sdd-reviewer` mówi, skąd agent pochodzi, a nie gdzie wolno go użyć —
+recenzja ad-hoc idzie tą samą ścieżką co finalna recenzja w SDD
+([D-035](docs/superpowers/evals/2026-08-05-reviewer-dispatch-consistency.md)).
+
 Uzasadnienia:
 
 - **Sesja opus/high:** effort sesji konsumuje implementer (sonnet rośnie z effortem),
