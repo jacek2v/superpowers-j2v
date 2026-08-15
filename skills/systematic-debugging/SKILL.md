@@ -253,7 +253,7 @@ Attempt 3 — hypothesis: <what you think the root cause is, and why>
    - **If ≥ 3: STOP and question the architecture (step 5 below)**
    - DON'T attempt Fix #4 without architectural discussion
 
-   **The failure ladder above governs this count.** A failed fixer dispatch is one attempt on that ladder. Return to Phase 1 only when the ladder sends you there.
+   **The failure ladder above governs this count.** A failed fixer dispatch is one attempt on that ladder.
 
 5. **If 3+ Fixes Failed: Question Architecture**
 
