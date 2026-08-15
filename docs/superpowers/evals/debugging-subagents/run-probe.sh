@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Put the systematic-debugging skill into one arm's state (the marketplace
 # plugin is a symlink to this checkout), assemble a ledgerlite toy repo, run one
-# claude -p probe session in it, save the stream-json transcript, restore the
-# skill directory, print the toy dir path.
+# claude -p probe session in it, save the stream-json transcript, print the toy
+# dir path. Each arm swap replaces the whole skill directory, so the tree
+# matches the target ref exactly. An EXIT trap restores the feature-branch
+# state on every exit path, including a failure.
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -16,6 +18,16 @@ PROBE="${1:?usage: run-probe.sh <p1|p2|p3> <red|green> [rep]}"
 ARM="${2:?arm: red|green}"
 REP="${3:-1}"
 
+# Replace the skill directory with the target ref's version. The removal makes
+# this a full sync: git checkout alone leaves files that the ref does not have.
+swap_to() {
+  # Guard the path, because rm -rf expands variables.
+  [[ -n "$REPO" && "$SKILL_DIR" == skills/?* ]] \
+    || { echo "refusing: unsafe skill path '$REPO/$SKILL_DIR'" >&2; exit 4; }
+  rm -rf "${REPO:?}/${SKILL_DIR:?}"
+  git -C "$REPO" checkout "$1" -- "$SKILL_DIR"
+}
+
 # Refuse to run on uncommitted skill edits — the arm swap would destroy them.
 if ! git -C "$REPO" diff --quiet -- "$SKILL_DIR" \
    || ! git -C "$REPO" diff --cached --quiet -- "$SKILL_DIR"; then
@@ -23,9 +35,12 @@ if ! git -C "$REPO" diff --quiet -- "$SKILL_DIR" \
   exit 3
 fi
 
+# Installed after the dirty check, so it cannot destroy uncommitted skill edits.
+trap 'swap_to "$FEATURE_REF"' EXIT
+
 case "$ARM" in
-  red)   git -C "$REPO" checkout "$BASE_REF" -- "$SKILL_DIR" ;;
-  green) git -C "$REPO" checkout "$FEATURE_REF" -- "$SKILL_DIR" ;;
+  red)   swap_to "$BASE_REF" ;;
+  green) swap_to "$FEATURE_REF" ;;
   *) echo "arm must be red or green" >&2; exit 2 ;;
 esac
 
@@ -56,7 +71,5 @@ PROMPT="$(cat "$HERE/prompts/prompt-${PROBE}.md")"
     --verbose \
     --output-format stream-json > "$OUT" 2>&1) || true
 
-# Always leave the checkout on the feature-branch state.
-git -C "$REPO" checkout "$FEATURE_REF" -- "$SKILL_DIR"
-
+# The EXIT trap restores the feature-branch state.
 echo "$TOY"
