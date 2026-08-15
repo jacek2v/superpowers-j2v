@@ -212,14 +212,15 @@ One attempt per subagent. The counter, the ladder and the architecture conversat
 
 In a project that declares `## Gated testing` (superpowers:test-driven-development — Gated Testing Mode), no debugging subagent runs a test command.
 
-**Paste this line into every dispatch prompt — investigator, analyst, experimenter and fixer — before you send it. The rule binds at the dispatch site, not in this file:**
+**Paste this line into every dispatch prompt — investigator, analyst, experimenter and fixer — before you send it. No phase earns an exception, and Phase 1 earns none either. The rule binds at the dispatch site, not in this file:**
 
 ```
 Gated testing mode — do NOT run any test command. Do NOT run the suite and do
 NOT run a single test. The operator runs every test at a gate.
 ```
 
-- **Investigators and the analyst** work unchanged beyond that line — they read, they do not run tests.
+- **Investigators and the analyst** read files. They run no test command. Running the existing suite IS running a test command. "It is read-only", "it is non-mutating" and "I am just observing the current state" are rationalizations, not exceptions.
+- **The failure output reaches an investigator through its brief.** You hold the operator's pasted round output in this session. Copy the relevant part into the brief. An investigator under gating receives that output. It never goes and gets it.
 - **The experimenter** gets a non-test experiment: a read, a git command, a script run. An experiment that needs the test suite is not dispatched — it becomes a round request you hand to the operator.
 - **The fixer** loses steps 2 and 4 of its template: it writes the failing test, writes the fix, commits, and returns without running anything. Say so in its brief.
 - **The rounds are yours.** You request the RED round and the GREEN round from the operator in this session, and you read their pasted output. A subagent never handles a gate.
