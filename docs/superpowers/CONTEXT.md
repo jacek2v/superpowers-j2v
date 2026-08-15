@@ -12,7 +12,7 @@
 
 Specs in flight — ONE line each: link + status ≤10 words.
 
-- [systematic-debugging subagent delegation](specs/2026-08-15-systematic-debugging-subagents-design.md) — spec approved, plan pending
+_(none in flight)_
 
 ## DECISIONS
 
@@ -72,3 +72,4 @@ One decision per line. ✓ adopted, ✗ rejected direction. Never delete — sup
 | 2026-07-29 | Brainstorming deep research — propose-then-accept parallel read-only research subagents, per-decision approval, research analysis files; eval-validated on a second fixture under an isolated HOME | D-029..D-033 |
 | 2026-07-30 | Brainstorming deep research follow-ups — research-guide load precondition (11/12), dispatch-count check when a trim cannot lower the count (4/4), proposal answerability criterion (4/4), new eval scenario N5; all measured under the operator's real global CLAUDE.md | D-029 (changed) |
 | 2026-07-30 | Pre-push independent review of the whole unpushed range (no Critical, 8 Important) and its fixes — per-approach ordering stated once + count guard duplicated into SKILL.md (both 2/2, elicitation 2/3, V11); parallel-SDD digraph dispatch order, task-worktree convention and declined-worktree fallback, task evidence copied out before worktree removal, topological task numbering, `Paste back:` in both embedded gate templates — probes afterwards confirmed the digraph dispatch order, the evidence copy and the `Paste back:` line, and caught `git worktree remove` needing `--force`; the declined-worktree fallback and the numbering rule under pressure stay unmeasured | D-033 (changed) |
+| 2026-08-15 | systematic-debugging subagent delegation — all four phases dispatched, attempt ledger and final verification in the main session, eval-validated | D-036..D-041 |
