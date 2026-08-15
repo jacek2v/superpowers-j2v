@@ -1,0 +1,10 @@
+2026-08-14 22:03:11 INFO  ledgerlite start, source=ledger.csv
+2026-08-14 22:03:11 INFO  parse: 4 rows read
+2026-08-14 22:03:11 DEBUG parse: row 1 label=OPENING date=01.01.2026
+2026-08-14 22:03:11 DEBUG parse: row 2 label=groceries date=2026-01-14
+2026-08-14 22:03:11 DEBUG parse: row 3 label=salary date=2026-02-03
+2026-08-14 22:03:11 DEBUG parse: row 4 label=rent date=2026-02-19
+2026-08-14 22:03:11 INFO  yearly report: {'2026': 3819.5}
+2026-08-14 22:03:11 INFO  monthly report: {'01.01.2': 1200.0, '2026-01': -80.5, '2026-02': 2700.0}
+2026-08-14 22:03:11 WARN  month bucket '01.01.2' matches no calendar month
+2026-08-14 22:03:11 INFO  ledgerlite done, exit=0
