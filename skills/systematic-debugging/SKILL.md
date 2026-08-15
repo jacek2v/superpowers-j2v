@@ -21,6 +21,20 @@ NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
 
 If you haven't completed Phase 1, you cannot propose fixes.
 
+## The Second Rule
+
+```
+SUBAGENTS READ THE EVIDENCE — YOU READ THEIR SYNTHESES
+```
+
+Logs, stack traces, test output and source files go to subagents. You read what they return: a short synthesis, plus the raw evidence behind it — the exact command and the verbatim error lines. All four phases below are dispatched.
+
+**Dispatch is unconditional.** No bug is small enough to investigate yourself. "This one is simple" is a judgment made before the investigation that would show whether it is, and it is the judgment this skill exists to block.
+
+What never leaves this session: the hypothesis, the attempt ledger, the failure count, the conversation with your human partner, and the final verification run. Subagents investigate, experiment and write code. They never decide and never gate.
+
+**Before you dispatch anything, read [debugging-subagents.md](debugging-subagents.md)** — not after, not from memory. It carries the prompt templates, the return formats and the role/model table. Dispatching a debugging subagent in a session where you have not read that file is always wrong, and "I remember the pattern" is the rationalization that makes it happen.
+
 ## When to Use
 
 Use for ANY technical issue:
@@ -48,6 +62,22 @@ Use for ANY technical issue:
 You MUST complete each phase before proceeding to the next.
 
 ### Phase 1: Root Cause Investigation
+
+**You do not run this phase — you assign it.** Send 2-4 investigators in ONE message; several dispatch calls in one response run concurrently, one call per response runs them one after another (superpowers:dispatching-parallel-agents). Each investigator gets one path from the numbered list below:
+
+| Investigation path | Agent | Model |
+|---|---|---|
+| 1 Read error messages, 2 Reproduce, 3 Check recent changes | `Explore` | `sonnet` |
+| 4 Gather evidence at component boundaries | `Explore` | `sonnet` |
+| 5 Trace data flow | `Explore` | session model — omit `model` |
+
+Paths 1-4 are relay work: read and report. Path 5 reasons across the call stack, so it keeps the session model — a miss there comes back as "nothing suspicious" and you cannot see what it missed.
+
+Give each investigator the symptom, its one path, and the return format from [debugging-subagents.md](debugging-subagents.md): a synthesis of 15 lines maximum, plus raw evidence — the exact command and the verbatim error lines.
+
+Then merge the reports into root-cause candidates yourself. When a path returns "nothing suspicious", decide whether the trace is absent or the investigator missed it, and re-dispatch that path with a sharper prompt when you cannot tell.
+
+The paths themselves:
 
 **BEFORE attempting ANY fix:**
 
@@ -121,6 +151,10 @@ You MUST complete each phase before proceeding to the next.
 
 ### Phase 2: Pattern Analysis
 
+**Dispatch this phase only when a working counterpart exists** — similar code in the same codebase that works. With no counterpart there is nothing to compare, so the phase is skipped, never faked.
+
+One pattern analyst, agent `Explore`, session model — omit `model`. Finding the single difference that matters among many that do not is exactly the reasoning this phase is for. Its brief is the four items below, plus the broken and the working locations. It returns every difference it found, the one it can tie to the symptom, and the lines that show the connection.
+
 **Find the pattern before fixing:**
 
 1. **Find Working Examples**
@@ -143,6 +177,17 @@ You MUST complete each phase before proceeding to the next.
    - What assumptions does it make?
 
 ### Phase 3: Hypothesis and Testing
+
+**The hypothesis and the ledger are yours.** You write the hypothesis; a subagent never forms one. Record every attempt in the attempt ledger, in your own messages, so it survives context compaction:
+
+```
+Attempt 3 — hypothesis: <what you think the root cause is, and why>
+            experiment: <the exact command or minimal change dispatched>
+            result: confirmed | refuted — <what the raw evidence showed>
+            conclusion: <what this rules in or rules out>
+```
+
+**Dispatch the experiment, never the hypothesis.** One experimenter, agent `general-purpose` with `model: sonnet`: it receives one exact command or one minimal change, runs it, and returns the verbatim output, a verdict — confirmed or refuted — and one sentence of rationale. It reverts its temporary instrumentation before it finishes. A refuted hypothesis goes into the ledger, and the next hypothesis is yours to form.
 
 **Scientific method:**
 
@@ -168,6 +213,18 @@ You MUST complete each phase before proceeding to the next.
    - Research more
 
 ### Phase 4: Implementation
+
+**One fixer, agent `general-purpose`, session model — omit `model` here, do not set `sonnet`.** Its brief: the root-cause synthesis from your ledger, the refuted hypotheses, the TDD requirement (failing test first — superpowers:test-driven-development), the exact test command and the expected outcome. It returns the verbatim test output; on failure it returns what it tried, plus raw evidence.
+
+**Failure ladder — one attempt per subagent, the loop is yours:**
+
+| Fixer failure | Your move |
+|---|---|
+| 1st | Re-dispatch a fresh fixer with the ledger conclusions added to its brief |
+| 2nd | Dispatch the `sdd-rescue` agent (opus/high); `general-purpose` with the session model only when that agent is missing from your registry |
+| 3rd | STOP. Question the architecture (step 5 below) and talk to your human partner |
+
+**Verify the fix yourself.** Run the full test suite once, in this session, before you claim anything is fixed. A subagent's "tests pass" is self-report: it is the claim under test, not the evidence for it (superpowers:verification-before-completion).
 
 **Fix the root cause, not the symptom:**
 
@@ -226,6 +283,8 @@ If you catch yourself thinking:
 - Proposing solutions before tracing data flow
 - **"One more fix attempt" (when already tried 2+)**
 - **Each fix reveals new problem in different place**
+- **"I'll just take a quick look at this log myself"**
+- **"Dispatching is too much overhead for a bug this small"**
 
 **ALL of these mean: STOP. Return to Phase 1.**
 
@@ -282,10 +341,15 @@ These techniques are part of systematic debugging and available in this director
 - **`root-cause-tracing.md`** - Trace bugs backward through call stack to find original trigger
 - **`defense-in-depth.md`** - Add validation at multiple layers after finding root cause
 - **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
+- **`debugging-subagents.md`** - Prompt templates, return formats and the role/model table for every dispatch in the four phases
 
 **Related skills:**
 - **superpowers:test-driven-development** - For creating failing test case (Phase 4, Step 1)
 - **superpowers:verification-before-completion** - Verify fix worked before claiming success
+
+## Gated Testing Projects
+
+In a project that declares `## Gated testing` (superpowers:test-driven-development — Gated Testing Mode), no debugging subagent runs a test command. Investigators still read, the analyst still compares, and the fixer still writes the failing test and the fix — but it commits and returns without running anything, and every test run goes through an operator round that you request and read in this session. A subagent never handles a gate. See `debugging-subagents.md` for what changes in each prompt template.
 
 ## Real-World Impact
 
