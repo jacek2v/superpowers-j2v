@@ -212,6 +212,8 @@ One attempt per subagent. The counter, the ladder and the architecture conversat
 
 In a project that declares `## Gated testing` (superpowers:test-driven-development — Gated Testing Mode), no debugging subagent runs a test command.
 
+**Ask for the RED round before Phase 1.** At the start you hold no failure output. Request the round first. Paste the round output into every investigator brief. That paste is where an investigator gets the failure evidence. Never gather that evidence yourself to fill the gap.
+
 **Paste this line into every dispatch prompt — investigator, analyst, experimenter and fixer — before you send it. No phase earns an exception, and Phase 1 earns none either. The rule binds at the dispatch site, not in this file:**
 
 ```
