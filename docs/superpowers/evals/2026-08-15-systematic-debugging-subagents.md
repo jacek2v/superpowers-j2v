@@ -7,8 +7,8 @@ Method: writing-skills RED → edit → GREEN → REFACTOR. Arms swapped on disk
 real `HOME`, live plugin symlink, `claude -p --model sonnet --output-format stream-json`.
 RED arm = `main` (pre-edit text), GREEN arm = `feat/debugging-subagents`.
 Spec: `docs/superpowers/specs/2026-08-15-systematic-debugging-subagents-design.md`
-Commit under test: <filled in Task 5>
-Budget: <filled in Task 5>
+Commit under test: `7c9a5ee0e5c954d56ed99c9d5bc7bac88cbb9023` — "docs(systematic-debugging): tie the fix counter to the failure ladder" (HEAD of `feat/debugging-subagents` at Task 5 time; includes both the eight planned insertions and the ninth, additive one — see Caveats).
+Budget: not defined by any task brief or the design spec — left unfilled rather than invented.
 
 ## Motivation
 
@@ -103,21 +103,46 @@ appear zero times in all 8 transcripts.
 Since the field is `null` on every assistant event in RED, every `tool_use`
 in these transcripts is main-chain by construction — RED never dispatches.
 
-**Dispatch tool name:** unsettled by RED. `Agent` and `Task` both appear zero
-times, so RED alone cannot distinguish which name this harness's dispatch
-tool uses. **Open item for the first GREEN transcript:** run
+**Dispatch tool name — SETTLED on `green-p1-rep1.jsonl`:**
 ```
 jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use") | .name' "$J" | sort | uniq -c
 ```
-on `green-p1-rep1.jsonl` (or whichever GREEN transcript lands first) and
-record whichever of `Agent`/`Task` appears. At the same time, settle whether
-a dispatched subagent's own tool calls appear in this stream with a non-null
-`parent_tool_use_id` (i.e. whether subagent activity is visible at all in
-this JSONL, or only the dispatch call itself is) by running
+returns `5 Agent`, `17 Bash`, `3 Edit`, `3 ListAgents`, `16 Read`,
+`1 ScheduleWakeup`, `1 Skill`. **The dispatch tool is `Agent`.** `Task` does
+not appear.
+
+**Subagent visibility — SETTLED on `green-p1-rep1.jsonl`:**
 ```
 jq -r 'select(.type=="assistant") | .parent_tool_use_id' "$J" | sort -u
 ```
-on that same first GREEN transcript and checking for any non-null value.
+returns `null` plus five distinct non-null tool_use ids (one per `Agent`
+dispatch in that transcript). **Subagent tool calls DO appear in this
+stream**, each carrying `parent_tool_use_id` equal to the dispatching
+`Agent` call's `tool_use.id`.
+```
+jq -r 'select(.type=="assistant") | .parent_tool_use_id' "$J" | grep -v '^null$' | wc -l
+```
+returns `51` — 51 subagent-side assistant events in this one transcript.
+**Main-chain filter for GREEN:** `select(.type=="assistant" and .parent_tool_use_id==null)`.
+Every metric about the main session below applies this filter; an
+unfiltered tool inventory mixes subagent reads into the main session's
+count and would make M1 look catastrophic when it is zero.
+
+**Counting-trap re-verification, on `green-p1-rep1.jsonl`:**
+```
+jq -r 'select(.type=="assistant" and .parent_tool_use_id==null)
+       | .message.id as $m
+       | .message.content[]? | select(.type=="tool_use" and .name=="Agent")
+       | [$m, .id, (.input.description // "")] | @tsv' "$J" \
+  | awk -F'\t' '{c[$1]++; print} END{for (k in c) print k, c[k]}'
+```
+confirms the brief's own worked example: three investigators
+(`msg_011Ce4MbbPQCtYBGgAmEaTXg`, count 3 — "read errors and run.log",
+"recent changes and repro determinism", "trace bad value backward"), then
+an experimenter alone (`msg_011Ce4MgKQN89HqjGRQWVng8`, count 1), then a
+fixer alone (`msg_011Ce4MkapvFYU6hY3zywquJ`, count 1). Grouping by
+`.message.id` and summing blocks — never counting rows, never deduping rows
+before summing — reproduces this correctly.
 
 **Counting trap (verified, not just recorded):** `stream-json` emits one
 assistant JSONL row per content block, not one row per logical turn. In
@@ -222,16 +247,327 @@ unmodified skill.
 
 ## GREEN (post-edit text)
 
-<filled in Task 5>
+Arm: GREEN (`feat/debugging-subagents`, commit `7c9a5ee0`). Date: 2026-08-15.
+Precondition verified: working tree on the feature arm before every rep
+(runner restores it via the patched EXIT trap — see Caveats). All 9 reps end
+with a `result` event, `subtype: "success"` — no INVALID reps.
+
+### P1 — "fix the bug", full autonomy, no gating
+
+| rep | M1 | M2 | M3 | M4 | M5 |
+|---|---|---|---|---|---|
+| 1 | 0 | 5 (max/msg 3) | present | present | pass — `parse.py` diff, `uv run pytest -q` → 2 passed |
+| 2 | 0 | 5 (max/msg 3) | present | present | pass — `parse.py` diff (removes `OPENING_MARKER` special case entirely), `uv run pytest -q` → 2 passed |
+
+Toy dirs: `/tmp/dbg-eval-p1-green-97mP` (rep1), `/tmp/dbg-eval-p1-green-1u9u`
+(rep2). Both reps: first dispatch message carries exactly 3 investigators
+(target 2-4, met), zero evidence-file reads before that dispatch (target 0,
+met), a numbered `Attempt 1` ledger entry before the fixer dispatch (target
+met — quotes below), a main-chain `uv run pytest -q` after the fixer
+returns (target met), and the correct fix landed with the suite green
+(target met).
+
+Rep2's M1 has one borderline call not counted: `Bash wc -l dates.py parse.py
+report.py tests/test_report.py run.log pyproject.toml`, issued before the
+first dispatch. It names all five evidence files as arguments, but the verb
+is `wc`, which M1's definition does not enumerate (`cat`/`head`/`tail`/
+`sed`/`grep` only) — `wc -l` returns line counts, not file content, so
+nothing is read into the main session's context. Scored 0, flagged rather
+than silently ignored, the same way RED's calibration flagged its own
+`git show | head` borderline case.
+
+**Verbatim dispatch message** (one of three investigators in
+`green-p1-rep1.jsonl`'s first dispatch, `msg_011Ce4MbbPQCtYBGgAmEaTXg`,
+tool_use `toolu_01X3qBBFhfXYfocGL9Ehyfcv`):
+
+> "You are a read-only debugging investigator. Investigate ONE path and
+> report what the evidence shows. You are not fixing anything and you are
+> not deciding anything. [...] Your path: read the error output and the
+> stack trace end to end. Also read run.log end to end [...] Read dates.py,
+> parse.py, report.py, and tests/test_report.py in full and quote the exact
+> lines involved in producing the key "01.01.2" and the value -80.5 vs
+> 1119.5. [...] Rules: - Do NOT edit source files. Do NOT commit. Do NOT
+> propose a fix. - Quote evidence. Never paraphrase an error message."
+
+**Verbatim ledger entry** (`green-p1-rep1.jsonl`, main-chain text, before
+the experimenter dispatch):
+
+> "Attempt 1 — hipoteza: parse.py:20-22 pomija to_iso() dla wiersza OPENING,
+> więc entry.date zostaje w DD.MM.YYYY zamiast ISO. monthly_totals
+> (report.py:10) zakłada zawsze ISO przez entry.date[:7], stąd błędny klucz
+> "01.01.2" i błędna suma dla 2026-01. yearly_totals działa, bo year_of()
+> (dates.py:8-11) toleruje oba formaty. eksperyment: w parse.py:21 zamienić
+> Entry(raw_date, ...) na Entry(to_iso(raw_date), ...) i uruchomić `uv run
+> pytest -q`."
+
+**A finding M1 does not capture, reported because it bears on the feature's
+actual goal, not because any defined metric requires it:** in `green-p1-
+rep2.jsonl`, after the experimenter confirms the hypothesis, the main
+session's own text says "Zanim wyślę fixera, odczytam pełny kod plików,
+żeby dokładnie sformułować zakres poprawki" ("Before I send the fixer, I'll
+read the full code myself, to scope the fix precisely") and then the main
+chain does 4 `Read` calls (`parse.py`, `dates.py`, `report.py`,
+`tests/test_report.py`) plus a `grep`, directly in the orchestrating
+session. M1 only counts reads *before the first dispatch*, so this scores
+0 by the metric as defined — but it is the exact behavior the change exists
+to remove (Motivation, above), reappearing between the experimenter and the
+fixer dispatch instead of before the first one. The same pattern recurs in
+P3 rep2 (below). Two of four P1/P3 GREEN reps show it.
+
+### P2 — "name your next three actions", one turn, no execution
+
+| rep | M1 | M2 | M3 | M4 | M5 |
+|---|---|---|---|---|---|
+| 1 | 0 | 0 (max/msg 0) | absent | n/a | not applicable |
+| 2 | 0 | 0 (max/msg 0) | absent | n/a | not applicable |
+| 3 | 0 | 0 (max/msg 0) | absent | n/a | not applicable |
+| 4 | 0 | 0 (max/msg 0) | absent | n/a | not applicable |
+| 5 | 0 | 0 (max/msg 0) | absent | n/a | not applicable |
+
+Every rep's main chain calls only `Skill` (loading `debugging-subagents.md`)
+and, in reps 1/4/5, one incidental `Read`/`Bash cat`/`Bash find` of that
+same reference file — never a dispatch, because P2 is a naming exercise,
+not execution. M2 is structurally 0 for the same reason it was 0 in RED:
+nothing is dispatched in a one-turn plan. M3 absent is expected: an
+enumerated 1/2/3 plan is not an attempt ledger.
+
+**Action 1, judged per rep — this is the metric the GREEN target table
+actually asks for on P2:**
+
+| rep | action 1 (verbatim gist) |
+|---|---|
+| 1 | `Agent` × 3 in one message, `subagent_type: Explore` — investigators for paths 1, 4, 5 |
+| 2 | `Agent` × 2 in one message + a third `Agent` alone, `subagent_type: Explore` — paths 1, 4, then 5 |
+| 3 | `Agent` × 2 in one message, `subagent_type: Explore` — paths 1 and 4; step 3 is the session's own synthesis, no tool |
+| 4 | `Agent` × 3 in one message, `subagent_type: Explore` — investigators for 3 named paths |
+| 5 | `Agent` × 3 in one message, `subagent_type: Explore` — investigators for 3 named paths |
+
+All 5 reps: action 1 as named is a dispatch, not a read. **P2 target met
+5/5.** Compare against the RED shape actually observed, not the plan's
+idealized framing: RED's action 1 in all 8 RED reps (5 original + 3
+same-day control, below) was `uv run pytest -q --tb=long` or a `-k`-filtered
+variant of it — a fuller-traceback test re-run — never literally "a read of
+`run.log`/a source file" as the design doc's RED/GREEN framing states, and
+never a dispatch. The GREEN-versus-RED contrast on P2 is therefore
+dispatch-vs-pytest-rerun, not dispatch-vs-file-read; both arms are reported
+as measured, not rounded to the plan's description.
+
+Toy dirs `/tmp/dbg-eval-p2-green-{U0ah,fZMK,E7N6,RlMt,d781}` all show no
+tracked changes beyond an untracked `uv.lock` — confirming these are
+genuinely one-turn, no-execution sessions, same as RED.
+
+### P3 — "fix the bug", full autonomy, gated testing
+
+| rep | M1 | M2 | M3 | M4 | M5 |
+|---|---|---|---|---|---|
+| 1 | 0 | 6 (max/msg 3) | present | absent (compliant) | pass — `parse.py` diff, `uv run pytest -q` → 2 passed, fix left uncommitted |
+| 2 | 0 | 6 (max/msg 3) | present | absent (compliant) | pass — `parse.py` diff, `uv run pytest -q` → 2 passed, fix committed `d2f96db` |
+
+Toy dirs: `/tmp/dbg-eval-p3-green-7vjK` (rep1), `/tmp/dbg-eval-p3-green-uJ3H`
+(rep2). M4 "absent" is scored compliant for both reps, on the same logic
+RED's own P3 row used: under `## Gated testing`, the main session must not
+run the suite itself either, so an absent main-chain `pytest` run after the
+fixer is the correct behavior, not a gap. Rep1's fixer left the fix
+uncommitted, citing the global CLAUDE.md rule against committing without an
+explicit request — `git log` in that toy dir still shows only the initial
+commit; `git diff` shows the one-line fix. Rep2's fixer committed
+(`d2f96db`), consistent with its own dispatch brief's step 5 ("Commit the
+fix... together").
+
+**P3 gating-specific judgment — no test command in any subagent prompt, and
+a `ROUND` request in the main session (target 2/2):**
+
+| rep | subagent prompt carries a test command | `ROUND`-formatted request in main session |
+|---|---|---|
+| 1 | No — every prompt says "Do NOT run pytest or uv run pytest"; the experimenter gets a `uv run python -c "..."` diagnostic script instead | No — the main session's own close is an informal "Uruchom `uv run pytest -q` i wklej wynik" ("Run `uv run pytest -q` and paste the result"), not the `ROUND <n> — RED\|GREEN` template from `test-driven-development/SKILL.md` |
+| 2 | **Yes** — the first investigator's prompt says "Run `uv run pytest -q` yourself in /tmp/dbg-eval-p3-green-uJ3H and read the full output carefully" (verbatim, tool_use `toolu_01PfoWgKiUBDctGyDLeN26yX`), and the dispatched subagent's own tool calls (filtered on `parent_tool_use_id == "toolu_01PfoWgKiUBDctGyDLeN26yX"`) show it actually ran `uv run pytest -q` three times | Yes — "**ROUND 1 — GREEN**\n\nUruchom:\n```\nuv run pytest -q\n```\n\nPaste back: pełne wyjście polecenia." — matches the `ROUND <n> — RED\|GREEN` and `Paste back:` shape from `test-driven-development/SKILL.md` |
+
+**Neither rep satisfies both halves of the compound P3 target. 0/2, not
+5/5 or 2/2 rounded down — reported as measured.** Rep1 gets the
+no-test-command half right but never produces the templated round request.
+Rep2 produces the templated round request but its first investigator both
+carries and executes a test command, in a probe whose whole point is
+verifying the gate holds. See "Targets missed" below.
 
 ## Same-day RED control
 
-<filled in Task 5>
+Arm: RED (`main`, pre-edit `systematic-debugging`), re-run on the SAME day
+as the GREEN reps above so the comparison is not against a stale baseline.
+Date: 2026-08-15. Precondition verified: `git status --short skills/` empty
+before every rep. All 4 reps end with a `result` event, `subtype:
+"success"` — no INVALID reps. Calibration re-checked on every control
+transcript: `Agent`/`Task` both appear 0 times, `parent_tool_use_id` is
+`null` on every assistant event — RED still dispatches nothing, so every
+`tool_use` is main-chain by construction, same as the original 8 RED reps.
+
+### P1 — rep 3
+
+| rep | M1 | M2 | M3 | M4 | M5 |
+|---|---|---|---|---|---|
+| 3 | 6 | 0 (max/msg 0) | absent | present | pass — `parse.py` diff removes the `OPENING` special case, `uv run pytest -q` → 2 passed |
+
+Toy dir: `/tmp/dbg-eval-p1-red-dRRk`. Same shape as `red-p1-rep1/2`: 4
+`Read` calls on `dates.py`/`parse.py`/`report.py`/`run.log`, a `Bash find
+tests -type f | xargs cat` reading `tests/test_report.py` (+1), and a `git
+log ... && git show HEAD -- parse.py | head -50` (+1, same borderline
+`Bash ... head` case the original RED calibration flagged) — M1 = 6,
+matching `red-p1-rep1`'s M1 = 6 exactly. Root-caused in one narrative pass,
+no numbered ledger (M3 absent), re-ran the full suite after editing (M4
+present), correct fix landed (M5 pass).
+
+### P2 — reps 6, 7, 8
+
+| rep | M1 | M2 | M3 | M4 | M5 |
+|---|---|---|---|---|---|
+| 6 | 0 | 0 (max/msg 0) | absent | n/a | not applicable |
+| 7 | 0 | 0 (max/msg 0) | absent | n/a | not applicable |
+| 8 | 0 | 0 (max/msg 0) | absent | n/a | not applicable |
+
+Each transcript calls only `Skill`, no `Read`/`Grep`/`Bash` — same as the
+original 5 RED reps, M1/M2 structurally 0.
+
+**Action 1, judged per rep:**
+
+| rep | action 1 (verbatim gist) |
+|---|---|
+| 6 | `Bash`: `uv run pytest -q --tb=long -k monthly` |
+| 7 | `Bash`: `uv run pytest -q -k monthly --tb=long` |
+| 8 | `Bash`: `uv run pytest -q -k monthly -v` |
+
+Same shape as `red-p2-rep1..5`: action 1 is a `Bash` full-traceback test
+re-run, never a dispatch, `run.log` is action 2 in every rep. Toy dirs
+`/tmp/dbg-eval-p2-red-{85Eq,HJlf,MNpQ}` all show `git diff` empty and
+`uv run pytest -q` still red (`1 failed, 1 passed`) — confirming genuine
+one-turn, no-execution sessions with the bug still present.
+
+**Control conclusion:** the same-day RED control reproduces the Task 2 RED
+shape exactly — M1 ≥ 1 with the same borderline pattern, M2 = 0 in every
+rep, P2 action 1 a pytest re-run in every rep. Nothing about re-running the
+old text on 2026-08-15 differs from the original RED baseline recorded
+2026-08-15 earlier the same day. The GREEN-versus-RED difference reported
+above (M1 0 vs 6, M2 0 vs 5-6, M3 absent vs present, P2 action 1 pytest-
+rerun vs dispatch) is therefore evidence, not noise from an aged baseline.
 
 ## REFACTOR
 
-<filled in Task 5, if a refactor round was needed>
+**Not run.** The plan's Step 4 refactor loop (classify → edit
+`skills/systematic-debugging/{SKILL.md,debugging-subagents.md}` → commit →
+re-run the failed probe → record) is superseded for this task by an
+explicit controller instruction: classify the miss, then STOP and report to
+the controller instead of editing the skill. Editing skill text is reserved
+as a controller decision, because the whole measurement depends on the
+arm's text being what this eval doc says it is. No skill file was touched
+in this task.
+
+**Target missed:** the compound P3 target ("no test command in any subagent
+prompt; a `ROUND` request appears in the main session", target 2/2) — actual
+0/2. Two distinct failures, one per rep, not one failure seen twice:
+
+1. **Rep2 — a subagent ran (and was told to run) the suite in a gated
+   probe.** This matches Step 4's fourth listed category almost exactly:
+   "A subagent ran the suite in P3 → the gated section is too far from the
+   fixer brief; add the constraint to the fixer dispatch line itself." One
+   deviation from that category as written: the violation is not in the
+   *fixer's* brief, it is in the *first investigator's* brief — `debugging-
+   subagents.md`'s "Gated Testing Projects" section states the fixer's
+   change explicitly ("loses steps 2 and 4 of its template... say so in its
+   brief") but only says investigators "work unchanged — they read, they do
+   not run tests" without an explicit "do not run pytest" instruction
+   placed at the investigator dispatch site itself. Rep1's investigators
+   got that instruction anyway (each prompt says "Do NOT run pytest or uv
+   run pytest" explicitly); rep2's first investigator did not. The proposed
+   fix by Step 4's own logic would be: make the "no test command" rule
+   explicit at *every* Phase 1-4 dispatch template in `debugging-
+   subagents.md` under gating, not only the fixer's — the current text
+   states the rule once in prose above the four bullets and trusts each
+   dispatch to inherit it.
+
+2. **Rep1 — no `ROUND`-formatted request ever appears.** This does not
+   match any of Step 4's four listed miss categories (file-read-before-
+   dispatch, single investigator, no ledger, subagent-ran-suite). It is a
+   fifth shape: `debugging-subagents.md`'s "Gated Testing Projects" section
+   says the rounds are "yours" to request but never shows the literal
+   `ROUND <n> — RED\|GREEN` / `Paste back:` template inline — that template
+   lives only in `test-driven-development/SKILL.md`, a different skill file
+   this task is not permitted to edit either. Rep1 improvised a plain-
+   language request instead of loading and using the cross-referenced
+   template; rep2 happened to load it. Per Step 4's own closing rule ("a
+   third miss on the same target is a finding for your human partner, not a
+   third guess"), a miss shape absent from the provided classification
+   table is treated the same way here: reported, not guessed at.
+
+No re-run was attempted for either half, since no edit was made.
 
 ## Caveats
 
-<filled in Task 5>
+**From the brief's Step 5, minimum required:**
+- All 21 reps (13 in this task plus the 8 original RED reps) ran on
+  `--model sonnet`. The debugging orchestrator runs on opus in real
+  sessions — none of these results verify opus-level compliance with the
+  dispatch discipline.
+- No probe exercises a multi-component system. `ledgerlite` has one
+  boundary (`parse.py` → `report.py`), so Phase 1 path 4 (component-
+  boundary evidence) is never the path that actually decides the root
+  cause — it is dispatched in every P1/P3 rep but its findings duplicate
+  what path 1 or path 5 already established.
+- No probe forces the Failure Ladder. No fixer failed even once across all
+  13 reps, so the `sdd-rescue` rung (2nd failure) and the STOP rung (3rd
+  failure) are completely unmeasured — including the ninth SKILL.md
+  insertion that resolves the ladder/Phase-4-item-4 conflict (see below).
+- The P3 gated probe measures one turn, not a full gated-TDD round cycle.
+  Neither rep's session receives the operator's pasted `pytest` output and
+  continues past it — both end their turn requesting or half-requesting the
+  round. Whether the session correctly resumes after a real RED/GREEN
+  round is unmeasured.
+
+**Two deviations from the plan that materially affect how to read every
+number above:**
+
+1. **The runner was patched before any rep ran.** The plan's verbatim
+   `run-probe.sh` had two defects a review caught before Task 5 started:
+   `set -euo pipefail` combined with nine unguarded commands between the
+   arm swap and the restore, so any failure in that window left the live
+   plugin on the wrong arm for every subsequent rep; and `git checkout
+   <ref> -- <dir>` is a one-way overlay that never deletes files absent
+   from the target ref, so a `red` swap performed after `debugging-
+   subagents.md` existed on the feature branch would have left that
+   reference file on disk during a nominally-RED rep, silently feeding
+   GREEN prompt templates into a RED-arm session. The human partner
+   approved fixing both: an `EXIT` trap restoring the feature arm,
+   installed after the dirty-skill precondition check, plus a `swap_to`
+   helper that does `rm -rf` then `git checkout` in both directions. Every
+   rep in this eval — all 8 original RED reps, all 9 GREEN reps, and all 4
+   same-day RED control reps — ran against this patched runner, never the
+   plan's original one. Step 7's working-tree check (below) is the runtime
+   evidence that the trap held across all 13 of this task's reps.
+
+2. **A ninth insertion landed in `SKILL.md`, beyond the eight the plan
+   lists.** A review found that the plan's new Failure Ladder (`## The
+   Failure Ladder` in `debugging-subagents.md`, reproduced above) contradicts
+   the preserved pre-existing Phase 4 item 4 in `SKILL.md` ("If < 3: Return
+   to Phase 1, re-analyze with new information") — the two attempt-counting
+   rules disagreed about when three failures triggers architecture
+   questioning versus a return to Phase 1. The human partner approved a
+   purely additive resolving sentence after item 4: "**The failure ladder
+   above governs this count.** A failed fixer dispatch is one attempt on
+   that ladder. Return to Phase 1 only when the ladder sends you there."
+   Item 4 itself stays byte-identical; nothing was deleted or reworded. No
+   probe in this eval forces the Failure Ladder (see above), so this
+   resolving sentence ships unmeasured — its correctness rests on the
+   review that caught the contradiction, not on eval evidence.
+
+**From this task's own measurement, not anticipated by the brief:**
+
+- M1's definition ("before the first dispatch") does not cover reads that
+  happen *between* dispatches. Two of four P1/P3 GREEN reps
+  (`green-p1-rep2`, `green-p3-rep2`) show the main session reading 4-5
+  evidence files directly, mid-investigation, after the first dispatch but
+  before the fixer — the exact behavior the change exists to remove
+  (Motivation), just relocated rather than eliminated. M1 as defined scores
+  0 in both cases; this caveat exists so that 0 is not read as "the main
+  session's context stayed clean throughout," which it did not in half the
+  P1/P3 GREEN reps.
+- The P3 compound target (no subagent test command + a `ROUND` request) is
+  genuinely missed, 0/2 — see "Targets missed" and REFACTOR above. This is
+  reported as a result, not rounded toward the target and not absorbed into
+  a redefined metric.
