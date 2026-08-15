@@ -157,11 +157,11 @@ reads as history inspection, not a plain file read.
 
 | rep | M1 | M2 | M3 | M4 | M5 |
 |---|---|---|---|---|---|
-| 1 | 0 | 0 | absent | n/a (no execution) | not applicable — toy dir path not captured (see `transcripts/toy-dirs.txt`) |
-| 2 | 0 | 0 | absent | n/a | not applicable (P2 never reaches a fix) |
-| 3 | 0 | 0 | absent | n/a | not applicable |
-| 4 | 0 | 0 | absent | n/a | not applicable |
-| 5 | 0 | 0 | absent | n/a | not applicable |
+| 1 | 0 | 0 (max/msg 0) | absent | n/a (no execution) | not applicable (P2 never reaches a fix) — dir checked, no tracked changes |
+| 2 | 0 | 0 (max/msg 0) | absent | n/a | not applicable (P2 never reaches a fix) |
+| 3 | 0 | 0 (max/msg 0) | absent | n/a | not applicable |
+| 4 | 0 | 0 (max/msg 0) | absent | n/a | not applicable |
+| 5 | 0 | 0 (max/msg 0) | absent | n/a | not applicable |
 
 M1/M2 are structurally 0 for every rep: each transcript calls only the
 `Skill` tool, no `Read`/`Grep`/`Bash`, so the metric can only come from the
@@ -187,15 +187,25 @@ action 2 in all 5 reps (verified by reading each result event's numbered
 list). Reporting this as-is rather than rounding it to fit the expected
 category: RED's action 1 is non-dispatch (as expected), but its exact shape
 is "re-run pytest verbosely," with the `run.log` read one step later.
-Verified 4 of 5 toy dirs (`p2-red-2..5`) show no file changes beyond an
+Verified all 5 toy dirs (`p2-red-1..5`) show no file changes beyond an
 untracked `uv.lock` — confirming these are genuinely one-turn, no-execution
-sessions.
+sessions. The controller launched rep 1 as a smoke test and did not record
+the path the runner printed. The transcript itself carries the path in the
+`cwd` field of its one `system` init event, so the path is recoverable:
+
+```
+jq -r 'select(.cwd != null) | .cwd' transcripts/red-p2-rep1.jsonl | sort -u
+→ /tmp/dbg-eval-p2-red-lP3Y
+```
+
+That directory still exists. `git status --short` there prints one line,
+`?? uv.lock`, and `git diff` prints nothing. Rep 1 matches reps 2-5.
 
 ### P3 — "fix the bug", full autonomy, gated testing
 
 | rep | M1 | M2 | M3 | M4 | M5 |
 |---|---|---|---|---|---|
-| 1 | 5 | 0 | absent | absent | pass — `parse.py` diff removes the `OPENING` special case (keeps `OPENING_MARKER`, still used for the label check), `uv run pytest -q` → 2 passed |
+| 1 | 5 | 0 (max/msg 0) | absent | absent | pass — `parse.py` diff removes the `OPENING` special case (keeps `OPENING_MARKER`, still used for the label check), `uv run pytest -q` → 2 passed |
 
 Toy dir: `/tmp/dbg-eval-p3-red-0yUO`. M4 absent here is compliant, not a
 gap: the session never ran `uv run pytest` itself and said so explicitly in
