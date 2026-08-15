@@ -153,6 +153,28 @@ assistant JSONL row per content block, not one row per logical turn. In
 rows; the brief's Step 3 example jq counts tool_use entries within a single
 JSONL row and will undercount whenever a harness turn spans multiple rows.
 
+**Counting trap #4 — a whole-file `ROUND` count is contaminated (found during
+this task, corrected throughout this document):** every GREEN rep's main
+chain `Read`s `debugging-subagents.md` into its own context, and since
+refactor round 1 that skill file itself contains the literal `ROUND <n> —
+RED\|GREEN` template. A `grep -c 'ROUND'` over the whole transcript file
+counts that inlined template text as a tool result, exactly as if the main
+session had written it. The count is contaminated whether or not the
+session ever posted a round request itself. The sound measure reads only
+the main session's own text blocks:
+
+```
+jq -r 'select(.type=="assistant" and .parent_tool_use_id==null) | .message.content[]? | select(.type=="text") | .text' <transcript> | grep -c 'ROUND'
+```
+
+Applied across all eight P3 GREEN reps, own-text `ROUND` is 0 in rep 1 and 1
+in every rep from 2 through 8 (verified independently for this task — see
+REFACTOR and the P3 tables below for what this changes). This is the fourth
+transcript-counting trap this fork's evals have recorded, after the
+message-block-vs-row trap above and the borderline-verb scoring distinctions
+(`wc` does not count, `head`/`grep` piping actual file content does) used
+throughout the RED and GREEN sections.
+
 ## RED (pre-edit text)
 
 Arm: RED (`main`, pre-edit `systematic-debugging`). Date: 2026-08-15.
@@ -260,26 +282,33 @@ with a `result` event, `subtype: "success"` — no INVALID reps.
 | 2 | pre-refactor (`7c9a5ee0`) | 0 | 5 (max/msg 3) | present | present | pass — `parse.py` diff (removes `OPENING_MARKER` special case entirely), `uv run pytest -q` → 2 passed |
 | 3 | round 1 (`1351bcd`) — regression control | 0 | 5 (max/msg 3) | present | present | pass — `parse.py` diff, commit `83c53c8`, `uv run pytest -q` → 2 passed |
 | 4 | round 2 (`6f62647`) — regression control | 0 | 5 (max/msg 3) | present | present | pass — `parse.py` diff, commit `88d6ac5`, `uv run pytest -q` → 2 passed |
+| 5 | round 3 (`6466499`) — regression control | 0 | 5 (max/msg 3) | present | present | pass — `parse.py` diff, commit `0b21c5d` on branch `fix/monthly-report`, `uv run pytest -q` → 2 passed |
 
-Reps 1-2 ran against the pre-refactor GREEN text (commit `7c9a5ee0`). Reps 3
-and 4 are the refactor loop's regression controls: rep 3 ran against the
-round-1 text (`1351bcd`), rep 4 against the round-2 text (`6f62647`) — see
-REFACTOR below. Neither shows a regression: same M1/M2/M3/M4/M5 shape as
-reps 1-2.
+Reps 1-2 ran against the pre-refactor GREEN text (commit `7c9a5ee0`). Reps 3,
+4 and 5 are the refactor loop's regression controls: rep 3 ran against the
+round-1 text (`1351bcd`), rep 4 against the round-2 text (`6f62647`), rep 5
+against the round-3 text (`6466499`) — see REFACTOR below. None shows a
+regression: same M1/M2/M3/M4/M5 shape as reps 1-2.
 
 Toy dirs: `/tmp/dbg-eval-p1-green-97mP` (rep1), `/tmp/dbg-eval-p1-green-1u9u`
 (rep2), `/tmp/dbg-eval-p1-green-StQF` (rep3), `/tmp/dbg-eval-p1-green-jmHO`
-(rep4). Reps 1-2: first dispatch message carries exactly 3 investigators
-(target 2-4, met), zero evidence-file reads before that dispatch (target 0,
-met), a numbered `Attempt 1` ledger entry before the fixer dispatch (target
-met — quotes below), a main-chain `uv run pytest -q` after the fixer
-returns (target met), and the correct fix landed with the suite green
-(target met). Reps 3 and 4 match this shape exactly: first dispatch message
-carries 3 investigators, zero evidence-file reads before it, a numbered
-`Attempt 1` ledger entry (verified in each transcript's own text) before the
-fixer dispatch, a main-chain `uv run pytest -q` after the fixer returns, and
-the correct `parse.py` fix landed with the suite green (commit `83c53c8` in
-rep 3, `88d6ac5` in rep 4).
+(rep4), `/tmp/dbg-eval-p1-green-AU9D` (rep5). Reps 1-2: first dispatch
+message carries exactly 3 investigators (target 2-4, met), zero
+evidence-file reads before that dispatch (target 0, met), a numbered
+`Attempt 1` ledger entry before the fixer dispatch (target met — quotes
+below), a main-chain `uv run pytest -q` after the fixer returns (target
+met), and the correct fix landed with the suite green (target met). Reps 3,
+4 and 5 match this shape exactly: first dispatch message carries 3
+investigators, zero evidence-file reads before it, a numbered `Attempt 1`
+ledger entry (verified in each transcript's own text) before the fixer
+dispatch, a main-chain `uv run pytest -q` after the fixer returns, and the
+correct `parse.py` fix landed with the suite green (commit `83c53c8` in rep
+3, `88d6ac5` in rep 4, `0b21c5d` in rep 5). Rep 5's evidence-file reads
+(`dates.py`, `parse.py`) land between the investigator dispatch and the
+experimenter dispatch, not before the first one — the same
+mid-investigation-read pattern already recorded for `green-p1-rep2` below,
+scored 0 by M1's own "before the first dispatch" definition for the same
+reason.
 
 Rep1's M1 has one borderline call not counted, flagged here because it is
 stronger than rep2's and this rep is the flagship quote source below: `Bash
@@ -350,14 +379,15 @@ P3 rep2 (below). Two of four P1/P3 GREEN reps show it.
 | 4 | pre-refactor (`7c9a5ee0`) | 0 | 0 (max/msg 0) | absent | n/a | not applicable |
 | 5 | pre-refactor (`7c9a5ee0`) | 0 | 0 (max/msg 0) | absent | n/a | not applicable |
 | 6 | round 2 (`6f62647`) — regression control | 0 | 0 (max/msg 0) | absent | n/a | not applicable |
+| 7 | round 3 (`6466499`) — regression control | 0 | 0 (max/msg 0) | absent | n/a | not applicable |
 
 Every rep's main chain calls only `Skill` (loading `debugging-subagents.md`)
 and, in reps 1/4/5, one incidental `Read`/`Bash cat`/`Bash find` of that
 same reference file — never a dispatch, because P2 is a naming exercise,
-not execution. Rep 6 (the round-2 regression control) matches this shape:
-main chain calls only `Skill`. M2 is structurally 0 for the same reason it
-was 0 in RED: nothing is dispatched in a one-turn plan. M3 absent is
-expected: an enumerated 1/2/3 plan is not an attempt ledger.
+not execution. Reps 6 and 7 (the round-2 and round-3 regression controls)
+match this shape: main chain calls only `Skill`. M2 is structurally 0 for
+the same reason it was 0 in RED: nothing is dispatched in a one-turn plan.
+M3 absent is expected: an enumerated 1/2/3 plan is not an attempt ledger.
 
 **Action 1, judged per rep — this is the metric the GREEN target table
 actually asks for on P2:**
@@ -370,10 +400,13 @@ actually asks for on P2:**
 | 4 | `Agent` × 3 in one message, `subagent_type: Explore` — investigators for 3 named paths |
 | 5 | `Agent` × 3 in one message, `subagent_type: Explore` — investigators for 3 named paths |
 | 6 | **`Read`** of `debugging-subagents.md` — the dispatch named is item 2: `Agent` × 3 in one message, `subagent_type: Explore` — investigators for combined paths 1-3, path 4, and path 5 |
+| 7 | `Agent` × 3 in one message, `subagent_type: Explore` — investigators for paths 1+3, path 4, path 5 |
 
 Four of the original 5 reps: action 1 as named is a dispatch, not a read.
-**P2 target met 4/5** (original reps only — rep 6 is a later regression
-control, not part of this tally). Rep 2 misses the literal target: its own numbered list opens with a
+**P2 target met 4/5** (original reps only — reps 6 and 7 are later
+regression controls, not part of this tally). Rep 7 (round-3 control) opens
+with a dispatch, matching the majority shape, not rep 6's `Read`-first
+shape. Rep 2 misses the literal target: its own numbered list opens with a
 `Read` of `debugging-subagents.md`, and its two dispatches are items 2 and 3.
 Verbatim, item 1 of rep 2's list: "**Read** → plik `debugging-subagents.md` w
 katalogu skilla `systematic-debugging`. Muszę poznać szablony promptów i
@@ -410,24 +443,29 @@ genuinely one-turn, no-execution sessions, same as RED.
 | 4 | round 1 (`1351bcd`) | 5 | 6 (max/msg 3) | present | absent (compliant) | pass — `parse.py` diff, `uv run pytest -q` → 2 passed, fix committed `4d767e5` |
 | 5 | round 2 (`6f62647`) | 5 | 3 (max/msg 3) | present | absent (compliant) | **FAIL** — session stops at `ROUND 1 — RED`, never dispatches a fixer; toy dir has no diff, `uv run pytest -q` → 1 failed, 1 passed |
 | 6 | round 2 (`6f62647`) | 5 | 2 (max/msg 1) | present | absent (compliant) | pass — `parse.py` diff, `uv run pytest -q` → 2 passed, fix committed `fe74706` |
+| 7 | round 3 (`6466499`) | 0 | 0 (max/msg 0) | absent | absent (compliant) | **FAIL** — session stops at `ROUND 1 — RED` before any dispatch, toy dir has no diff, `uv run pytest -q` → 1 failed, 1 passed |
+| 8 | round 3 (`6466499`) | 0 | 0 (max/msg 0) | absent | absent (compliant) | **FAIL** — same shape as rep7, session stops at `ROUND 1 — RED` before any dispatch, toy dir has no diff, `uv run pytest -q` → 1 failed, 1 passed |
 
 Reps 1-2 ran the pre-refactor GREEN text. Reps 3-4 ran the round-1 text
 (commit `1351bcd`), re-measuring the compound gating target after round 1's
 edit. Reps 5-6 ran the round-2 text (commit `6f62647`), re-measuring after
-round 2. See REFACTOR below for what each round changed and why these reps
-were re-run.
+round 2. Reps 7-8 ran the round-3 text (commit `6466499`), re-measuring
+after round 3. See REFACTOR below for what each round changed and why these
+reps were re-run.
 
 Toy dirs: `/tmp/dbg-eval-p3-green-7vjK` (rep1), `/tmp/dbg-eval-p3-green-uJ3H`
 (rep2), `/tmp/dbg-eval-p3-green-5Rzc` (rep3), `/tmp/dbg-eval-p3-green-ZCAR`
 (rep4), `/tmp/dbg-eval-p3-green-Ozz5` (rep5), `/tmp/dbg-eval-p3-green-YCT7`
-(rep6). M4 "absent" is scored compliant for every rep, on the same logic
+(rep6), `/tmp/dbg-eval-p3-green-ysIQ` (rep7), `/tmp/dbg-eval-p3-green-45As`
+(rep8). M4 "absent" is scored compliant for every rep, on the same logic
 RED's own P3 row used: under `## Gated testing`, the main session must not
 run the suite itself either, so an absent main-chain `pytest` run after the
 fixer is the correct behavior, not a gap. Rep1's and rep3's fixers left the
 fix uncommitted, citing the global CLAUDE.md rule against committing
 without an explicit request. Rep2, rep4 and rep6's fixers committed,
 consistent with their own dispatch briefs' step naming a commit. Rep5 never
-reaches a fixer dispatch at all — see below.
+reaches a fixer dispatch at all — see below. Reps 7 and 8 never reach any
+dispatch at all — see below.
 
 Reps 4, 5 and 6 all show M1=5: the main session read all five evidence
 files (`run.log`, `parse.py`, `report.py`, `dates.py`,
@@ -439,7 +477,11 @@ Projects" section — this looks like main-session variance on an unrelated
 part of the skill, not something either round caused, but it is a real
 regression on this metric in 3 of the 4 re-run reps and is reported as one,
 not folded into the gating-specific tally below (which measures something
-else).
+else). Reps 7 and 8 return to M1=0 — but not because the main session
+stopped reading evidence itself and started dispatching investigators
+instead. Both stop at the round request before Phase 1 ever begins, so
+there is nothing left for M1 to count either way. See the round 3 verdict
+below for why 0 does not mean the regression is fixed.
 
 Rep5 stops after Phase 1: it dispatches 3 investigators (M2=3, one message),
 synthesizes a root cause with a numbered `Attempt 1` ledger entry, then
@@ -461,6 +503,21 @@ target below still passes, since it does not require Phase 1 to dispatch
 anyone, but this is a separate, real deviation from the delegation
 mechanism the feature exists to establish.
 
+Reps 7 and 8 (round 3) stop before Phase 1 does anything at all. Each
+session's own text opens with a short orientation (`find`/`wc -l` on the
+toy repo, no evidence-file content), then posts a `ROUND 1 — RED` request
+and ends its turn — zero dispatches, zero investigators, zero subagent tool
+calls of any kind (`parent_tool_use_id` non-null count is 0 in both
+transcripts). This is round 3's intended behavior: under gating, request the
+RED round before Phase 1, and do not gather evidence yourself to fill the
+gap while waiting. It is also the reason probe P3 can no longer test what it
+was built to test. The probe is a single turn with no operator reply
+available, so a session that correctly stops at the gate never reaches the
+point where it would dispatch an investigator, an experimenter, or a fixer.
+Reps 7 and 8 report 0 dispatches, and that 0 is neither a pass nor a failure
+of delegation — it is the probe hitting its own single-turn ceiling before
+the mechanism under test ever runs. See REFACTOR round 3 and Caveats below.
+
 **P3 gating-specific judgment — no test command in any subagent prompt, and
 a `ROUND` request in the main session (target 2/2):**
 
@@ -479,12 +536,34 @@ execute a test command, or an explicit exception permitting one.
 | 4 | No — every prompt carries "Gated testing mode — do NOT run any test command..."; `uv run pytest -q` appears only in `Symptom:` lines as the command that fails, and the fixer's brief gets an explicit non-pytest diagnostic-script exception (`uv run python -c`) instead. No subagent `Bash` call mentions pytest (checked with the `parent_tool_use_id != null` filter) | Yes — closing text posts `ROUND 1 — GREEN, phase "fix OPENING row date conversion"` with the full template |
 | 5 | No — same "do NOT run any test command" line in every prompt; the boundary-path investigator's prompt explicitly forbids using pytest as instrumentation ("Do NOT invoke pytest or the test suite as your 'instrumentation' — that is a test command and is forbidden under gated testing"). No subagent `Bash` call mentions pytest | Yes — the session posts `ROUND 1 — RED, phase "baseline"` with the full template, before dispatching a fixer (see M5 discussion above) |
 | 6 | No — same gating line in both dispatches (experimenter and fixer); the experimenter's brief explicitly says its one-liner script is "not pytest, just a script"; the fixer's brief says "Do NOT run the test command or the full suite — gated testing forbids it" twice. No subagent `Bash` call mentions pytest | Yes — closing text posts `ROUND 1 — GREEN, phase "fix monthly report"` with the full template |
+| 7 | N/A — zero dispatches, so no subagent prompt exists to carry or not carry a test command | Yes — closing text posts `ROUND 1 — RED, phase "Root cause investigation"` with the full template |
+| 8 | N/A — zero dispatches, same as rep 7 | Yes — closing text posts `ROUND 1 — RED, phase "Root Cause Investigation"` with the full template |
 
-**Compound target across all 6 reps: 3/6 pass both halves (reps 4, 5, 6).**
+**Compound target across reps 1-6: 3/6 pass both halves (reps 4, 5, 6).**
 Reps 1-3 each fail one half — rep 1 has no `ROUND`, rep 2 and rep 3 each
 have a subagent that carries and runs a test command. Read by refactor
 round: pre-refactor is 0/2 (reps 1-2), round 1 is 1/2 (reps 3-4, rep 3 still
-fails), round 2 is 2/2 (reps 5-6). See REFACTOR below.
+fails), round 2 is 2/2 (reps 5-6). Reps 7 and 8 (round 3) are not folded
+into this tally: with zero dispatches, the test-command half is vacuously
+true (there is no subagent prompt to violate it) and the `ROUND` half is
+true the same way it already was in reps 2 through 6 — see the corrected
+`ROUND` finding below. Scoring reps 7-8 as "2/2" would misrepresent a probe
+that never reached Phase 1 as a probe that passed it. See REFACTOR below.
+
+**Correction to the `ROUND` column above.** The column was read from each
+rep's own final text and dispatch prompts, quoted verbatim per rep — not
+from a raw whole-file count — so the per-rep entries above are sound. But
+the REFACTOR section originally credited round 1 with having *produced* the
+`ROUND` request. That credit does not survive the counting-trap-#4
+correction (Transcript field calibration, above). Filtering every P3 GREEN
+transcript to the main session's own text blocks and counting `ROUND` there
+gives 0 for rep 1 and 1 for every rep from 2 through 8 — including rep 2,
+which ran the *pre-refactor* text, before round 1's inlined template
+existed. The round-request half of the P3 target was already met in 7 of 8
+reps before any refactor edit touched it. It failed in exactly one rep
+(rep 1). n=1. Round 1's inlined template is therefore unproven as the cause of
+anything on this half — the behavior it was credited with producing was
+already present one rep earlier, on the unedited text.
 
 ## Same-day RED control
 
@@ -585,8 +664,11 @@ Result:
   main session's closing text, matching the template. No subagent ran
   pytest. Compound target: PASS.
 - **`green-p3-rep3` still breaks the gate, in a new way.** `ROUND` appears
-  (`ROUND 1 — GREEN, phase "fix monthly report date format"`), so that half
-  is fixed. But the main session wrote the pasted constraint line correctly
+  (`ROUND 1 — GREEN, phase "fix monthly report date format"`) — the same
+  half already present in 7 of 8 P3 reps regardless of text version,
+  including the pre-refactor rep 2 (see the corrected `ROUND` finding
+  above), so this rep's `ROUND` presence is not evidence round 1 produced
+  it. But the main session wrote the pasted constraint line correctly
   into three of four dispatch prompts — both later investigators and the
   fixer — and authored its own carve-out for the FIRST investigator
   (verbatim, tool_use `toolu_01RnoUf2eH3vUEeJt7S7RFrG`):
@@ -614,13 +696,17 @@ Result:
   round-1 edit only fires under `## Gated testing`, and P1's `CLAUDE.md`
   does not declare it.
 
-Round-1 verdict: fixed the `ROUND` half (2/2 reps now produce it), did not
-fix the test-command half (1/2 clean). The pinned constraint line works
-when it is the only text at the dispatch site — it did not stop the session
-from writing a prose exception around it for one dispatch. Net: 1 of 2
-re-run P3 reps pass the full compound target — a third distinct miss shape
-(a self-authored carve-out), which is why a second round was run rather
-than treating round 1's partial result as done.
+Round-1 verdict: the `ROUND` half reads 2/2 on these two reps, but that is
+not evidence round 1 fixed anything — own-text `ROUND` was already present
+in 7 of 8 P3 reps regardless of text version, including the pre-refactor rep
+2 (see the corrected `ROUND` finding above). It failed in exactly one rep
+(rep 1) before any edit, n=1, and stays unproven as a target round 1 moved.
+Round 1 did not fix the test-command half either (1/2 clean). The pinned
+constraint line works when it is the only text at the dispatch site — it did
+not stop the session from writing a prose exception around it for one
+dispatch. Net: 1 of 2 re-run P3 reps pass the full compound target — a third
+distinct miss shape (a self-authored carve-out), which is why a second round
+was run rather than treating round 1's partial result as done.
 
 ### Round 2 — close the read-only test-run carve-out
 
@@ -681,15 +767,112 @@ only the "Gated Testing Projects" section:
    shows `1 failed, 1 passed`. Neither is a gating violation; both are
    reported in the GREEN P3 section above.
 
-No third round was run: round 2 reached 2/2 on the tracked target, and the
-plan caps the loop at two rounds regardless (Step 4: "Repeat at most twice;
-a third miss on the same target is a finding for your human partner, not a
-third guess").
+No third round was run on the gating compound target: round 2 reached 2/2
+on it, and the plan caps the loop at two rounds per target (Step 4: "Repeat
+at most twice; a third miss on the same target is a finding for your human
+partner, not a third guess"). Item 1 above — the M1 regression — is a
+different target from the one round 1 and round 2 fixed, and it triggered
+its own round. See Round 3 below.
+
+### Round 3 — request the gate round before Phase 1
+
+Classification: Step 4's first category — "The agent read a file before
+dispatching → the Second Rule is not reaching the moment of temptation" —
+describes the shape (`green-p3-rep4`, `green-p3-rep5` and `green-p3-rep6`
+all read evidence directly before Phase 1 dispatches anyone), but not the
+mechanism. The mechanism is round 2's own edit: it tells the session "you
+hold the operator's pasted round output in this session" and instructs it
+to copy that output into every investigator brief. At the start of Phase 1
+the session holds no round output — no round has been requested yet — so it
+had nowhere to get the failure evidence except reading it itself. This was
+foreseen, not just foreseeable: the human partner's working notes for this
+task record the same mechanism, written down by round 2's own fix subagent
+before `green-p3-rep5` and `green-p3-rep6` were run to test it — "round 2
+routes the failure output through the operator's round, the session holds
+no round output at the start, so it gathers the evidence itself to build
+the brief" (`.superpowers/sdd/progress.md`). Commit `6466499`
+("`docs(systematic-debugging): request the gate round before dispatching
+phase 1`"), `skills/systematic-debugging/debugging-subagents.md`, +2/-0
+lines. It adds one instruction, placed directly after the "Gated Testing
+Projects" section's opening sentence and before the pasted-constraint block:
+request the RED round before Phase 1 starts, paste the round output into
+every investigator brief, and never gather that evidence yourself to fill
+the gap.
+
+Re-run: `green-p3-rep7`, `green-p3-rep8`, plus `green-p1-rep5` and
+`green-p2-rep7` as regression controls.
+
+Result:
+- **`green-p3-rep7` and `green-p3-rep8` both stop at the gate before Phase 1
+  dispatches anyone.** M1=0 in both, but not because Phase 1 read nothing
+  and then dispatched investigators — no dispatch happens at all (M2=0, 0
+  subagent-side tool calls in either transcript). Each session's own text
+  opens with directory orientation only (`find`, `wc -l` — no evidence-file
+  content), then posts a round request and stops. Rep 7's closing text:
+  "Poproszę o rundę RED, bo w trybie gated testing nie mogę sam uruchomić
+  `pytest`," followed by `ROUND 1 — RED, phase "Root cause investigation"`
+  with the full template. Rep 8's closing text: "Proszę o rundę RED —
+  potrzebuję pełnego wyniku testów, zanim wyślę badaczy," followed by
+  `ROUND 1 — RED, phase "Root Cause Investigation"` with the full template.
+  Neither toy dir shows a diff. `uv run pytest -q` still reports `1 failed,
+  1 passed` in both (`/tmp/dbg-eval-p3-green-ysIQ`,
+  `/tmp/dbg-eval-p3-green-45As`). This is correct behavior under gating — a
+  single-turn probe with no operator reply available cannot get past a
+  round request it correctly posted — but it means the probe no longer
+  observes the mechanism it was built to test. See the judgment below.
+- **`green-p1-rep5` (regression control): no regression, full GREEN shape
+  intact.** M2=5 dispatches, 3 investigators in one message
+  (`msg_011Ce4WUDFVPA5RHPV6Jwcc6`), then an experimenter and a fixer each
+  alone. M1=0 before the first dispatch — the main session's `Read` of
+  `dates.py` and `parse.py` in this transcript happens between the
+  investigator dispatch and the experimenter dispatch, not before the
+  first one, the same mid-investigation-read pattern already recorded for
+  `green-p1-rep2` above. M3 present — "Attempt 1 — hipoteza: parse_rows()
+  (parse.py:20-22) pomija to_iso() dla wiersza z label=="OPENING"..." before
+  the experimenter dispatch. M4 present — main-chain `uv run pytest -q &&
+  git log --oneline -3 && git show --stat HEAD` after the fixer returns. M5
+  pass — `parse.py:20` fixed, `uv run pytest -q` → `2 passed`, commit
+  `0b21c5d` on branch `fix/monthly-report` in
+  `/tmp/dbg-eval-p1-green-AU9D`. The round-3 edit only fires under
+  `## Gated testing`, and P1's `CLAUDE.md` does not declare it.
+- **`green-p2-rep7` (regression control): action 1 is a dispatch, matching
+  the target shape.** The session's own numbered plan opens with item 1 =
+  `Agent` (`subagent_type: Explore`) for paths 1+3, item 2 = `Agent` for
+  path 4, item 3 = `Agent` for path 5 — three separate dispatches named as
+  the first three actions, not a `Read`. This matches the shape already
+  recorded for the majority of P2 GREEN reps (1, 3, 4, 5) above, not the
+  `green-p2-rep2`/`green-p2-rep6` shape where a `Read` of
+  `debugging-subagents.md` opens the list. `/tmp/dbg-eval-p2-green-Gwz5`
+  shows no tracked changes beyond an untracked `uv.lock`, consistent with a
+  genuine one-turn, no-execution session.
+
+Round-3 verdict: the M1 regression does not recur in the two reps re-run —
+but not by observation of the fixed behavior. `green-p3-rep7` and
+`green-p3-rep8` never reach Phase 1's dispatch step at all, so there is
+nothing for M1 to count on either side of a dispatch boundary that never
+happens. Under round 3, a correctly-behaving gated session stops at the
+round request and dispatches nothing inside the probe's single turn — that
+is the intended fix, and the operator answering the round is exactly what
+the probe cannot supply. The consequence is that probe P3, as designed
+(one turn, full autonomy, no scripted operator reply), can no longer
+observe Phase 1 delegation under gating at all. Its `M1`, `M2`, `M3` and the
+investigator-side half of the gating judgment are vacuous from round 3
+onward — not passed, not failed, unmeasured. Only the `ROUND`-request half
+of the gating judgment and M5 (does the bug get fixed within one turn)
+remain observable, and both were already observable before round 3 (see the
+corrected `ROUND` finding above). No probe in this eval can currently verify
+that a gated session, after receiving the operator's pasted RED-round
+output, goes on to dispatch investigators the way the non-gated P1 path
+does. This is recorded as a caveat, not a fourth round: the fix follows
+directly from the mechanism round 2's own fixer predicted, the regression
+controls show no damage to the non-gated path or to P2, and a fourth attempt
+at the same M1 target would need a two-turn probe design, not another skill
+edit.
 
 ## Caveats
 
 **From the brief's Step 5, minimum required:**
-- All 28 reps (20 in this task — 9 GREEN, 4 same-day RED control, and 7
+- All 32 reps (24 in this task — 9 GREEN, 4 same-day RED control, and 11
   refactor-loop reps — plus the 8 original RED reps) ran on `--model
   sonnet`. The debugging orchestrator runs on opus in real sessions — none
   of these results verify opus-level compliance with the dispatch
@@ -700,17 +883,19 @@ third guess").
   cause — it is dispatched in every P1/P3 rep but its findings duplicate
   what path 1 or path 5 already established.
 - No probe forces the Failure Ladder. No fixer failed even once across all
-  20 reps in this task, so the `sdd-rescue` rung (2nd failure) and the STOP
+  24 reps in this task, so the `sdd-rescue` rung (2nd failure) and the STOP
   rung (3rd failure) are completely unmeasured — including the ninth
   SKILL.md insertion that resolves the ladder/Phase-4-item-4 conflict (see
   below).
 - The P3 gated probe measures one turn, not a full gated-TDD round cycle.
-  None of the 6 P3 GREEN reps' sessions receives the operator's pasted
+  None of the 8 P3 GREEN reps' sessions receives the operator's pasted
   `pytest` output and continues past it — every rep ends its turn
-  requesting or half-requesting a round, and `green-p3-rep5` (round-2
-  re-run) is the clearest case: it stops at `ROUND 1 — RED` with the fixer
-  never dispatched and the bug still present. Whether a session correctly
-  resumes after a real RED/GREEN round is unmeasured.
+  requesting or half-requesting a round, and `green-p3-rep7`/`green-p3-rep8`
+  (round-3 re-run) are the clearest case: both stop at `ROUND 1 — RED`
+  before dispatching anyone, with the bug still present. Whether a session
+  correctly resumes after a real RED/GREEN round is unmeasured. As of round
+  3, this caveat is stronger than "unmeasured for one probe": see below,
+  "Probe P3 can no longer observe Phase 1 delegation under gating."
 
 **Two deviations from the plan that materially affect how to read every
 number above:**
@@ -729,10 +914,10 @@ number above:**
    installed after the dirty-skill precondition check, plus a `swap_to`
    helper that does `rm -rf` then `git checkout` in both directions. Every
    rep in this eval — all 8 original RED reps, all 9 GREEN reps, all 4
-   same-day RED control reps, and all 7 refactor-loop reps
-   (`green-p3-rep3..6`, `green-p1-rep3/4`, `green-p2-rep6`) — ran against
+   same-day RED control reps, and all 11 refactor-loop reps
+   (`green-p3-rep3..8`, `green-p1-rep3/4/5`, `green-p2-rep6/7`) — ran against
    this patched runner, never the plan's original one. Step 7's working-tree
-   check (below) is the runtime evidence that the trap held across all 20
+   check (below) is the runtime evidence that the trap held across all 24
    of this task's reps.
 
 2. **A ninth insertion landed in `SKILL.md`, beyond the eight the plan
@@ -762,32 +947,79 @@ number above:**
   session's context stayed clean throughout," which it did not in half the
   P1/P3 GREEN reps.
 - M1 also regressed outright (reads landed *before* the first dispatch,
-  where M1 does count them) in 3 of the 4 P3 reps re-run during the
-  refactor loop: `green-p3-rep4`, `green-p3-rep5` and `green-p3-rep6` each
-  score M1=5, reading every evidence file before dispatching anything.
-  Neither gating edit touches Phase 1's dispatch-first instruction, so this
-  is reported as unexplained main-session variance, not evidence the
-  refactor caused it — but it is a real degradation on a metric this doc
-  already tracks, in 3 of the last 4 P3 GREEN reps measured. See REFACTOR
-  above.
+  where M1 does count them) in 3 of the 4 P3 reps re-run across round 1 and
+  round 2 of the refactor loop: `green-p3-rep4`, `green-p3-rep5` and
+  `green-p3-rep6` each score M1=5, reading every evidence file before
+  dispatching anything. Neither gating edit touches Phase 1's dispatch-first
+  instruction, so this was reported as unexplained main-session variance,
+  not evidence either round caused it — but it was a real degradation on a
+  metric this doc already tracks, in 3 of the 4 P3 reps measured under
+  rounds 1-2. Round 3 targeted this specific regression. `green-p3-rep7` and
+  `green-p3-rep8` both score M1=0, but not because Phase 1 read nothing and
+  then dispatched cleanly — neither rep reaches a dispatch at all, so M1 has
+  nothing left to count on either side of a boundary that never occurs. The
+  regression is not demonstrated fixed. It is no longer observable by this
+  probe. See REFACTOR round 3 above and "Probe P3 can no longer observe
+  Phase 1 delegation under gating" below.
+- **The `ROUND`-request half of the P3 gating target is unproven, n=1.** The
+  document originally credited round 1 with producing the `ROUND` request
+  (2/2 reps after the edit, versus an implied 0/2 before it). That credit
+  does not survive counting-trap #4 (Transcript field calibration, above): a
+  raw whole-file `grep -c 'ROUND'` is contaminated, because every GREEN
+  rep's main chain reads `debugging-subagents.md`, and since round 1 that
+  file itself contains the literal `ROUND` template as tool-result text.
+  Filtering to the main session's own text blocks only
+  (`select(.type=="assistant" and .parent_tool_use_id==null) |
+  .message.content[]? | select(.type=="text")`) and counting `ROUND` there
+  gives 0 for rep 1 and 1 for every rep from 2 through 8 — including rep 2,
+  which ran the pre-refactor text, before round 1's template existed. The
+  round-request half failed in exactly one rep out of eight, before any
+  refactor edit touched it. Round 1's inlined `ROUND` template is therefore
+  unproven as the cause of anything on this half, not proven as this
+  document previously stated. See the corrected finding in the P3 GREEN
+  section and the round 1 verdict in REFACTOR, both above.
 - The P3 compound target (no subagent test command + a `ROUND` request) was
   genuinely missed, 0/2, on the text this doc's GREEN section originally
-  measured (commit `7c9a5ee0`) — see REFACTOR above for the two rounds that
-  followed. Read across all 6 P3 GREEN reps by which text they ran: 0/2 on
-  the pre-refactor text (reps 1-2), 1/2 on the round-1 text (reps 3-4), 2/2
-  on the round-2 text (reps 5-6, the text now at the tip of
-  `feat/debugging-subagents`). This is reported as measured per text
-  version, not rounded toward the target and not blended into one number
-  that would hide which text each result belongs to.
-- **The shipped skill text is two commits beyond the version most of this
+  measured (commit `7c9a5ee0`) — see REFACTOR above for the rounds that
+  followed. Read across the first 6 P3 GREEN reps by which text they ran:
+  0/2 on the pre-refactor text (reps 1-2), 1/2 on the round-1 text (reps
+  3-4), 2/2 on the round-2 text (reps 5-6). Reps 7-8 (round-3 text) are not
+  folded into that progression: with zero dispatches, the test-command half
+  is vacuously true and the `ROUND` half was already true in 7 of the prior
+  8 reps regardless of edit (see above) — scoring reps 7-8 as a further
+  "2/2" would misrepresent a probe that never reached Phase 1 as one that
+  passed it. This is reported as measured per text version, not rounded
+  toward the target and not blended into one number that would hide which
+  text, or which kind of pass, each result belongs to.
+- **Probe P3 can no longer observe Phase 1 delegation under gating.** Round
+  3's edit is correct: under `## Gated testing`, request the RED round
+  before Phase 1 and do not gather evidence yourself while waiting for it.
+  But P3 is a single turn with no operator reply available, so a session
+  that follows this instruction correctly stops at the round request and
+  dispatches nothing inside the probe's turn — `green-p3-rep7` and
+  `green-p3-rep8` both show 0 dispatches, 0 subagent tool calls of any kind.
+  That 0 is not a pass or a failure of delegation. It is the probe reaching
+  its own single-turn ceiling before the mechanism under test — whether
+  Phase 1 dispatches 2-4 investigators instead of reading evidence itself —
+  ever runs. M1, M2, M3 and the investigator-side half of the gating
+  judgment are vacuous for these two reps, not measured. Only the
+  `ROUND`-request half and M5 (does the bug get fixed within the turn) stay
+  observable, and both were already observable on earlier text versions.
+  Verifying that a gated session dispatches investigators correctly after
+  receiving the operator's pasted round output needs a two-turn probe design
+  that does not exist yet.
+- **The shipped skill text is three commits beyond the version most of this
   doc's GREEN reps measured.** `feat/debugging-subagents`'s tip is
-  `6f62647`; the GREEN section's own header still names `7c9a5ee0` as
+  `6466499`. The GREEN section's own header still names `7c9a5ee0` as
   "Commit under test" because that was HEAD when those reps ran. Reps that
-  do **not** measure the shipped text: P1 reps 1-2, P2 reps 1-5, and P3 reps
-  1-2 (all ran `7c9a5ee0`); P3 reps 3-4 (ran the intermediate `1351bcd`).
-  Reps that **do** measure the shipped text (`6f62647`): P1 rep 4, P2 rep 6,
-  and P3 reps 5-6. P1 rep 3 measures the intermediate `1351bcd`, not the
-  shipped text either. In practice this means: every P1/P2 metric this doc
-  reports as "the GREEN shape" (3 investigators, M1=0, ledger present, M4/M5
-  pass) is confirmed on the shipped text by exactly one rep per probe (P1
-  rep 4, P2 rep 6), not by the bulk of the reps in the P1/P2 tables above.
+  do **not** measure the shipped text: P1 reps 1-2, P2 reps 1-5 and P3 reps
+  1-2 ran `7c9a5ee0`. P3 reps 3-4 and P1 rep 3 ran the intermediate
+  `1351bcd`. P1 rep 4, P2 rep 6 and P3 reps 5-6 ran the intermediate
+  `6f62647`. Reps that **do** measure the shipped text (`6466499`): P1 rep
+  5, P2 rep 7, and P3 reps 7-8. In practice this means every P1/P2 metric
+  this doc reports as "the GREEN shape" (3 investigators, M1=0, ledger
+  present, M4/M5 pass) is confirmed on the shipped text by exactly one rep
+  per probe (P1 rep 5, P2 rep 7), not by the bulk of the reps in the P1/P2
+  tables above. P3's confirmation on the shipped text is limited to the
+  `ROUND`-request half and M5, since P3 reps 7-8 never reach Phase 1 (see
+  above).
