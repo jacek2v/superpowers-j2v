@@ -267,6 +267,18 @@ met — quotes below), a main-chain `uv run pytest -q` after the fixer
 returns (target met), and the correct fix landed with the suite green
 (target met).
 
+Rep1's M1 has one borderline call not counted, flagged here because it is
+stronger than rep2's and this rep is the flagship quote source below: `Bash
+uv run pytest -q 2>&1 | tail -60`, issued at 10:12:47Z, before the first
+`Agent` dispatch at 10:13:00Z. It pulls the assertion diff and the file
+references from the failing test straight into the main session's own
+context. M1 scores it 0 and that score stands: M1 counts reads of five
+enumerated evidence files (`run.log`, `parse.py`, `report.py`, `dates.py`,
+`tests/test_report.py`), and this is live command output, not one of those
+files. The `tail` here truncates a pipe from `pytest`, it does not read a
+file. Recorded rather than passed over, so the 0 is not read as "the main
+session saw no failure detail before dispatching," which it did.
+
 Rep2's M1 has one borderline call not counted: `Bash wc -l dates.py parse.py
 report.py tests/test_report.py run.log pyproject.toml`, issued before the
 first dispatch. It names all five evidence files as arguments, but the verb
@@ -337,13 +349,27 @@ actually asks for on P2:**
 | rep | action 1 (verbatim gist) |
 |---|---|
 | 1 | `Agent` × 3 in one message, `subagent_type: Explore` — investigators for paths 1, 4, 5 |
-| 2 | `Agent` × 2 in one message + a third `Agent` alone, `subagent_type: Explore` — paths 1, 4, then 5 |
+| 2 | **`Read`** of `debugging-subagents.md` — the dispatches are items 2 and 3: `Agent` × 2 in one message + a third `Agent` alone, `subagent_type: Explore` — paths 1, 4, then 5 |
 | 3 | `Agent` × 2 in one message, `subagent_type: Explore` — paths 1 and 4; step 3 is the session's own synthesis, no tool |
 | 4 | `Agent` × 3 in one message, `subagent_type: Explore` — investigators for 3 named paths |
 | 5 | `Agent` × 3 in one message, `subagent_type: Explore` — investigators for 3 named paths |
 
-All 5 reps: action 1 as named is a dispatch, not a read. **P2 target met
-5/5.** Compare against the RED shape actually observed, not the plan's
+Four of 5 reps: action 1 as named is a dispatch, not a read. **P2 target met
+4/5.** Rep 2 misses the literal target: its own numbered list opens with a
+`Read` of `debugging-subagents.md`, and its two dispatches are items 2 and 3.
+Verbatim, item 1 of rep 2's list: "**Read** → plik `debugging-subagents.md` w
+katalogu skilla `systematic-debugging`. Muszę poznać szablony promptów i
+format zwrotki, zanim wyślę subagentów." ("**Read** → the file
+`debugging-subagents.md` in the `systematic-debugging` skill directory. I must
+learn the prompt templates and the return format before I send the
+subagents.") Both facts are recorded, neither is hidden: the literal target is
+missed in that rep, and the read that misses it is the skill's own reference
+file, which the skill requires the session to load before any dispatch. It is
+not an evidence read of `run.log` or a source file, so it is not the behavior
+the probe tests for. The other 4 reps open with `Agent` (verified in each
+rep's own numbered list). The RED comparison is unaffected — RED never
+dispatched at all, in any rep. Compare against the RED shape actually
+observed, not the plan's
 idealized framing: RED's action 1 in all 8 RED reps (5 original + 3
 same-day control, below) was `uv run pytest -q --tb=long` or a `-k`-filtered
 variant of it — a fuller-traceback test re-run — never literally "a read of
@@ -380,7 +406,7 @@ a `ROUND` request in the main session (target 2/2):**
 | rep | subagent prompt carries a test command | `ROUND`-formatted request in main session |
 |---|---|---|
 | 1 | No — every prompt says "Do NOT run pytest or uv run pytest"; the experimenter gets a `uv run python -c "..."` diagnostic script instead | No — the main session's own close is an informal "Uruchom `uv run pytest -q` i wklej wynik" ("Run `uv run pytest -q` and paste the result"), not the `ROUND <n> — RED\|GREEN` template from `test-driven-development/SKILL.md` |
-| 2 | **Yes** — the first investigator's prompt says "Run `uv run pytest -q` yourself in /tmp/dbg-eval-p3-green-uJ3H and read the full output carefully" (verbatim, tool_use `toolu_01PfoWgKiUBDctGyDLeN26yX`), and the dispatched subagent's own tool calls (filtered on `parent_tool_use_id == "toolu_01PfoWgKiUBDctGyDLeN26yX"`) show it actually ran `uv run pytest -q` three times | Yes — "**ROUND 1 — GREEN**\n\nUruchom:\n```\nuv run pytest -q\n```\n\nPaste back: pełne wyjście polecenia." — matches the `ROUND <n> — RED\|GREEN` and `Paste back:` shape from `test-driven-development/SKILL.md` |
+| 2 | **Yes** — the first investigator's prompt says "Run `uv run pytest -q` yourself in /tmp/dbg-eval-p3-green-uJ3H and read the full output carefully" (verbatim, tool_use `toolu_01PfoWgKiUBDctGyDLeN26yX`), and the dispatched subagent's own tool calls (filtered on `parent_tool_use_id == "toolu_01PfoWgKiUBDctGyDLeN26yX"`) show it ran pytest three times: `uv run pytest -q 2>&1`, `uv run pytest -q -vv 2>&1`, `uv run pytest -vv 2>&1` | Yes — "**ROUND 1 — GREEN**\n\nUruchom:\n```\nuv run pytest -q\n```\n\nPaste back: pełne wyjście polecenia." — matches the `ROUND <n> — RED\|GREEN` and `Paste back:` shape from `test-driven-development/SKILL.md` |
 
 **Neither rep satisfies both halves of the compound P3 target. 0/2, not
 5/5 or 2/2 rounded down — reported as measured.** Rep1 gets the
