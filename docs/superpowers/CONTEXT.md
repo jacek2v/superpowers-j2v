@@ -59,6 +59,7 @@ One decision per line. ✓ adopted, ✗ rejected direction. Never delete — sup
 - **D-039** ✓ subagent model by work character, not cost: sonnet for relay paths (errors, repro, git, experiments), session model for reasoning paths (data-flow, pattern analysis, fixer) — sonnet is faster and hallucinates less on simple work [2026-08-15](specs/2026-08-15-systematic-debugging-subagents-design.md)
 - **D-040** ✓ fixer failure ladder: re-dispatch with ledger → sdd-rescue → STOP and question architecture with human partner — one attempt per subagent, the loop belongs to the main agent [2026-08-15](specs/2026-08-15-systematic-debugging-subagents-design.md)
 - **D-041** ✓ in gated projects debugging subagents never run tests; test commands go through operator gates — single gate owner per D-009 [2026-08-15](specs/2026-08-15-systematic-debugging-subagents-design.md)
+- **D-042** ✗ DO NOT add plain-code/readability rules to fork skills — skills trigger unreliably (karpathy-guidelines was installed when the dynamic-SQL defect occurred); layer lives in the operator's global CLAUDE.md per D-034 pattern, micro-tested RED→GREEN (dynamic SQL 2/9→0/8, why-comments 3/9→8/8; evidence in skills-workspace docs repo, superpowers/claude-md/) [2026-08-16](session)
 
 ## SHIPPED
 
