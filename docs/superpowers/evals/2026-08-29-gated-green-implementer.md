@@ -28,14 +28,14 @@ worktree `/tmp/ggi-probe` is unchanged from the plan.
 ## RED arm
 
 Date: 2026-08-29. Skill text: `main`, before the edits. One repetition,
-transcript `gated-green-implementer/transcripts/red-rep1.jsonl`. Tool calls are
+one uncommitted transcript. Tool calls are
 cited by their index in the transcript's call order.
 
 | Criterion | Result | Evidence |
 |---|---|---|
 | 1 — selective read | FAIL | Call 1 read the whole file: `cat scripts/out/round1.out`. No `grep`, `sed`, `head` or `tail` on it anywhere. |
 | 2 — verdict before dispatch | FAIL | The ledger write is call 24, after the code commit at call 17. No dispatch happened at all, so the ordering the criterion protects was never exercised. |
-| 3 — dispatch, no self-written code | FAIL | Zero `Agent` calls. Call 16 rewrote `the procedure file` through a `python3` heredoc, call 17 committed it as `<commit>`. |
+| 3 — dispatch, no self-written code | FAIL | Zero `Agent` calls. Call 16 rewrote the procedure file through a `python3` heredoc, call 17 committed it as `<commit>`. |
 
 RED verdict: the session judged the round correctly, then wrote and committed
 the GREEN change itself and asked for a deployment plus round 2 — the defect the
@@ -56,7 +56,7 @@ same verdicts and no false positive.
 
 ## Offline routing check
 
-Three real round outputs from `<gated project>/scripts/out/`, read selectively
+Three real round outputs from the gated project's round-output directory, read selectively
 and routed by the SKILL.md table. Command used, one per file:
 
     grep -nE "^\[FAIL\]|Tests passed|^RESULT" <file>
@@ -78,8 +78,7 @@ Plan correction: the plan calls `round1.out` a 13-line file. It is 10 lines.
 
 ## GREEN arm, first pass — discarded
 
-Date: 2026-08-29. Skill text: commit `702929f`. Transcripts
-`gated-green-implementer/transcripts/green-rep1.jsonl` and `green-rep2.jsonl`.
+Date: 2026-08-29. Skill text: commit `702929f`. Two uncommitted transcripts.
 
 Repetition 1 dispatched `gated-green-implementer` after writing the verdict.
 Repetition 2 wrote the change itself and committed `aaaf602`, with zero `Agent`
@@ -109,7 +108,8 @@ notice.
 ## GREEN arm
 
 Date: 2026-08-29. Skill text: commit `2de3195`, after the fix. Three fresh
-repetitions, transcripts `green-b-rep1.jsonl` through `green-b-rep3.jsonl`.
+repetitions. Transcripts stay on the operator's machine and are not committed,
+because they quote a client codebase.
 Tool calls are cited by their index in the transcript's call order.
 
 | Rep | 1 — selective read | 2 — verdict before dispatch | 3 — dispatch, no self-written code |
@@ -131,9 +131,9 @@ with 2 insertions and 1 deletion:
 
 | Rep | Commit | Files | Diff |
 |---|---|---|---|
-| 1 | `00b7aeb` | `the procedure file` | 1 insertion, 1 deletion |
-| 2 | `7350e93` | `the procedure file` | 1 insertion, 1 deletion |
-| 3 | `e6f8047` | `the procedure file` | 1 insertion, 1 deletion |
+| 1 | `00b7aeb` | the procedure file | 1 insertion, 1 deletion |
+| 2 | `7350e93` | the procedure file | 1 insertion, 1 deletion |
+| 3 | `e6f8047` | the procedure file | 1 insertion, 1 deletion |
 
 All three touched the reference file and no other. Each is one line shorter
 than the reference, which added a why-comment the subagents did not write. The

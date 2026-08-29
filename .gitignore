@@ -12,3 +12,5 @@ triage/
 # plugin, so the whole directory is ignored here. Anchored to repo root so
 # docs/superpowers/evals/ (fork eval reports) stays tracked.
 /evals/
+# Session transcripts quote client code — judge them locally, never commit.
+docs/superpowers/evals/gated-green-implementer/transcripts/

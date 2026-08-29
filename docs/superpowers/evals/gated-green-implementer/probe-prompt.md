@@ -55,9 +55,11 @@ The transcript is the newest file in `~/.claude/projects/-tmp-ggi-fixture/`:
 ls -t ~/.claude/projects/-tmp-ggi-fixture/*.jsonl | head -1
 ```
 
-Copy it into `transcripts/<arm>-rep<N>.jsonl` (`arm` is `red` or `green`), then
-run `./judge-transcript.sh transcripts/<arm>-rep<N>.jsonl` and read the three
-evidence blocks against the pass criteria in the plan.
+Run `./judge-transcript.sh <that file>` and read the three evidence blocks
+against the pass criteria in the plan.
+
+Keep the transcript outside this repository. It quotes a client codebase, so
+only the judged result belongs in the eval document.
 
 ## What the fixture CLAUDE.md deliberately omits
 

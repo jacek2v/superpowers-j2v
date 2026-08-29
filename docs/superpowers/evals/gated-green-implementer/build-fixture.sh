@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 # Builds the throwaway gated-testing fixture the probe session runs in.
-# Reads the client project; writes only under /tmp.
+# Reads the client project named by the environment; writes only under /tmp.
 set -euo pipefail
 
-client="<gated project>"
+# The gated project is a client codebase. Its paths come from the
+# environment so they never enter this repository.
+client="${GGI_CLIENT_ROOT:?set GGI_CLIENT_ROOT to the gated project root}"
+repo="${GGI_CLIENT_REPO:?set GGI_CLIENT_REPO to the code repo under that root}"
+red_commit="${GGI_RED_COMMIT:?set GGI_RED_COMMIT to the RED commit the round output came from}"
 fixture=/tmp/ggi-fixture
 worktree=/tmp/ggi-probe
 
@@ -28,8 +32,8 @@ cat > "$fixture/.superpowers/rounds.md" <<'ROUNDSEOF'
 ROUND 1 RED phase "index backup rows move to status debug" — issued
 ROUNDSEOF
 
-git clone --quiet --no-checkout "$client/<code repo>" "$worktree"
-git -C "$worktree" checkout --quiet <red commit>
+git clone --quiet --no-checkout "$client/$repo" "$worktree"
+git -C "$worktree" checkout --quiet "$red_commit"
 
 echo "fixture:  $fixture"
 echo "worktree: $worktree  ($(git -C "$worktree" log --oneline -1))"
