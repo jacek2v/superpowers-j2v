@@ -21,8 +21,7 @@ Run it from any directory — every path inside the script is absolute.
 
 It creates `/tmp/ggi-fixture` (the gated declaration, `scripts/out/round1.out`,
 a round ledger holding only the "issued" line) and clones the code worktree
-`/tmp/ggi-probe` at `<red commit>`, the RED commit that round output was produced
-from. It reads the client project and writes only under `/tmp`.
+`/tmp/ggi-probe` at the RED commit that round output was produced from. It reads the client project and writes only under `/tmp`.
 
 ## The session
 

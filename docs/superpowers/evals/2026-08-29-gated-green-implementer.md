@@ -126,7 +126,7 @@ selectively in substance. The criterion cannot discriminate on this fixture. A
 fixture with a 319-line output — `cat_green1.out`, already used in the offline
 routing check — would measure it. That measurement is not in this eval.
 
-Subagent diff versus the reference commit `<reference commit>`, which changed one file
+Subagent diff versus the reference commit in the client repo, which changed one file
 with 2 insertions and 1 deletion:
 
 | Rep | Commit | Files | Diff |
