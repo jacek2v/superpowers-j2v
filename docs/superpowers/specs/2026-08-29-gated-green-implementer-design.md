@@ -21,8 +21,10 @@ description names the condition: "subagent dispatch is unavailable".
 Measurement, 2026-08-29. A Sonnet subagent reproduced an Opus session's GREEN
 commit from the same round output. The diff was identical except one comment
 line. The subagent used 55.6 k tokens against 1.24 M cache-read tokens in the
-Opus session. Full record:
-[`../analyses/2026-08-29-cc-model-effort-usage-analysis.md`](../analyses/2026-08-29-cc-model-effort-usage-analysis.md).
+Opus session. Full record: the skills
+workspace docs repository, file
+`docs/superpowers/analyses/2026-08-29-cc-model-effort-usage-analysis.md`. That
+file sits in a different repository, so no link resolves from here.
 
 ## Goal and honest limits
 
@@ -105,6 +107,10 @@ The main session fills the template. It passes no path to the plan and no path
 to the spec. When a plan exists, the session pastes the one relevant task block
 into the prompt. This follows the construction rule in
 `subagent-driven-development/SKILL.md:9`.
+
+One template serves all three dispatch targets. The verdict field and the
+wanted-behavior field change. The `sdd-rescue` dispatches for INVALID RED and
+for a Gate GREEN failure use the same template.
 
 The template carries:
 
