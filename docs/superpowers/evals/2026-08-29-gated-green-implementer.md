@@ -48,7 +48,25 @@ scans `Bash` commands that touch the code worktree for a write construct.
 
 ## Offline routing check
 
-TO BE FILLED BY TASK 6.
+Three real round outputs from `<gated project>/scripts/out/`, read selectively
+and routed by the SKILL.md table. Command used, one per file:
+
+    grep -nE "^\[FAIL\]|Tests passed|^RESULT" <file>
+
+| File | Lines in file | Lines the grep returned | Verdict | Target |
+|---|---|---|---|---|
+| `round1.out` | 10 | 3 | Valid RED — assertion failure on the missing debug row | `gated-green-implementer` |
+| `obj_red5.out` | 44 | 7 | INVALID RED — `Error occurred in Describe block`, `Cannot bind argument to parameter 'Path' because it is null` | `sdd-rescue` |
+| `cat_green1.out` | 319 | 22 | Gate GREEN failure — full suite, 1464 passed, 20 failed, `RESULT: FAIL` | `sdd-rescue` |
+
+Selective reading stayed sufficient on all three, including the 319-line output,
+where the grep returned 22 lines.
+
+Spec correction: the spec named `round1b.out` and described it as 1766 lines.
+It is 1766 bytes, 6 lines, `RESULT: PASS` — it fits neither goal of this check,
+so the three files above replace it.
+
+Plan correction: the plan calls `round1.out` a 13-line file. It is 10 lines.
 
 ## GREEN arm
 
