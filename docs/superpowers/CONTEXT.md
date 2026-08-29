@@ -12,8 +12,6 @@
 
 Specs in flight — ONE line each: link + status ≤10 words.
 
-- [gated GREEN implementer](specs/2026-08-29-gated-green-implementer-design.md) — approved, not implemented
-
 ## DECISIONS
 
 One decision per line. ✓ adopted, ✗ rejected direction. Never delete — supersede.
@@ -64,6 +62,7 @@ One decision per line. ✓ adopted, ✗ rejected direction. Never delete — sup
 - **D-044** ✓ agent files carry model and effort only and take their name from the role, with role instructions kept in the dispatch template — the template must stay the only source of instructions [2026-08-29](specs/2026-08-29-gated-green-implementer-design.md)
 - **D-045** ✓ a subagent cannot watch a `Monitor`, so waiting for a round belongs to the main session — a subagent ends the moment it stops calling tools, and no event reaches it after that (measured 2026-08-29: it armed the watch, returned after 15 s, the event that followed reached nobody) [2026-08-29](specs/2026-08-29-gated-green-implementer-design.md)
 - **D-046** ✗ DO NOT replace the role-named agents with effort-named ones (`subagent-high`, `subagent-medium`) and pass the model per call — the operator judged the rebuild unnecessary, and the rename would invalidate the eval behind D-035 [2026-08-29](session)
+- **D-047** ✓ the gated dispatch subsection must name the dispatch as work the human partner already asked for — a client-side efficiency experiment (`claude_code_opus5_efficiency_paragraph_experiment`, cached in `~/.claude.json`) tells every session not to call an agent unless asked, and without that sentence a repetition read the routing, overrode it and wrote the code itself (1/2 → 3/3 after the sentence) [2026-08-29](evals/2026-08-29-gated-green-implementer.md)
 
 ## SHIPPED
 
@@ -78,3 +77,4 @@ One decision per line. ✓ adopted, ✗ rejected direction. Never delete — sup
 | 2026-07-30 | Brainstorming deep research follow-ups — research-guide load precondition (11/12), dispatch-count check when a trim cannot lower the count (4/4), proposal answerability criterion (4/4), new eval scenario N5; all measured under the operator's real global CLAUDE.md | D-029 (changed) |
 | 2026-07-30 | Pre-push independent review of the whole unpushed range (no Critical, 8 Important) and its fixes — per-approach ordering stated once + count guard duplicated into SKILL.md (both 2/2, elicitation 2/3, V11); parallel-SDD digraph dispatch order, task-worktree convention and declined-worktree fallback, task evidence copied out before worktree removal, topological task numbering, `Paste back:` in both embedded gate templates — probes afterwards confirmed the digraph dispatch order, the evidence copy and the `Paste back:` line, and caught `git worktree remove` needing `--force`; the declined-worktree fallback and the numbering rule under pressure stay unmeasured | D-033 (changed) |
 | 2026-08-15 | systematic-debugging subagent delegation — all four phases dispatched, attempt ledger and final verification in the main session, eval-validated | D-036..D-041 |
+| 2026-08-29 | Gated round GREEN implementer — the main session judges the round and dispatches `gated-green-implementer` (sonnet/high) for the change, `sdd-rescue` for INVALID RED and Gate GREEN failures; new agent file, dispatch template, four SKILL.md edits; verdict-before-dispatch and dispatch-not-self-written measured 3/3, selective read unmeasured | D-043, D-044, D-047 |

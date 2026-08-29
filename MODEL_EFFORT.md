@@ -35,6 +35,19 @@ Nazwa `sdd-reviewer` mówi, skąd agent pochodzi, a nie gdzie wolno go użyć �
 recenzja ad-hoc idzie tą samą ścieżką co finalna recenzja w SDD
 ([D-035](docs/superpowers/evals/2026-08-05-reviewer-dispatch-consistency.md)).
 
+## Tryb gated testing bez orkiestracji SDD
+
+| Rola | Model / effort | Skąd |
+|---|---|---|
+| implementer GREEN po ważnym RED | sonnet / high | agent `gated-green-implementer` |
+| naprawa testów po INVALID RED | opus / high | agent `sdd-rescue` |
+| naprawa kodu po nieudanym Gate GREEN | opus / high | agent `sdd-rescue` |
+
+Sesja główna czyta wynik rundy, orzeka werdykt i dopisuje go do rejestru rund,
+dopiero potem wysyła subagenta (D-043). Gdy fazę prowadzi
+`subagent-driven-development` albo jego kopia równoległa, obowiązuje routing
+tamtego skilla, a ta tabela nie działa.
+
 Uzasadnienia:
 
 - **Sesja opus/high:** effort sesji konsumuje implementer (sonnet rośnie z effortem),

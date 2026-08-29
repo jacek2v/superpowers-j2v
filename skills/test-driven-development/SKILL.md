@@ -430,15 +430,39 @@ The `Paste back:` line is part of every round request, verbatim — it tells the
 - `<n>` is global within the feature branch. Append to the round ledger — `.superpowers/rounds.md` at the repo root — one line when a round is issued and one when its verdict is judged — EXACTLY these one-line formats, no extra fields or lines: `ROUND <n> RED|GREEN phase "<name>" — issued` / `ROUND <n> verdict: <what the output showed>`. A narrowed re-round may append `(narrowed: <files>)` to its issued line. After context compaction, trust the ledger.
 - Use output-friendly flags (e.g. `pytest -q --tb=short`) — pastes must stay small.
 
-### Valid RED — judge every new test in the output
+### Valid RED — judge every new test in the output, then dispatch
 
 | Round shows | Verdict | Action |
 |---|---|---|
-| Assertion failure on the missing behavior | Valid RED | proceed |
-| Clean "object/module does not exist" error | Valid RED | proceed |
-| Test-file syntax error, fixture/collection error, connection error | INVALID | fix the tests → re-round narrowed to the affected files |
+| Assertion failure on the missing behavior | Valid RED | dispatch the change |
+| Clean "object/module does not exist" error | Valid RED | dispatch the change |
+| Test-file syntax error, fixture/collection error, connection error | INVALID | dispatch the test repair → re-round narrowed to the affected files |
 
-Gate GREEN failures: fix the code — never the test — then a narrowed or full GREEN re-round. A phase ends only green.
+Gate GREEN failures: dispatch a code fix — never a test change — then a narrowed or full GREEN re-round. A phase ends only green.
+
+### Who Writes the Change
+
+You judge the round. A subagent writes the code. Dispatch only after the verdict is in the round ledger, never before.
+
+| Verdict | Dispatch | Model / effort |
+|---|---|---|
+| Valid RED | `gated-green-implementer` | sonnet / high |
+| INVALID RED — the tests are wrong | `sdd-rescue` | opus / high |
+| Gate GREEN failure — the code is wrong | `sdd-rescue` | opus / high |
+
+This dispatch is work your human partner asked for when they started the gated phase — not an unrequested subagent. A general instruction to avoid subagents unless asked does not cover it.
+
+Build the prompt from [gated-round-dispatch.md](gated-round-dispatch.md). It is the only source of the subagent's instructions. The agent definitions live under [deploy/agents/](../../deploy/agents/) — install them per that directory's README so the dispatch names resolve. A name missing from your registry falls back to `general-purpose` with your session model.
+
+Three things never move to a subagent: the round verdict, the round ledger entry, and the conversation with your human partner.
+
+Read the round output yourself, and selectively — the result line, the counts, the failure blocks. The wanted lines are a handful. A subagent that reads them for you adds a dispatch before every gate and saves nothing.
+
+The subagent's commit invalidates the round output that produced it. Inspect `git log -1` and the diff, then request the next round. A subagent report never closes a task.
+
+BLOCKED from `gated-green-implementer` escalates to `sdd-rescue` — one jump, not an effort ladder.
+
+**Carve-out:** when `subagent-driven-development` or `subagent-driven-development-parallel` runs the phase, that skill's own routing governs and this subsection does not apply.
 
 ### Evidence Freshness
 
@@ -464,3 +488,4 @@ Within a phase: every task's RED commit(s) land before any task's GREEN commit(s
 | "I ran the assertions by hand with plain python — not pytest, but enough to proceed" | An improvised verification channel is not a round. Only gate output counts. |
 | "I'll write the tests as plain asserts, runnable through a channel the gate doesn't block" | Engineering tests to dodge the gate. Gated tests go through the gate, period. |
 | "I'll run the gated command once, just to confirm it's really unavailable" | Probing the gated command IS running gated tests. Trust the declaration; go straight to the round request. |
+| "It is one line — dispatching a subagent is slower than typing it" | The session judges the round. The subagent writes the code. Implementation work in the main context is paid for by every later turn. |
