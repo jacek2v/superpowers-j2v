@@ -208,7 +208,9 @@ does not know in advance how many files the change touches.
 ## Out of scope
 
 - The generic effort agents. Backlog entry: `docs/superpowers/backlog/2026-08-29-generic-effort-agents.md`.
-- `~/prjs/<gated project>/CLAUDE.md:33` says "you read the result from
-  `scripts/out/round3.out`". It must say that the session judges the output and
-  then dispatches. Change it in a session started in that project. That
-  repository is read-only here.
+- No change is needed in `~/prjs/<gated project>/CLAUDE.md`. The handoff asked
+  to redirect line 33, which says "you read the result from
+  `scripts/out/round3.out`". That request assumed a subagent reads the round
+  output. The approved flow keeps that read in the main session, so the line
+  already describes the wanted behavior. The dispatch rule stays in the skill,
+  and D-003 allows only `Runner:` and `Local subset:` as project overrides.
