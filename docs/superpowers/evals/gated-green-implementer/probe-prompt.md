@@ -13,8 +13,10 @@ closed and would have no verdict left to write.
 
 ## Setup (run once per repetition, before the session starts)
 
+Run it from any directory — every path inside the script is absolute.
+
 ```bash
-docs/superpowers/evals/gated-green-implementer/build-fixture.sh
+<repo>/docs/superpowers/evals/gated-green-implementer/build-fixture.sh
 ```
 
 It creates `/tmp/ggi-fixture` (the gated declaration, `scripts/out/round1.out`,
