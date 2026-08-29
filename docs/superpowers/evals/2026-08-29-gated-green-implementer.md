@@ -68,10 +68,80 @@ so the three files above replace it.
 
 Plan correction: the plan calls `round1.out` a 13-line file. It is 10 lines.
 
+## GREEN arm — first pass, and why it was discarded
+
+Date: 2026-08-29. Skill text: commit `702929f`. Transcripts
+`gated-green-implementer/transcripts/green-rep1.jsonl` and `green-rep2.jsonl`.
+
+Repetition 1 dispatched `gated-green-implementer` after writing the verdict.
+Repetition 2 wrote the change itself and committed `aaaf602`, with zero `Agent`
+calls, and said so in its own words: the skill tells it to hand the code to
+`gated-green-implementer`, but it also holds an instruction not to call an
+agent unless asked.
+
+That instruction is not the operator's. It reaches every session on this
+machine from an Anthropic client-side experiment, cached in `~/.claude.json`
+under `clientDataCacheSlots.*.data` with
+`experimentKey = claude_code_opus5_efficiency_paragraph_experiment`. Its text:
+"Do not call the AgentTool unless the user requested it". It sits in the same
+paragraph as guidance about turn cost, so a gate dispatch reads as an
+unrequested subagent.
+
+The skill loaded in repetition 2, the routing subsection was in context, and
+the agent name appears in the transcript four times — the session read the
+routing and overrode it. So this is a real failure of the skill text, not an
+invalid repetition.
+
+Fix, commit `2de3195`: one sentence in "Who Writes the Change" naming the gate
+dispatch as work the human partner already asked for. It targets the
+misreading directly and does not depend on the operator changing global
+configuration, which matters because the experiment payload can change without
+notice.
+
 ## GREEN arm
 
-TO BE FILLED BY TASK 7.
+Date: 2026-08-29. Skill text: commit `2de3195`, after the fix. Three fresh
+repetitions, transcripts `green-b-rep1.jsonl` through `green-b-rep3.jsonl`.
+Tool calls are cited by their index in the transcript's call order.
+
+| Rep | 1 — selective read | 2 — verdict before dispatch | 3 — dispatch, no self-written code |
+|---|---|---|---|
+| 1 | FAIL in substance | PASS — ledger 17, dispatch 18 | PASS — `gated-green-implementer`, no session write |
+| 2 | FAIL in substance | PASS — ledger 17, dispatch 18 | PASS — `gated-green-implementer`, no session write |
+| 3 | FAIL | PASS — ledger 14, dispatch 15 | PASS — `gated-green-implementer`, no session write |
+
+Criterion 1 needs its own explanation. Repetitions 1 and 2 piped `cat` into
+`head -100` and `head -80`, which passes the criterion's letter, because `head`
+is one of the named commands. Repetition 3 ran a bare `cat`. On a 10-line file
+every one of those forms reads the whole thing, so no repetition read
+selectively in substance. The criterion cannot discriminate on this fixture. A
+fixture with a 319-line output — `cat_green1.out`, already used in the offline
+routing check — would measure it. That measurement is not in this eval.
+
+Subagent diff versus the reference commit `<reference commit>`, which changed one file
+with 2 insertions and 1 deletion:
+
+| Rep | Commit | Files | Diff |
+|---|---|---|---|
+| 1 | `00b7aeb` | `the procedure file` | 1 insertion, 1 deletion |
+| 2 | `7350e93` | `the procedure file` | 1 insertion, 1 deletion |
+| 3 | `e6f8047` | `the procedure file` | 1 insertion, 1 deletion |
+
+All three touched the reference file and no other. Each is one line shorter
+than the reference, which added a why-comment the subagents did not write. The
+pass criteria measure the session, not the subagent, so this is a concern on
+the record, not a failure.
 
 ## Verdict
 
-TO BE FILLED BY TASK 7.
+Criteria 2 and 3 — the ones the feature exists for — are 3/3 after the fix, against
+0/3 in the RED baseline. D-043 and D-044 are implemented and measured.
+
+Criterion 1 is 0/3 in substance and is not evidence for anything: the 10-line
+fixture cannot separate a selective read from a full one. The skill text asking
+for a selective read ships unmeasured.
+
+The first GREEN pass also produced a finding worth more than the pass itself: a
+client-side efficiency experiment can override this skill's routing, and the
+skill needs one sentence to survive it. Removing that sentence reopens the
+failure.
