@@ -94,7 +94,6 @@ main session requests a new round. A subagent report never closes a task.
 | `skills/test-driven-development/gated-round-dispatch.md` | new | The dispatch prompt template. |
 | `skills/test-driven-development/SKILL.md` | edit | New subsection in "Gated Testing Mode". Reworded "Valid RED". One new rationalization row. |
 | `docs/superpowers/CONTEXT.md` | edit | D-043 and D-044. |
-| `docs/superpowers/backlog/2026-08-29-generic-effort-agents.md` | new | The deferred agent rebuild. |
 
 The agent file body carries no role instructions. `sdd-reviewer` and
 `sdd-rescue` are bare passthroughs for the same reason
@@ -197,9 +196,8 @@ operator: effort would follow the session instead of staying fixed.
 **Generic effort agents, `subagent-high` and `subagent-medium`.** The operator
 proposed replacing the named agents with effort carriers and passing the model
 per call. The dispatch tool supports it, because the call-level `model`
-overrides the agent frontmatter. Deferred to the backlog: the change touches
-five skills, two prompt templates, and D-035, whose wording was eval-validated
-5/5.
+overrides the agent frontmatter. Rejected by the operator as unnecessary. The change also touches five skills,
+two prompt templates, and D-035, whose wording was eval-validated 5/5.
 
 **A size threshold for the dispatch.** Dispatch only above a file count or a
 failure count. Rejected: the threshold has no data behind it, and the session
@@ -207,7 +205,6 @@ does not know in advance how many files the change touches.
 
 ## Out of scope
 
-- The generic effort agents. Backlog entry: `docs/superpowers/backlog/2026-08-29-generic-effort-agents.md`.
 - No change is needed in `~/prjs/<gated project>/CLAUDE.md`. The handoff asked
   to redirect line 33, which says "you read the result from
   `scripts/out/round3.out`". That request assumed a subagent reads the round

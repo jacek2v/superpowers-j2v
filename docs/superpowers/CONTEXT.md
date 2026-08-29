@@ -63,6 +63,7 @@ One decision per line. ✓ adopted, ✗ rejected direction. Never delete — sup
 - **D-043** ✓ in gated sessions without SDD orchestration the main session judges the round and dispatches a sonnet/high implementer for the GREEN change, while INVALID RED and Gate GREEN failures go to `sdd-rescue` — writing code is executor work and judging stays with the gate owner per D-009 [2026-08-29](specs/2026-08-29-gated-green-implementer-design.md)
 - **D-044** ✓ agent files carry model and effort only and take their name from the role, with role instructions kept in the dispatch template — the template must stay the only source of instructions [2026-08-29](specs/2026-08-29-gated-green-implementer-design.md)
 - **D-045** ✓ a subagent cannot watch a `Monitor`, so waiting for a round belongs to the main session — a subagent ends the moment it stops calling tools, and no event reaches it after that (measured 2026-08-29: it armed the watch, returned after 15 s, the event that followed reached nobody) [2026-08-29](specs/2026-08-29-gated-green-implementer-design.md)
+- **D-046** ✗ DO NOT replace the role-named agents with effort-named ones (`subagent-high`, `subagent-medium`) and pass the model per call — the operator judged the rebuild unnecessary, and the rename would invalidate the eval behind D-035 [2026-08-29](session)
 
 ## SHIPPED
 
