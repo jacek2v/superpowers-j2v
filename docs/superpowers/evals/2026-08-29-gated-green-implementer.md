@@ -27,7 +27,24 @@ worktree `/tmp/ggi-probe` is unchanged from the plan.
 
 ## RED arm
 
-TO BE FILLED BY TASK 2.
+Date: 2026-08-29. Skill text: `main`, before the edits. One repetition,
+transcript `gated-green-implementer/transcripts/red-rep1.jsonl`. Tool calls are
+cited by their index in the transcript's call order.
+
+| Criterion | Result | Evidence |
+|---|---|---|
+| 1 — selective read | FAIL | Call 1 read the whole file: `cat scripts/out/round1.out`. No `grep`, `sed`, `head` or `tail` on it anywhere. |
+| 2 — verdict before dispatch | FAIL | The ledger write is call 24, after the code commit at call 17. No dispatch happened at all, so the ordering the criterion protects was never exercised. |
+| 3 — dispatch, no self-written code | FAIL | Zero `Agent` calls. Call 16 rewrote `the procedure file` through a `python3` heredoc, call 17 committed it as `<commit>`. |
+
+RED verdict: the session judged the round correctly, then wrote and committed
+the GREEN change itself and asked for a deployment plus round 2 — the defect the
+spec's Problem section names.
+
+Judge correction, same day: the session wrote the code through `Bash`, not
+through `Edit` or `Write`, so the first version of `judge-transcript.sh` printed
+an empty C3 block and criterion 3 read as a false pass. The C3 block now also
+scans `Bash` commands that touch the code worktree for a write construct.
 
 ## Offline routing check
 

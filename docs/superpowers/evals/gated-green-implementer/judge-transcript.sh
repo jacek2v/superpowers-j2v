@@ -24,4 +24,11 @@ tool_calls | grep -n -E "rounds\.md|^Agent" || echo "(neither a ledger write nor
 echo
 echo "== C3: dispatch target, and code the session wrote itself =="
 tool_calls | awk -F'\t' '$1=="Agent" { print "dispatch: " $2 }'
-tool_calls | awk -F'\t' '$1=="Edit" || $1=="Write" || $1=="NotebookEdit" { print "session write: " $3 }'
+tool_calls | awk -F'\t' '$1=="Edit" || $1=="Write" || $1=="NotebookEdit" { print "tool write: " $3 }'
+# A session can write code through Bash instead of Edit/Write, so scan Bash
+# commands that touch the code worktree for a write construct.
+tool_calls | awk -F'\t' '$1=="Bash" { print $3 }' \
+    | grep -E "ggi-probe" \
+    | grep -E "git (add|commit)|sed -i|tee |open\([^)]*, *.w.|>>? *'?\"?[^ ]*\.(sql|ps1|py|md|json|yml)" \
+    | cut -c1-140 \
+    | sed 's/^/bash write: /' || true
