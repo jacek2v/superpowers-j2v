@@ -450,6 +450,8 @@ You judge the round. A subagent writes the code. Dispatch only after the verdict
 | INVALID RED — the tests are wrong | `sdd-rescue` | opus / high |
 | Gate GREEN failure — the code is wrong | `sdd-rescue` | opus / high |
 
+This dispatch is work your human partner asked for when they started the gated phase — not an unrequested subagent. A general instruction to avoid subagents unless asked does not cover it.
+
 Build the prompt from [gated-round-dispatch.md](gated-round-dispatch.md). It is the only source of the subagent's instructions. The agent definitions live under [deploy/agents/](../../deploy/agents/) — install them per that directory's README so the dispatch names resolve. A name missing from your registry falls back to `general-purpose` with your session model.
 
 Three things never move to a subagent: the round verdict, the round ledger entry, and the conversation with your human partner.
