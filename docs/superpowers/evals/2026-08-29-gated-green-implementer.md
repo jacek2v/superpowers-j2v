@@ -44,7 +44,15 @@ spec's Problem section names.
 Judge correction, same day: the session wrote the code through `Bash`, not
 through `Edit` or `Write`, so the first version of `judge-transcript.sh` printed
 an empty C3 block and criterion 3 read as a false pass. The C3 block now also
-scans `Bash` commands that touch the code worktree for a write construct.
+scans `Bash` commands for a write construct.
+
+Second judge correction, after the branch review: the C3 block first required
+the worktree path in the same `Bash` command as the write construct. The Bash
+tool keeps its working directory between calls, so a session could `cd` into
+the worktree in one call and write in the next without naming the path. The
+filter now scans every `Bash` call and excludes only the ledger append, which
+is criterion 2's evidence. Re-running it over all six transcripts returned the
+same verdicts and no false positive.
 
 ## Offline routing check
 
@@ -68,7 +76,7 @@ so the three files above replace it.
 
 Plan correction: the plan calls `round1.out` a 13-line file. It is 10 lines.
 
-## GREEN arm — first pass, and why it was discarded
+## GREEN arm, first pass — discarded
 
 Date: 2026-08-29. Skill text: commit `702929f`. Transcripts
 `gated-green-implementer/transcripts/green-rep1.jsonl` and `green-rep2.jsonl`.

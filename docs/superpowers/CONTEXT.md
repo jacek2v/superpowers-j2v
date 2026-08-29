@@ -12,7 +12,6 @@
 
 Specs in flight — ONE line each: link + status ≤10 words.
 
-
 ## DECISIONS
 
 One decision per line. ✓ adopted, ✗ rejected direction. Never delete — supersede.

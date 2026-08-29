@@ -25,10 +25,12 @@ echo
 echo "== C3: dispatch target, and code the session wrote itself =="
 tool_calls | awk -F'\t' '$1=="Agent" { print "dispatch: " $2 }'
 tool_calls | awk -F'\t' '$1=="Edit" || $1=="Write" || $1=="NotebookEdit" { print "tool write: " $3 }'
-# A session can write code through Bash instead of Edit/Write, so scan Bash
-# commands that touch the code worktree for a write construct.
+# A session can write code through Bash instead of Edit/Write. The Bash tool
+# keeps its working directory between calls, so a command can write without
+# naming the worktree; scan every Bash call for a write construct instead of
+# prefiltering on the path. The ledger append is C2's evidence, not a code write.
 tool_calls | awk -F'\t' '$1=="Bash" { print $3 }' \
-    | grep -E "ggi-probe" \
     | grep -E "git (add|commit)|sed -i|tee |open\([^)]*, *.w.|>>? *'?\"?[^ ]*\.(sql|ps1|py|md|json|yml)" \
+    | grep -v "rounds\.md" \
     | cut -c1-140 \
     | sed 's/^/bash write: /' || true
